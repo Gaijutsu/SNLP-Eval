@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "context-gathering-harness"
+version = "0.1.0"
+description = "Testing harness comparing Agentic vs RAG context-gathering for LLMs on code"
+requires-python = ">=3.11"
+dependencies = [
+    "datasets>=2.18",
+    "rank-bm25>=0.2.2",
+    "sentence-transformers>=2.6",
+    "faiss-cpu>=1.7",
+    "openai>=1.30",
+    "tiktoken>=0.7",
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "rich>=13.7",
+    "pyyaml>=6.0",
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.29",
+    "websockets>=12.0",
+    "httpx>=0.27",
+    "gitpython>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+harness = "harness.runner:main"

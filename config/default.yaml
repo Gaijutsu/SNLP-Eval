@@ -1,0 +1,28 @@
+benchmark:
+  name: swebench_lite
+  split: test
+  limit: 50            # for quick dev runs
+
+llm:
+  provider: local                               # or openai
+  model: qwen3:0.6b                             # gpt-5-mini
+  base_url: http://localhost:11434/v1           # null
+
+gatherers:
+  - name: rag_dense
+    model: all-MiniLM-L6-v2
+    top_k: 10
+  - name: react_agent
+    llm: qwen3:0.6b
+    max_steps: 15
+  - name: agentless
+    llm: qwen3:0.6b
+    n_samples: 5
+
+k_values: [1, 3, 5, 10]
+
+dashboard:
+  enabled: true
+  port: 8765
+
+output_dir: ./results

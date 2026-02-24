@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context Gathering Harness — Live Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0f1117;
+            --bg-secondary: #1a1d28;
+            --bg-card: #21243180;
+            --border: #2d3148;
+            --text-primary: #e4e6f0;
+            --text-secondary: #8b8fa8;
+            --accent-blue: #6366f1;
+            --accent-green: #22c55e;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --accent-cyan: #06b6d4;
+            --radius: 12px;
+            --glow-blue: 0 0 20px rgba(99, 102, 241, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .8rem;
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            transition: background .3s;
+        }
+
+        .dot.on {
+            background: var(--accent-green);
+        }
+
+        /* Progress */
+        .prog {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 18px;
+            box-shadow: var(--glow-blue);
+        }
+
+        .prog-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .prog-top h2 {
+            font-size: .95rem;
+            font-weight: 600;
+        }
+
+        .prog-pct {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--accent-blue);
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 4px;
+            transition: width .5s ease;
+        }
+
+        .prog-details {
+            display: flex;
+            gap: 24px;
+            margin-top: 10px;
+            font-size: .8rem;
+            color: var(--text-secondary);
+        }
+
+        .prog-details strong {
+            color: var(--text-primary);
+        }
+
+        /* Counters */
+        .counters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .ctr {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .ctr .lbl {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .ctr .val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .blue {
+            color: var(--accent-blue);
+        }
+
+        .green {
+            color: var(--accent-green);
+        }
+
+        .orange {
+            color: var(--accent-orange);
+        }
+
+        .cyan {
+            color: var(--accent-cyan);
+        }
+
+        /* Section cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 18px;
+        }
+
+        .card h3 {
+            font-size: .9rem;
+            margin-bottom: 14px;
+            color: var(--text-secondary);
+        }
+
+        canvas {
+            width: 100% !important;
+            display: block;
+        }
+
+        /* Metric comparison chart section */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Gatherer detail cards */
+        .gatherers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 16px;
+        }
+
+        .g-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            transition: border-color .3s, box-shadow .3s;
+        }
+
+        .g-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: var(--glow-blue);
+        }
+
+        .g-name {
+            font-size: .95rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .g-name .cdot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .g-type {
+            font-size: .7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 12px;
+            padding: 2px 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .g-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .m-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 6px;
+            font-size: .82rem;
+            border-bottom: 1px solid #ffffff08;
+        }
+
+        .m-row:nth-child(odd) {
+            background: #ffffff03;
+        }
+
+        .m-row .mk {
+            color: var(--text-secondary);
+        }
+
+        .m-row .mv {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .g-chart-area {
+            margin-top: 12px;
+        }
+
+        .g-chart-area canvas {
+            height: 100px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Context Gathering Harness</h1>
+            <div class="badge">
+                <div class="dot" id="connDot"></div><span id="connLbl">Disconnected</span>
+            </div>
+        </header>
+
+        <!-- Progress -->
+        <div class="prog">
+            <div class="prog-top">
+                <h2>Experiment Progress</h2>
+                <div class="prog-pct" id="pct">0%</div>
+            </div>
+            <div class="bar-track">
+                <div class="bar-fill" id="barFill"></div>
+            </div>
+            <div class="prog-details">
+                <span><strong id="done">0</strong> / <strong id="tot">0</strong> instances</span>
+                <span>Elapsed: <strong id="elapsed">0s</strong></span>
+                <span>Current: <strong id="cur">—</strong></span>
+            </div>
+        </div>
+
+        <!-- Counters -->
+        <div class="counters">
+            <div class="ctr">
+                <div class="lbl">Total Tokens</div>
+                <div class="val blue" id="cTok">0</div>
+            </div>
+            <div class="ctr">
+                <div class="lbl">Tokens/min (avg)</div>
+                <div class="val green" id="cTpm">0</div>
+            </div>
+            <div class="ctr">
+                <div class="lbl">Tokens/min (60s)</div>
+                <div class="val orange" id="cRoll">0</div>
+            </div>
+            <div class="ctr">
+                <div class="lbl">Methods Running</div>
+                <div class="val cyan" id="cMethods">0</div>
+            </div>
+        </div>
+
+        <!-- Comparison charts -->
+        <div class="comparison-grid">
+            <div class="card">
+                <h3>📈 MRR by Method</h3>
+                <canvas id="chartMRR" style="height:200px"></canvas>
+            </div>
+            <div class="card">
+                <h3>📈 Precision@5 by Method</h3>
+                <canvas id="chartP5" style="height:200px"></canvas>
+            </div>
+            <div class="card">
+                <h3>📈 Recall@5 by Method</h3>
+                <canvas id="chartR5" style="height:200px"></canvas>
+            </div>
+            <div class="card">
+                <h3>📈 NDCG@5 by Method</h3>
+                <canvas id="chartN5" style="height:200px"></canvas>
+            </div>
+        </div>
+
+        <!-- Token usage chart -->
+        <div class="card">
+            <h3>🪙 Cumulative Token Usage</h3>
+            <canvas id="chartTokens" style="height:160px"></canvas>
+        </div>
+
+        <!-- Per-gatherer detail cards -->
+        <h3 style="color:var(--text-secondary); margin-bottom:14px; font-size:.9rem;">Method Details</h3>
+        <div class="gatherers-grid" id="gGrid"></div>
+    </div>
+
+    <script>
+        (() => {
+            const COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#a855f7', '#06b6d4', '#ec4899', '#14b8a6'];
+            const TYPE_MAP = {
+                rag_bm25: 'RAG · Sparse', rag_dense: 'RAG · Dense', rag_hybrid: 'RAG · Hybrid',
+                react_agent: 'Agentic · ReAct', agentless: 'Agentic · Agentless'
+            };
+            let tokenData = [];
+            let ws = null;
+
+            function connect() {
+                const p = location.protocol === 'https:' ? 'wss' : 'ws';
+                ws = new WebSocket(`${p}://${location.host}/ws`);
+                ws.onopen = () => { id('connDot').classList.add('on'); id('connLbl').textContent = 'Connected'; };
+                ws.onclose = () => { id('connDot').classList.remove('on'); id('connLbl').textContent = 'Reconnecting…'; setTimeout(connect, 2000); };
+                ws.onerror = () => ws.close();
+                ws.onmessage = e => { try { update(JSON.parse(e.data)); } catch (er) { console.error(er); } };
+            }
+
+            function id(x) { return document.getElementById(x); }
+            function fmt(n) { return n.toLocaleString(); }
+
+            function update(d) {
+                // Progress
+                const p = d.progress;
+                id('pct').textContent = p.percent + '%';
+                id('barFill').style.width = p.percent + '%';
+                id('done').textContent = p.completed;
+                id('tot').textContent = p.total;
+                id('cur').textContent = p.current_gatherer ? `${p.current_gatherer} → ${p.current_instance}` : '—';
+                const m = Math.floor(d.elapsed_s / 60), s = Math.floor(d.elapsed_s % 60);
+                id('elapsed').textContent = m > 0 ? `${m}m ${s}s` : `${s}s`;
+
+                // Counters
+                id('cTok').textContent = fmt(d.tokens.total);
+                id('cTpm').textContent = fmt(d.tokens.tokens_per_min);
+                id('cRoll').textContent = fmt(d.tokens.rolling_tokens_per_min);
+                const gNames = Object.keys(d.gatherers || {});
+                id('cMethods').textContent = gNames.length;
+
+                // Token chart data
+                tokenData.push({ t: d.elapsed_s, v: d.tokens.total });
+                if (tokenData.length > 600) tokenData.shift();
+
+                // Draw comparison charts
+                drawComparisonChart('chartMRR', d.gatherers, 'mrr');
+                drawComparisonChart('chartP5', d.gatherers, 'p@5');
+                drawComparisonChart('chartR5', d.gatherers, 'r@5');
+                drawComparisonChart('chartN5', d.gatherers, 'ndcg@5');
+                drawTokenChart();
+                renderCards(d.gatherers);
+            }
+
+            // ── Per-metric comparison chart (multi-line, one line per gatherer) ──
+            function drawComparisonChart(canvasId, gatherers, metricKey) {
+                const canvas = id(canvasId);
+                const ctx = canvas.getContext('2d');
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
+                const W = rect.width, H = rect.height;
+                ctx.clearRect(0, 0, W, H);
+
+                const PAD_L = 44, PAD_R = 100, PAD_T = 8, PAD_B = 22; // increased PAD_R for labels
+                const cW = W - PAD_L - PAD_R, cH = H - PAD_T - PAD_B;
+
+                // Gather all series
+                const series = [];
+                let maxLen = 0;
+                let globalMax = 0;
+                Object.entries(gatherers).forEach(([name, s], i) => {
+                    const hist = s.metric_history || [];
+                    const vals = hist.map(h => h[metricKey] ?? 0);
+
+                    let avg = 0;
+                    if (metricKey === 'mrr') avg = s.avg_mrr ?? 0;
+                    else if (metricKey.startsWith('p@')) avg = s.avg_precision?.[metricKey.split('@')[1]] ?? 0;
+                    else if (metricKey.startsWith('r@')) avg = s.avg_recall?.[metricKey.split('@')[1]] ?? 0;
+                    else if (metricKey.startsWith('ndcg@')) avg = s.avg_ndcg?.[metricKey.split('@')[1]] ?? 0;
+
+                    if (vals.length > maxLen) maxLen = vals.length;
+                    const mx = Math.max(...vals, 0);
+                    if (mx > globalMax) globalMax = mx;
+                    series.push({ name, vals, avg, color: COLORS[i % COLORS.length] });
+                });
+                if (maxLen < 1 || globalMax === 0) { globalMax = 1; }
+
+                // Grid
+                ctx.strokeStyle = '#2d3148'; ctx.lineWidth = 0.5;
+                for (let i = 0; i <= 4; i++) {
+                    const y = PAD_T + cH - (i / 4) * cH;
+                    ctx.beginPath(); ctx.moveTo(PAD_L, y); ctx.lineTo(W - PAD_R, y); ctx.stroke();
+                    ctx.fillStyle = '#8b8fa8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+                    ctx.fillText((globalMax * i / 4).toFixed(2), PAD_L - 4, y + 3);
+                }
+
+                // X-axis label
+                ctx.fillStyle = '#8b8fa866'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+                ctx.fillText('instances →', W / 2, H - 2);
+
+                // Lines
+                series.forEach(s => {
+                    if (s.vals.length < 1) return;
+
+                    const lenDiv = (maxLen - 1) || 1;
+
+                    // Draw faint line for instances
+                    ctx.strokeStyle = s.color + '66'; // semi-transparent
+                    ctx.lineWidth = 1; ctx.lineJoin = 'round';
+                    ctx.beginPath();
+                    s.vals.forEach((v, i) => {
+                        const x = PAD_L + (i / lenDiv) * cW;
+                        const y = PAD_T + cH - (v / globalMax) * cH;
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    });
+                    ctx.stroke();
+
+                    // Draw dots for instance values
+                    ctx.fillStyle = s.color;
+                    s.vals.forEach((v, i) => {
+                        const x = PAD_L + (i / lenDiv) * cW;
+                        const y = PAD_T + cH - (v / globalMax) * cH;
+                        ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fill();
+                    });
+
+                    // Draw dashed horizontal line for average
+                    const avgY = PAD_T + cH - (s.avg / globalMax) * cH;
+                    ctx.save();
+                    ctx.strokeStyle = s.color; ctx.lineWidth = 1.5;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(PAD_L, avgY);
+                    ctx.lineTo(W - PAD_R, avgY);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // Label for average at the right side
+                    ctx.fillStyle = s.color;
+                    ctx.font = '10px sans-serif'; ctx.textAlign = 'left';
+                    ctx.fillText(`${s.name} avg: ${s.avg.toFixed(3)}`, W - PAD_R + 6, avgY + 3);
+                });
+            }
+
+            // ── Token usage chart ──
+            function drawTokenChart() {
+                const canvas = id('chartTokens');
+                const ctx = canvas.getContext('2d');
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
+                const W = rect.width, H = rect.height;
+                ctx.clearRect(0, 0, W, H);
+                if (tokenData.length < 2) return;
+
+                const maxT = tokenData[tokenData.length - 1].t || 1;
+                const maxV = Math.max(...tokenData.map(d => d.v)) || 1;
+
+                ctx.strokeStyle = '#2d3148'; ctx.lineWidth = 0.5;
+                for (let i = 0; i <= 4; i++) {
+                    const y = H - (i / 4) * (H - 10);
+                    ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(W, y); ctx.stroke();
+                    ctx.fillStyle = '#8b8fa8'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+                    ctx.fillText(fmt(Math.round(maxV * i / 4)), 36, y + 3);
+                }
+
+                const grad = ctx.createLinearGradient(0, 0, W, 0);
+                grad.addColorStop(0, '#6366f1'); grad.addColorStop(1, '#a855f7');
+                ctx.strokeStyle = grad; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+                ctx.beginPath();
+                tokenData.forEach((d, i) => {
+                    const x = 40 + (d.t / maxT) * (W - 50);
+                    const y = H - (d.v / maxV) * (H - 10);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                const last = tokenData[tokenData.length - 1];
+                ctx.lineTo(40 + (last.t / maxT) * (W - 50), H);
+                ctx.lineTo(40, H); ctx.closePath();
+                const fg = ctx.createLinearGradient(0, 0, 0, H);
+                fg.addColorStop(0, 'rgba(99,102,241,0.15)'); fg.addColorStop(1, 'rgba(99,102,241,0)');
+                ctx.fillStyle = fg; ctx.fill();
+            }
+
+            // ── Gatherer cards ──
+            function renderCards(gatherers) {
+                const grid = id('gGrid');
+                grid.innerHTML = '';
+                Object.entries(gatherers).forEach(([name, s], i) => {
+                    const color = COLORS[i % COLORS.length];
+                    const type = TYPE_MAP[name] || 'Unknown';
+                    const isRAG = name.startsWith('rag_');
+                    const tokenLabel = isRAG ? '0 (no LLM)' : fmt(s.total_tokens);
+
+                    let metricsHTML = '';
+                    // Left column: core metrics
+                    const leftMetrics = [
+                        ['MRR', s.avg_mrr],
+                        ['Avg Latency', s.avg_latency_s + 's'],
+                        ['Tokens', tokenLabel],
+                        ['Instances', s.instances_completed],
+                    ];
+                    // Add precision
+                    if (s.avg_precision) Object.entries(s.avg_precision).forEach(([k, v]) => leftMetrics.push([`P@${k}`, v]));
+
+                    // Right column
+                    const rightMetrics = [];
+                    if (s.avg_recall) Object.entries(s.avg_recall).forEach(([k, v]) => rightMetrics.push([`R@${k}`, v]));
+                    if (s.avg_ndcg) Object.entries(s.avg_ndcg).forEach(([k, v]) => rightMetrics.push([`NDCG@${k}`, v]));
+
+                    const maxRows = Math.max(leftMetrics.length, rightMetrics.length);
+                    let rowsHTML = '';
+                    for (let r = 0; r < maxRows; r++) {
+                        const left = leftMetrics[r];
+                        const right = rightMetrics[r];
+                        rowsHTML += '<div style="display:flex">';
+                        if (left) rowsHTML += `<div class="m-row" style="flex:1"><span class="mk">${left[0]}</span><span class="mv">${left[1]}</span></div>`;
+                        else rowsHTML += '<div class="m-row" style="flex:1"></div>';
+                        if (right) rowsHTML += `<div class="m-row" style="flex:1"><span class="mk">${right[0]}</span><span class="mv">${right[1]}</span></div>`;
+                        else rowsHTML += '<div class="m-row" style="flex:1"></div>';
+                        rowsHTML += '</div>';
+                    }
+
+                    const cardId = `gChart_${i}`;
+                    grid.innerHTML += `
+                <div class="g-card">
+                    <div class="g-name"><span class="cdot" style="background:${color}"></span>${name}</div>
+                    <span class="g-type">${type}</span>
+                    ${rowsHTML}
+                    <div class="g-chart-area">
+                        <canvas id="${cardId}"></canvas>
+                    </div>
+                </div>`;
+
+                    // Draw sparkline after DOM update
+                    requestAnimationFrame(() => drawSparkline(cardId, s.metric_history || [], color));
+                });
+            }
+
+            // ── Per-gatherer sparkline (MRR trend) ──
+            function drawSparkline(canvasId, history, color) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas || history.length < 2) return;
+                const ctx = canvas.getContext('2d');
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
+                const W = rect.width, H = rect.height;
+                ctx.clearRect(0, 0, W, H);
+
+                // Compute running average for the trend sparkline
+                const vals = [];
+                let sum = 0;
+                history.forEach((h, i) => {
+                    sum += (h.mrr ?? 0);
+                    vals.push(sum / (i + 1));
+                });
+                const maxV = Math.max(...vals, 0.01);
+
+                // Subtle grid
+                ctx.strokeStyle = '#ffffff08'; ctx.lineWidth = 0.5;
+                ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke();
+
+                // Line
+                ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.lineJoin = 'round';
+                ctx.beginPath();
+                vals.forEach((v, i) => {
+                    const x = (i / (vals.length - 1)) * W;
+                    const y = H - 4 - (v / maxV) * (H - 8);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+
+                // Fill
+                ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+                const fg = ctx.createLinearGradient(0, 0, 0, H);
+                fg.addColorStop(0, color + '22'); fg.addColorStop(1, color + '00');
+                ctx.fillStyle = fg; ctx.fill();
+
+                // Label
+                ctx.fillStyle = '#8b8fa8'; ctx.font = '9px sans-serif'; ctx.textAlign = 'left';
+                ctx.fillText('MRR trend →', 4, 10);
+            }
+
+            connect();
+        })();
+    </script>
+</body>
+
+</html>
