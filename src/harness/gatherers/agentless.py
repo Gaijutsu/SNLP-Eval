@@ -121,6 +121,12 @@ class AgentlessGatherer(ContextGatherer):
         ttft = resp.latency_s
 
         candidate_files = self._parse_json_list(resp.content)
+        # Deduplicate while preserving order (LLM may repeat paths)
+        seen: set[str] = set()
+        candidate_files = [
+            f for f in candidate_files
+            if isinstance(f, str) and f not in seen and not seen.add(f)  # type: ignore[func-returns-value]
+        ]
         # Fall back to BM25 if LLM didn't return useful results
         if not candidate_files:
             idx = ChunkedIndex(repo)

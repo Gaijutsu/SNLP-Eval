@@ -69,3 +69,93 @@ class TestSWEBenchPatchExtraction:
         from harness.benchmarks.swebench import SWEBenchAdapter
 
         assert SWEBenchAdapter._extract_files_from_patch("") == []
+
+
+class TestGoldContextStrategy:
+    """Tests for the configurable gold_context_strategy."""
+
+    PATCH = (
+        "diff --git a/src/auth.py b/src/auth.py\n"
+        "--- a/src/auth.py\n"
+        "+++ b/src/auth.py\n"
+        "@@ -1 +1 @@\n"
+        "-old\n"
+        "+new\n"
+    )
+    TEST_PATCH = (
+        "diff --git a/tests/test_auth.py b/tests/test_auth.py\n"
+        "--- a/tests/test_auth.py\n"
+        "+++ b/tests/test_auth.py\n"
+        "@@ -1 +1 @@\n"
+        "-old\n"
+        "+new\n"
+    )
+
+    def _make_repo(self, tmp_path):
+        """Create a minimal repo with imports for testing."""
+        # src/auth.py imports src/models.py and os (stdlib, should be ignored)
+        src_dir = tmp_path / "src"
+        src_dir.mkdir()
+        (src_dir / "__init__.py").write_text("")
+        (src_dir / "auth.py").write_text(
+            "import os\nfrom src.models import User\nfrom src.utils import helper\n"
+        )
+        (src_dir / "models.py").write_text("class User: pass\n")
+        (src_dir / "utils.py").write_text("def helper(): pass\n")
+
+        # tests/
+        tests_dir = tmp_path / "tests"
+        tests_dir.mkdir()
+        (tests_dir / "test_auth.py").write_text("def test_login(): pass\n")
+
+        return tmp_path
+
+    def test_patch_only(self, tmp_path):
+        from harness.benchmarks.swebench import SWEBenchAdapter
+
+        repo = self._make_repo(tmp_path)
+        adapter = SWEBenchAdapter(gold_context_strategy="patch_only")
+        gold = adapter._build_gold_context(self.PATCH, self.TEST_PATCH, repo)
+        assert gold == ["src/auth.py"]
+
+    def test_patch_and_tests(self, tmp_path):
+        from harness.benchmarks.swebench import SWEBenchAdapter
+
+        repo = self._make_repo(tmp_path)
+        adapter = SWEBenchAdapter(gold_context_strategy="patch_and_tests")
+        gold = adapter._build_gold_context(self.PATCH, self.TEST_PATCH, repo)
+        assert "src/auth.py" in gold
+        assert "tests/test_auth.py" in gold
+        assert len(gold) == 2
+
+    def test_patch_tests_and_imports(self, tmp_path):
+        from harness.benchmarks.swebench import SWEBenchAdapter
+
+        repo = self._make_repo(tmp_path)
+        adapter = SWEBenchAdapter(gold_context_strategy="patch_tests_and_imports")
+        gold = adapter._build_gold_context(self.PATCH, self.TEST_PATCH, repo)
+
+        # Patch + test files
+        assert "src/auth.py" in gold
+        assert "tests/test_auth.py" in gold
+
+        # First-party imports of src/auth.py should be included
+        assert "src/models.py" in gold
+        assert "src/utils.py" in gold
+
+        # Stdlib imports (os) should NOT be included
+        assert not any("os.py" in f for f in gold)
+
+    def test_no_duplicates(self, tmp_path):
+        from harness.benchmarks.swebench import SWEBenchAdapter
+
+        repo = self._make_repo(tmp_path)
+        adapter = SWEBenchAdapter(gold_context_strategy="patch_tests_and_imports")
+        gold = adapter._build_gold_context(self.PATCH, self.TEST_PATCH, repo)
+        assert len(gold) == len(set(gold)), "Gold set contains duplicates"
+
+    def test_invalid_strategy_raises(self):
+        from harness.benchmarks.swebench import SWEBenchAdapter
+
+        with pytest.raises(ValueError, match="Unknown gold_context_strategy"):
+            SWEBenchAdapter(gold_context_strategy="invalid_strategy")

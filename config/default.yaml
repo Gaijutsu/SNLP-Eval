@@ -2,6 +2,8 @@ benchmark:
   name: swebench_lite
   split: test
   limit: 50            # for quick dev runs
+  # Gold set strategy: patch_only | patch_and_tests | patch_tests_and_imports
+  gold_context_strategy: patch_and_tests
 
 llm:
   provider: local                               # or openai

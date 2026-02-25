@@ -6,6 +6,17 @@ import math
 from typing import Sequence
 
 
+def _deduplicate(items: Sequence[str]) -> list[str]:
+    """Remove duplicates from *items* while preserving order."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            out.append(item)
+    return out
+
+
 def precision_at_k(
     retrieved: Sequence[str],
     gold: Sequence[str],
@@ -23,7 +34,7 @@ def precision_at_k(
     """
     if k <= 0:
         return 0.0
-    top_k = retrieved[:k]
+    top_k = _deduplicate(retrieved)[:k]
     gold_set = set(gold)
     relevant_count = sum(1 for item in top_k if item in gold_set)
     return relevant_count / k
@@ -41,7 +52,7 @@ def recall_at_k(
     """
     if not gold or k <= 0:
         return 0.0
-    top_k = retrieved[:k]
+    top_k = _deduplicate(retrieved)[:k]
     gold_set = set(gold)
     relevant_count = sum(1 for item in top_k if item in gold_set)
     return relevant_count / len(gold_set)
@@ -57,7 +68,7 @@ def mrr(
         MRR value in (0, 1] or 0.0 if no relevant item is found.
     """
     gold_set = set(gold)
-    for rank, item in enumerate(retrieved, start=1):
+    for rank, item in enumerate(_deduplicate(retrieved), start=1):
         if item in gold_set:
             return 1.0 / rank
     return 0.0
@@ -81,8 +92,9 @@ def ndcg_at_k(
     gold_set = set(gold)
 
     # DCG@K
+    deduped = _deduplicate(retrieved)
     dcg = 0.0
-    for i, item in enumerate(retrieved[:k]):
+    for i, item in enumerate(deduped[:k]):
         if item in gold_set:
             dcg += 1.0 / math.log2(i + 2)  # i+2 because rank is 1-indexed
 

@@ -30,7 +30,10 @@ def _get_adapter(cfg: dict) -> BenchmarkAdapter:
     if name in ("swebench_lite", "swebench"):
         from harness.benchmarks.swebench import SWEBenchAdapter
 
-        return SWEBenchAdapter(cache_dir=cfg.get("cache_dir"))
+        return SWEBenchAdapter(
+            cache_dir=cfg.get("cache_dir"),
+            gold_context_strategy=cfg.get("gold_context_strategy", "patch_and_tests"),
+        )
     elif name in ("crosscodeeval", "crosscode"):
         from harness.benchmarks.crosscodeeval import CrossCodeEvalAdapter
 

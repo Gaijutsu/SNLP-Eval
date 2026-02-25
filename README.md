@@ -22,6 +22,9 @@ software-engineering benchmarks.
   - [Dashboard](#dashboard)
   - [Reporting](#reporting)
   - [LLM Client](#llm-client)
+- [Gold Set Construction](#gold-set-construction)
+  - [Strategies](#strategies)
+  - [Import Graph Expansion](#import-graph-expansion)
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
 - [Configuration](#configuration)
@@ -112,7 +115,7 @@ harness --config config/default.yaml
 | Module | Class | Description |
 |---|---|---|
 | `benchmarks/base.py` | `BenchmarkAdapter` (ABC), `BenchmarkInstance` | Defines the interface every benchmark must implement: `load()` returns instances; `evaluate_patch()` scores a candidate patch. |
-| `benchmarks/swebench.py` | `SWEBenchAdapter` | Loads instances from the HuggingFace `princeton-nlp/SWE-bench_Lite` dataset. Clones each repo at the correct base commit, derives gold context from the reference patch, and supports `git apply` + test evaluation. |
+| `benchmarks/swebench.py` | `SWEBenchAdapter` | Loads instances from the HuggingFace `princeton-nlp/SWE-bench_Lite` dataset. Clones each repo at the correct base commit, builds gold context using a configurable strategy (see [Gold Set Construction](#gold-set-construction)), and supports `git apply` + test evaluation. |
 | `benchmarks/crosscodeeval.py` | `CrossCodeEvalAdapter` | Loads from `microsoft/CrossCodeEval`. Evaluates cross-file code completion — retrieval metrics only (no patch evaluation). |
 
 ### Gatherers
@@ -173,6 +176,61 @@ Python SDK. Supports:
 - Streaming and non-streaming completions.
 - Automatic token counting via `tiktoken` (falls back to `cl100k_base` for
   unknown models).
+
+---
+
+## Gold Set Construction
+
+Retrieval metrics (Precision@K, Recall@K, NDCG@K, MRR) compare each gatherer's
+retrieved file list against a **gold set** of ground-truth relevant files.  The
+quality and size of this gold set directly affects how informative the metrics
+are.
+
+For the SWE-bench Lite benchmark, each instance comes with a **reference patch**
+(the official fix) and a **test patch** (the tests that verify the fix). The
+harness constructs the gold set from these artefacts using one of three
+cumulative strategies, controlled by the `gold_context_strategy` config key.
+
+### Strategies
+
+| Strategy | Gold set contains | Typical size | When to use |
+|----------|-------------------|-------------|-------------|
+| `patch_only` | Files modified in the reference patch | 1–2 files | Strict evaluation: only the exact fix location counts |
+| **`patch_and_tests`** *(default)* | Patch files **+** files from the test patch | 2–5 files | Balanced: rewards finding both the code-to-fix and the relevant test files |
+| `patch_tests_and_imports` | Above **+** first-party imports of the patched files | 4–15 files | Generous: credits structurally related files (interfaces, utilities, base classes) that provide useful context |
+
+**Why not `patch_only`?** In SWE-bench Lite, ~78 % of issues touch only **one**
+file, which collapses Precision@K to a binary 0 or 1/K and causes Recall@K to
+saturate at 1.0 as soon as one file is found.  Including test files and imports
+gives the metrics more discrimination power.
+
+#### Example
+
+For a Django issue whose fix modifies `django/db/models/query.py`:
+
+| Strategy | Gold files |
+|----------|------------|
+| `patch_only` | `django/db/models/query.py` |
+| `patch_and_tests` | `django/db/models/query.py`, `tests/queries/test_qs_combinators.py` |
+| `patch_tests_and_imports` | …the above + `django/db/models/sql/query.py`, `django/db/models/manager.py`, `django/db/models/__init__.py`, etc. |
+
+### Import Graph Expansion
+
+The `patch_tests_and_imports` strategy extends the gold set by parsing the
+`import` / `from … import` statements in each patched file and resolving them
+to concrete files that exist in the repository.  Key design decisions:
+
+- **First-party only** — only modules that map to an actual file in the repo
+  are included; standard-library and third-party imports are ignored.
+- **Depth-1 only** — only direct imports of patched files are added (no
+  transitive closure) to keep the gold set focused.
+- **AST-based parsing** — uses Python's `ast` module for reliable extraction.
+  Falls back to a regex pattern when a file cannot be parsed (e.g. Python 2
+  syntax).
+- **Module → path mapping** — dotted names (e.g. `django.db.models`) are
+  converted to candidate paths (`django/db/models.py` and
+  `django/db/models/__init__.py`) and also tried relative to the source
+  file's directory.
 
 ---
 
@@ -245,6 +303,9 @@ benchmark:
   name: swebench_lite        # swebench_lite | crosscodeeval
   split: test                # dataset split
   limit: 50                  # cap instance count (null for all)
+  # How to build the ground-truth file set for retrieval metrics.
+  # Options: patch_only | patch_and_tests | patch_tests_and_imports
+  gold_context_strategy: patch_and_tests
 
 llm:
   provider: local            # local | openai

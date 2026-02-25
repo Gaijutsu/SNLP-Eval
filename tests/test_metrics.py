@@ -103,3 +103,35 @@ class TestComputeAll:
         )
         for key, value in result.items():
             assert 0.0 <= value <= 1.0, f"{key}={value} out of range"
+
+
+class TestDuplicateRetrievedItems:
+    """Regression tests: duplicates in retrieved list must not inflate scores."""
+
+    def test_precision_with_duplicates(self):
+        # "a" appears 5 times but should only count once
+        assert precision_at_k(["a", "a", "a", "a", "a"], ["a"], k=5) == pytest.approx(1 / 5)
+
+    def test_recall_with_duplicates(self):
+        assert recall_at_k(["a", "a", "a", "a", "a"], ["a"], k=5) == pytest.approx(1.0)
+
+    def test_recall_duplicates_capped_at_one(self):
+        # Even with many duplicates, recall can never exceed 1.0
+        result = recall_at_k(["a", "a", "a", "a", "a"], ["a", "b"], k=5)
+        assert result <= 1.0
+
+    def test_ndcg_with_duplicates(self):
+        result = ndcg_at_k(["a", "a", "a", "a", "a"], ["a"], k=5)
+        assert 0.0 <= result <= 1.0
+
+    def test_mrr_with_duplicates(self):
+        assert mrr(["a", "a", "a"], ["a"]) == 1.0
+
+    def test_compute_all_with_duplicates_in_range(self):
+        result = compute_all_retrieval_metrics(
+            ["a", "a", "b", "b", "a", "c", "c", "a", "b", "a"],
+            ["a", "c"],
+            k_values=[1, 3, 5, 10],
+        )
+        for key, value in result.items():
+            assert 0.0 <= value <= 1.0, f"{key}={value} out of range with duplicates"
