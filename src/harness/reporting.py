@@ -135,4 +135,6 @@ class ResultStore:
                 print(f"  {gatherer}")
                 print(f"{'='*60}")
                 for metric, values in sorted(stats.items()):
-                    print(f"  {metric:30s}  mean={values['mean']:.4f}  std={values['std']:.4f}")
+                    print(
+                        f"  {metric:30s}  mean={values['mean']:.4f}  std={values['std']:.4f}"
+                    )

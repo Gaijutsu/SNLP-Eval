@@ -87,7 +87,9 @@ class AgentlessGatherer(ContextGatherer):
         cfg = llm_config or {}
         if "llm" in kwargs:
             cfg.setdefault("model", kwargs["llm"])
-        self.llm = LLMClient(LLMConfig(**{k: v for k, v in cfg.items() if v is not None}))
+        self.llm = LLMClient(
+            LLMConfig(**{k: v for k, v in cfg.items() if v is not None})
+        )
         self.n_samples = n_samples
         self.top_files = top_files
 
@@ -102,14 +104,19 @@ class AgentlessGatherer(ContextGatherer):
         # ── Phase 1: File-level localization ──────────────────────
         file_listing = self._get_file_listing(repo)
 
-        resp = self.llm.chat([
-            {"role": "system", "content": "You are an expert code analyst."},
-            {"role": "user", "content": FILE_LOCALIZATION_PROMPT.format(
-                query=instance.query[:3000],
-                file_listing=file_listing[:6000],
-                top_n=self.top_files,
-            )},
-        ])
+        resp = self.llm.chat(
+            [
+                {"role": "system", "content": "You are an expert code analyst."},
+                {
+                    "role": "user",
+                    "content": FILE_LOCALIZATION_PROMPT.format(
+                        query=instance.query[:3000],
+                        file_listing=file_listing[:6000],
+                        top_n=self.top_files,
+                    ),
+                },
+            ]
+        )
         total_tokens += resp.total_tokens
         ttft = resp.latency_s
 
@@ -120,11 +127,13 @@ class AgentlessGatherer(ContextGatherer):
             bm25_results = idx.search(instance.query, top_k=self.top_files)
             candidate_files = [path for path, _ in bm25_results]
 
-        trace.append({
-            "phase": "file_localization",
-            "candidate_files": candidate_files,
-            "tokens": resp.total_tokens,
-        })
+        trace.append(
+            {
+                "phase": "file_localization",
+                "candidate_files": candidate_files,
+                "tokens": resp.total_tokens,
+            }
+        )
 
         # ── Phase 2: Function-level localization ──────────────────
         file_contents = ""
@@ -134,21 +143,28 @@ class AgentlessGatherer(ContextGatherer):
                 content = _read_file_safe(full_path)
                 file_contents += f"\n### {fpath}\n```\n{content[:3000]}\n```\n"
 
-        resp2 = self.llm.chat([
-            {"role": "system", "content": "You are an expert code analyst."},
-            {"role": "user", "content": FUNCTION_LOCALIZATION_PROMPT.format(
-                query=instance.query[:2000],
-                file_contents=file_contents[:8000],
-            )},
-        ])
+        resp2 = self.llm.chat(
+            [
+                {"role": "system", "content": "You are an expert code analyst."},
+                {
+                    "role": "user",
+                    "content": FUNCTION_LOCALIZATION_PROMPT.format(
+                        query=instance.query[:2000],
+                        file_contents=file_contents[:8000],
+                    ),
+                },
+            ]
+        )
         total_tokens += resp2.total_tokens
 
         regions = self._parse_json_list(resp2.content)
-        trace.append({
-            "phase": "function_localization",
-            "regions": regions,
-            "tokens": resp2.total_tokens,
-        })
+        trace.append(
+            {
+                "phase": "function_localization",
+                "regions": regions,
+                "tokens": resp2.total_tokens,
+            }
+        )
 
         # ── Phase 3: Repair (generate candidate patches) ─────────
         code_regions = file_contents  # Reuse the file contents
@@ -157,11 +173,17 @@ class AgentlessGatherer(ContextGatherer):
         for sample_idx in range(self.n_samples):
             resp3 = self.llm.chat(
                 [
-                    {"role": "system", "content": "You are an expert software engineer."},
-                    {"role": "user", "content": REPAIR_PROMPT.format(
-                        query=instance.query[:2000],
-                        code_regions=code_regions[:6000],
-                    )},
+                    {
+                        "role": "system",
+                        "content": "You are an expert software engineer.",
+                    },
+                    {
+                        "role": "user",
+                        "content": REPAIR_PROMPT.format(
+                            query=instance.query[:2000],
+                            code_regions=code_regions[:6000],
+                        ),
+                    },
                 ],
                 temperature=0.8,  # Higher temp for diversity
             )
@@ -170,11 +192,13 @@ class AgentlessGatherer(ContextGatherer):
             if patch:
                 patches.append(patch)
 
-        trace.append({
-            "phase": "repair",
-            "n_patches_generated": len(patches),
-            "tokens_per_sample": resp3.total_tokens if patches else 0,
-        })
+        trace.append(
+            {
+                "phase": "repair",
+                "n_patches_generated": len(patches),
+                "tokens_per_sample": resp3.total_tokens if patches else 0,
+            }
+        )
 
         # Select the first valid patch (simple heuristic; full Agentless
         # would run reproduction tests here)

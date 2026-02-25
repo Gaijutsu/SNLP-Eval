@@ -31,7 +31,9 @@ class CrossCodeEvalAdapter(BenchmarkAdapter):
     ):
         self.language = language
         self.cache_dir = (
-            Path(cache_dir) if cache_dir else Path(tempfile.gettempdir()) / "crosscodeeval_repos"
+            Path(cache_dir)
+            if cache_dir
+            else Path(tempfile.gettempdir()) / "crosscodeeval_repos"
         )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 

@@ -24,13 +24,16 @@ logger = logging.getLogger(__name__)
 # Registry: name → class
 # ------------------------------------------------------------------
 
+
 def _get_adapter(cfg: dict) -> BenchmarkAdapter:
     name = cfg["name"]
     if name in ("swebench_lite", "swebench"):
         from harness.benchmarks.swebench import SWEBenchAdapter
+
         return SWEBenchAdapter(cache_dir=cfg.get("cache_dir"))
     elif name in ("crosscodeeval", "crosscode"):
         from harness.benchmarks.crosscodeeval import CrossCodeEvalAdapter
+
         return CrossCodeEvalAdapter(
             language=cfg.get("language", "python"),
             cache_dir=cfg.get("cache_dir"),
@@ -45,18 +48,23 @@ def _get_gatherer(cfg: dict, llm_cfg: dict | None = None) -> ContextGatherer:
 
     if name == "rag_bm25":
         from harness.gatherers.rag_bm25 import BM25RAGGatherer
+
         return BM25RAGGatherer(**kwargs)
     elif name == "rag_dense":
         from harness.gatherers.rag_dense import DenseRAGGatherer
+
         return DenseRAGGatherer(**kwargs)
     elif name == "rag_hybrid":
         from harness.gatherers.rag_hybrid import HybridRAGGatherer
+
         return HybridRAGGatherer(**kwargs)
     elif name == "react_agent":
         from harness.gatherers.react_agent import ReActGatherer
+
         return ReActGatherer(llm_config=llm_cfg, **kwargs)
     elif name == "agentless":
         from harness.gatherers.agentless import AgentlessGatherer
+
         return AgentlessGatherer(llm_config=llm_cfg, **kwargs)
     else:
         raise ValueError(f"Unknown gatherer: {name}")
@@ -65,6 +73,7 @@ def _get_gatherer(cfg: dict, llm_cfg: dict | None = None) -> ContextGatherer:
 # ------------------------------------------------------------------
 # Main experiment loop
 # ------------------------------------------------------------------
+
 
 def run_experiment(config_path: str) -> None:
     """Run the full experiment as defined by the YAML config."""
@@ -96,6 +105,7 @@ def run_experiment(config_path: str) -> None:
     dash_cfg = cfg.get("dashboard", {})
     if dash_cfg.get("enabled", True):
         from harness.dashboard.server import start_dashboard_server
+
         port = dash_cfg.get("port", 8765)
         start_dashboard_server(dashboard, port=port)
         logger.info("📊 Dashboard live at http://127.0.0.1:%d", port)

@@ -93,9 +93,17 @@ def _tool_grep(repo: Path, pattern: str, path: str = ".") -> str:
     target = repo / path.strip().strip("/")
     try:
         result = subprocess.run(
-            ["grep", "-rnI", "--include=*.py", "--include=*.java",
-             "--include=*.ts", "--include=*.js", "--include=*.cs",
-             pattern, str(target)],
+            [
+                "grep",
+                "-rnI",
+                "--include=*.py",
+                "--include=*.java",
+                "--include=*.ts",
+                "--include=*.js",
+                "--include=*.cs",
+                pattern,
+                str(target),
+            ],
             capture_output=True,
             text=True,
             timeout=15,
@@ -119,7 +127,9 @@ def _tool_grep(repo: Path, pattern: str, path: str = ".") -> str:
             if not f.is_file() or f.suffix not in {".py", ".java", ".ts", ".js", ".cs"}:
                 continue
             try:
-                for i, line in enumerate(f.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                for i, line in enumerate(
+                    f.read_text(encoding="utf-8", errors="replace").splitlines(), 1
+                ):
                     if compiled.search(line):
                         rel = f.relative_to(repo).as_posix()
                         matches.append(f"{rel}:{i}: {line.strip()}")
@@ -160,7 +170,9 @@ class ReActGatherer(ContextGatherer):
         # Allow top-level 'llm' key to override model
         if "llm" in kwargs:
             cfg.setdefault("model", kwargs["llm"])
-        self.llm = LLMClient(LLMConfig(**{k: v for k, v in cfg.items() if v is not None}))
+        self.llm = LLMClient(
+            LLMConfig(**{k: v for k, v in cfg.items() if v is not None})
+        )
         self.max_steps = max_steps
 
     def gather(self, instance: BenchmarkInstance) -> GatherResult:
@@ -176,7 +188,10 @@ class ReActGatherer(ContextGatherer):
         )
         messages: list[dict[str, str]] = [
             {"role": "system", "content": system},
-            {"role": "user", "content": f"Find the files most relevant to this issue:\n\n{instance.query[:4000]}"},
+            {
+                "role": "user",
+                "content": f"Find the files most relevant to this issue:\n\n{instance.query[:4000]}",
+            },
         ]
 
         retrieved: list[str] = []
@@ -191,13 +206,19 @@ class ReActGatherer(ContextGatherer):
             content = response.content
             tool_name, args = _parse_action(content)
 
-            trace.append({
-                "step": step + 1,
-                "thought": content.split("Action:")[0].strip() if "Action:" in content else content,
-                "action": tool_name,
-                "args": args,
-                "tokens": response.total_tokens,
-            })
+            trace.append(
+                {
+                    "step": step + 1,
+                    "thought": (
+                        content.split("Action:")[0].strip()
+                        if "Action:" in content
+                        else content
+                    ),
+                    "action": tool_name,
+                    "args": args,
+                    "tokens": response.total_tokens,
+                }
+            )
 
             # Execute tool
             if tool_name == "finish":
@@ -214,16 +235,21 @@ class ReActGatherer(ContextGatherer):
             elif tool_name == "search_codebase":
                 # Use BM25 as a simple search backend
                 from harness.gatherers.rag_bm25 import ChunkedIndex
+
                 idx = ChunkedIndex(repo)
                 query = args[0] if args else instance.query
                 results = idx.search(query, top_k=5)
-                observation = "\n".join(f"  {path} (score: {score:.4f})" for path, score in results)
+                observation = "\n".join(
+                    f"  {path} (score: {score:.4f})" for path, score in results
+                )
             else:
                 observation = f"Unknown tool: {tool_name}. Available: list_dir, read_file, grep, search_codebase, finish."
 
             # Append observation to conversation
             messages.append({"role": "assistant", "content": content})
-            messages.append({"role": "user", "content": f"Observation:\n{observation[:3000]}"})
+            messages.append(
+                {"role": "user", "content": f"Observation:\n{observation[:3000]}"}
+            )
 
             trace[-1]["observation"] = observation[:500]
 

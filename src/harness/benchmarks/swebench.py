@@ -25,7 +25,11 @@ class SWEBenchAdapter(BenchmarkAdapter):
     HF_DATASET = "princeton-nlp/SWE-bench_Lite"
 
     def __init__(self, cache_dir: str | Path | None = None):
-        self.cache_dir = Path(cache_dir) if cache_dir else Path(tempfile.gettempdir()) / "swebench_repos"
+        self.cache_dir = (
+            Path(cache_dir)
+            if cache_dir
+            else Path(tempfile.gettempdir()) / "swebench_repos"
+        )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
     def load(
@@ -34,6 +38,7 @@ class SWEBenchAdapter(BenchmarkAdapter):
         limit: int | None = None,
     ) -> list[BenchmarkInstance]:
         import os
+
         os.environ["DATASETS_NO_TORCH"] = "1"
         from datasets import load_dataset
 
@@ -47,7 +52,9 @@ class SWEBenchAdapter(BenchmarkAdapter):
             if instance:
                 instances.append(instance)
 
-        logger.info("Loaded %d SWE-bench Lite instances (split=%s)", len(instances), split)
+        logger.info(
+            "Loaded %d SWE-bench Lite instances (split=%s)", len(instances), split
+        )
         return instances
 
     def _row_to_instance(self, row: dict[str, Any]) -> BenchmarkInstance | None:

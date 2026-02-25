@@ -43,7 +43,7 @@ class _BM25:
 
         # Inverted index: word -> {doc_id: tf}
         self.inv_index: dict[str, dict[int, int]] = {}
-        
+
         for doc_idx, doc in enumerate(corpus):
             tf = dict(Counter(doc))
             for word, count in tf.items():
@@ -62,14 +62,14 @@ class _BM25:
     def get_scores(self, query: list[str]) -> list[float]:
         """Score all documents against a tokenized query using an inverted index."""
         scores = [0.0] * self.corpus_size
-        
+
         for q in query:
             if q not in self.idf:
                 continue
-                
+
             idf = self.idf[q]
             doc_map = self.inv_index.get(q, {})
-            
+
             for doc_idx, q_tf in doc_map.items():
                 doc_len = self.doc_lens[doc_idx]
                 numerator = q_tf * (self.k1 + 1)
@@ -77,7 +77,7 @@ class _BM25:
                     1 - self.b + self.b * doc_len / self.avgdl
                 )
                 scores[doc_idx] += idf * numerator / denominator
-                
+
         return scores
 
 
@@ -97,7 +97,12 @@ class ChunkedIndex:
         else:
             self.bm25 = None
 
-    def _build(self, repo_path: Path, extensions: tuple[str, ...], tokenized_corpus: list[list[str]]) -> None:
+    def _build(
+        self,
+        repo_path: Path,
+        extensions: tuple[str, ...],
+        tokenized_corpus: list[list[str]],
+    ) -> None:
         """Walk the repo and index each eligible file."""
         for fpath in sorted(repo_path.rglob("*")):
             if not fpath.is_file():
@@ -123,10 +128,10 @@ class ChunkedIndex:
         """Return top-K file paths with BM25 scores."""
         if not self.bm25:
             return []
-        
+
         # VERY IMPORTANT: `query` is a raw string here! It MUST be tokenized!
         tokenized_query = _tokenize(query)
-        
+
         scores = self.bm25.get_scores(tokenized_query)
         ranked = sorted(
             zip(self.file_paths, scores),

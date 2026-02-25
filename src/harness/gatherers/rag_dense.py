@@ -64,6 +64,7 @@ class DenseIndex:
             # Help the garbage collector promptly reclaim the large string lists
             # and PyTorch intermediate tensors from CPU RAM.
             import gc
+
             file_contents.clear()
             gc.collect()
 
@@ -83,10 +84,7 @@ class DenseIndex:
         scores = (self.embeddings @ query_emb.T).flatten()
 
         top_indices = np.argsort(scores)[::-1][:top_k]
-        return [
-            (self.file_paths[i], float(scores[i]))
-            for i in top_indices
-        ]
+        return [(self.file_paths[i], float(scores[i])) for i in top_indices]
 
 
 class DenseRAGGatherer(ContextGatherer):

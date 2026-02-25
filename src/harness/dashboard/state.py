@@ -125,12 +125,14 @@ class DashboardState:
             stats.metric_history.append(snapshot_entry)
 
             # Token timeline
-            self.token_timeline.append({
-                "timestamp": time.time(),
-                "tokens": token_usage,
-                "cumulative_tokens": self.total_tokens,
-                "gatherer": gatherer_name,
-            })
+            self.token_timeline.append(
+                {
+                    "timestamp": time.time(),
+                    "tokens": token_usage,
+                    "cumulative_tokens": self.total_tokens,
+                    "gatherer": gatherer_name,
+                }
+            )
 
     def snapshot(self) -> dict[str, Any]:
         """Return a JSON-serializable snapshot of the current state."""
@@ -185,4 +187,3 @@ class DashboardState:
                 "elapsed_s": round(elapsed, 1),
                 "gatherers": gatherers,
             }
-
