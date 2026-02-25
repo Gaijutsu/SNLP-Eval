@@ -26,6 +26,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+gpu = [
+    "faiss-gpu>=1.7",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",

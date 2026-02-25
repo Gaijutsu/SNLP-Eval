@@ -2,15 +2,19 @@
 
 from __future__ import annotations
 
+import logging
 import time
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+import torch
 
 from harness.benchmarks.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.gatherers.rag_bm25 import _read_file_safe
+
+logger = logging.getLogger(__name__)
 
 
 class DenseIndex:
@@ -101,7 +105,9 @@ class DenseRAGGatherer(ContextGatherer):
         self.model_name = model
         self.top_k = top_k
         # Load the model EXACTLY ONCE globally for this gatherer instance
-        self._model = SentenceTransformer(self.model_name)
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        self._model = SentenceTransformer(self.model_name, device=device)
+        logger.info("DenseRAGGatherer using device: %s", device)
 
     def gather(self, instance: BenchmarkInstance) -> GatherResult:
         t0 = time.perf_counter()

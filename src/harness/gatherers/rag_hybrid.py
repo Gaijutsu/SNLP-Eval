@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import logging
 import time
 from collections import defaultdict
 from typing import Any
+
+import torch
 
 from harness.benchmarks.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.gatherers.rag_bm25 import ChunkedIndex
 from harness.gatherers.rag_dense import DenseIndex
+
+logger = logging.getLogger(__name__)
 
 
 def reciprocal_rank_fusion(
@@ -52,7 +57,9 @@ class HybridRAGGatherer(ContextGatherer):
         self.model_name = model
         self.top_k = top_k
         self.rrf_k = rrf_k
-        self._model = SentenceTransformer(self.model_name)
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        self._model = SentenceTransformer(self.model_name, device=device)
+        logger.info("HybridRAGGatherer using device: %s", device)
 
     def gather(self, instance: BenchmarkInstance) -> GatherResult:
         t0 = time.perf_counter()
