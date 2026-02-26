@@ -5,12 +5,16 @@ from __future__ import annotations
 import math
 import re
 import time
+import logging
 from collections import Counter
 from pathlib import Path
 from typing import Any
 
 from harness.benchmarks.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
+
+
+logger = logging.getLogger(__name__)
 
 
 def _tokenize(text: str) -> list[str]:
@@ -146,13 +150,24 @@ class BM25RAGGatherer(ContextGatherer):
 
     name = "rag_bm25"
 
+    _index_cache: dict[Path, ChunkedIndex] = {}
+
     def __init__(self, top_k: int = 10, **kwargs: Any):
         self.top_k = top_k
 
     def gather(self, instance: BenchmarkInstance) -> GatherResult:
         t0 = time.perf_counter()
 
-        index = ChunkedIndex(instance.repo_snapshot)
+        repo_path = instance.repo_snapshot.resolve()
+
+        if repo_path not in self._index_cache:
+            logger.info("Building BM25 index for repo: %s", repo_path)
+            self._index_cache[repo_path] = ChunkedIndex(repo_path)
+        else:
+            logger.info("Using cached BM25 index for repo: %s", repo_path)
+
+        index = self._index_cache[repo_path]
+
         results = index.search(instance.query, top_k=self.top_k)
         retrieved = [path for path, _ in results]
 
