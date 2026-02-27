@@ -1,4 +1,4 @@
-"""Result reporting — aggregated CSV, per-instance JSON, summary tables."""
+"""Result reporting — versioned runs, enriched per-instance JSON, aggregated reports."""
 
 from __future__ import annotations
 
@@ -6,27 +6,60 @@ import csv
 import json
 import logging
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from harness.gatherers.base import GatherResult
 
 logger = logging.getLogger(__name__)
 
 
 class ResultStore:
-    """Collects per-instance results and writes aggregated reports."""
+    """Collects per-instance results and writes aggregated reports.
 
-    def __init__(self, output_dir: str | Path):
-        self.output_dir = Path(output_dir)
+    Results are stored in versioned run directories:
+        <output_dir>/<YYYY-MM-DD_HHMMSS>/
+            run_meta.json          – config snapshot & run metadata
+            instances/             – one JSON per (instance, gatherer)
+            results.csv            – aggregated flat CSV
+            summary.json           – per-gatherer mean/std/min/max
+    """
+
+    def __init__(self, output_dir: str | Path, *, run_id: str | None = None):
+        self.base_dir = Path(output_dir)
+
+        # Versioned run directory
+        if run_id is None:
+            run_id = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H%M%S")
+        self.run_id = run_id
+        self.output_dir = self.base_dir / run_id
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
         self.records: list[dict[str, Any]] = []
+
+    def save_run_meta(self, config: dict[str, Any]) -> None:
+        """Persist run-level metadata (config snapshot, timestamp, etc.)."""
+        meta = {
+            "run_id": self.run_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "config": config,
+        }
+        meta_path = self.output_dir / "run_meta.json"
+        meta_path.write_text(json.dumps(meta, indent=2, default=str), encoding="utf-8")
+        logger.info("Wrote run metadata to %s", meta_path)
 
     def store(
         self,
         instance_id: str,
         gatherer_name: str,
         metrics: dict[str, Any],
+        result: GatherResult | None = None,
+        gold_context: list[str] | None = None,
+        model: str | None = None,
     ) -> None:
-        """Store a single result record."""
+        """Store a single result record with optional enriched data."""
         record = {
             "instance_id": instance_id,
             "gatherer": gatherer_name,
@@ -34,12 +67,32 @@ class ResultStore:
         }
         self.records.append(record)
 
-        # Also write per-instance JSON
+        # Build enriched per-instance JSON
+        enriched: dict[str, Any] = {
+            "instance_id": instance_id,
+            "gatherer": gatherer_name,
+            "model": model,
+            "metrics": metrics,
+        }
+
+        if result is not None:
+            enriched["retrieved_documents"] = result.retrieved_contexts
+            enriched["conversation"] = result.conversation
+            enriched["trace"] = result.trace
+            enriched["generated_patch"] = result.generated_patch
+            enriched["token_usage"] = result.token_usage
+            enriched["latency_s"] = result.latency_s
+            enriched["ttft_s"] = result.ttft_s
+
+        if gold_context is not None:
+            enriched["gold_context"] = gold_context
+
+        # Write per-instance JSON
         instance_dir = self.output_dir / "instances"
         instance_dir.mkdir(exist_ok=True)
         safe_id = instance_id.replace("/", "__").replace("\\", "__")
         fpath = instance_dir / f"{safe_id}_{gatherer_name}.json"
-        fpath.write_text(json.dumps(record, indent=2, default=str), encoding="utf-8")
+        fpath.write_text(json.dumps(enriched, indent=2, default=str), encoding="utf-8")
 
     def generate_report(self) -> Path:
         """Write aggregated CSV and summary to output_dir."""

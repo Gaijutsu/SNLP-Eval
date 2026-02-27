@@ -31,6 +31,9 @@ class GatherResult:
     # Step-by-step trace for post-hoc analysis
     trace: list[dict[str, Any]] = field(default_factory=list)
 
+    # Full LLM conversation history (system/user/assistant messages)
+    conversation: list[dict[str, str]] = field(default_factory=list)
+
 
 class ContextGatherer(ABC):
     """Base class for all context-gathering strategies.

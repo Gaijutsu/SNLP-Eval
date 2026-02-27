@@ -1,0 +1,116 @@
+{
+  "instance_id": "django__django-11049",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.05,
+    "ndcg@5": 0.14606834984270645,
+    "precision@10": 0.2,
+    "recall@10": 0.1,
+    "ndcg@10": 0.16421958630632802,
+    "mrr": 0.25,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.7717261439975118,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/forms_tests/field_tests/test_durationfield.py",
+    "tests/forms_tests/tests/test_input_formats.py",
+    "django/forms/fields.py",
+    "django/db/models/fields/__init__.py",
+    "django/db/backends/mysql/operations.py",
+    "tests/utils_tests/test_duration.py",
+    "django/db/backends/oracle/functions.py",
+    "django/utils/dateparse.py",
+    "django/db/backends/sqlite3/operations.py",
+    "tests/forms_tests/field_tests/test_timefield.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2120,
+      "results": [
+        {
+          "file": "tests/forms_tests/field_tests/test_durationfield.py",
+          "score": 0.6627
+        },
+        {
+          "file": "tests/forms_tests/tests/test_input_formats.py",
+          "score": 0.6607
+        },
+        {
+          "file": "django/forms/fields.py",
+          "score": 0.6411
+        },
+        {
+          "file": "django/db/models/fields/__init__.py",
+          "score": 0.6196
+        },
+        {
+          "file": "django/db/backends/mysql/operations.py",
+          "score": 0.5962
+        },
+        {
+          "file": "tests/utils_tests/test_duration.py",
+          "score": 0.593
+        },
+        {
+          "file": "django/db/backends/oracle/functions.py",
+          "score": 0.5887
+        },
+        {
+          "file": "django/utils/dateparse.py",
+          "score": 0.5881
+        },
+        {
+          "file": "django/db/backends/sqlite3/operations.py",
+          "score": 0.584
+        },
+        {
+          "file": "tests/forms_tests/field_tests/test_timefield.py",
+          "score": 0.5817
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.7717261439975118,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/__init__.py",
+    "tests/model_fields/test_durationfield.py",
+    "django/__init__.py",
+    "django/apps/__init__.py",
+    "django/conf/__init__.py",
+    "django/core/__init__.py",
+    "django/core/exceptions.py",
+    "django/db/__init__.py",
+    "django/db/models/constants.py",
+    "django/db/models/query_utils.py",
+    "django/utils/__init__.py",
+    "django/utils/datastructures.py",
+    "django/utils/dateparse.py",
+    "django/utils/duration.py",
+    "django/utils/functional.py",
+    "django/utils/ipv6.py",
+    "django/utils/itercompat.py",
+    "django/utils/text.py",
+    "django/utils/translation/__init__.py",
+    "django/db/models/expressions.py"
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "instance_id": "django__django-11001",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.08333333333333333,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 0.16666666666666666,
+    "ndcg@3": 0.7653606369886217,
+    "precision@5": 0.6,
+    "recall@5": 0.25,
+    "ndcg@5": 0.6843515475204855,
+    "precision@10": 0.3,
+    "recall@10": 0.25,
+    "ndcg@10": 0.4440973278132557,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6434658770012902,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/compiler.py",
+    "django/db/models/sql/query.py",
+    "django/db/backends/base/operations.py",
+    "django/db/models/query.py",
+    "django/db/models/expressions.py",
+    "django/db/backends/base/features.py",
+    "django/db/models/base.py",
+    "django/db/models/sql/where.py",
+    "django/contrib/admin/views/main.py",
+    "tests/queries/tests.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2129,
+      "results": [
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 773.2107
+        },
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 707.0254
+        },
+        {
+          "file": "django/db/backends/base/operations.py",
+          "score": 652.1932
+        },
+        {
+          "file": "django/db/models/query.py",
+          "score": 651.9739
+        },
+        {
+          "file": "django/db/models/expressions.py",
+          "score": 624.3952
+        },
+        {
+          "file": "django/db/backends/base/features.py",
+          "score": 619.6663
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 579.2109
+        },
+        {
+          "file": "django/db/models/sql/where.py",
+          "score": 570.9161
+        },
+        {
+          "file": "django/contrib/admin/views/main.py",
+          "score": 556.1493
+        },
+        {
+          "file": "tests/queries/tests.py",
+          "score": 551.8827
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6434658770012902,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/compiler.py",
+    "tests/expressions/tests.py",
+    "django/core/exceptions.py",
+    "django/db/models/constants.py",
+    "django/db/models/expressions.py",
+    "django/db/models/query_utils.py",
+    "django/db/models/sql/constants.py",
+    "django/db/models/sql/query.py",
+    "django/db/transaction.py",
+    "django/db/utils.py",
+    "django/utils/deprecation.py",
+    "django/utils/hashable.py"
+  ]
+}

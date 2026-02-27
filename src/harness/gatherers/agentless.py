@@ -18,6 +18,25 @@ from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.gatherers.rag_bm25 import ChunkedIndex, _read_file_safe
 from harness.llm_client import LLMClient, LLMConfig
 
+
+def _strip_think_blocks(text: str) -> str:
+    """Remove <think>...</think> blocks (e.g. Qwen3 chain-of-thought)."""
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+
+
+def _read_file_with_line_numbers(path: Path, max_lines: int = 300) -> str:
+    """Read a file and prefix each line with its line number."""
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        selected = lines[:max_lines]
+        numbered = [f"{i+1:>4}: {line}" for i, line in enumerate(selected)]
+        result = "\n".join(numbered)
+        if len(lines) > max_lines:
+            result += f"\n... ({len(lines) - max_lines} more lines, total {len(lines)})"
+        return result
+    except OSError:
+        return "(unable to read file)"
+
 # ------------------------------------------------------------------
 # Prompt templates
 # ------------------------------------------------------------------
@@ -35,6 +54,8 @@ to this issue. Return ONLY a JSON array of file paths, ranked by relevance.
 
 Respond with a JSON array of up to {top_n} file paths, most relevant first.
 Example: ["src/auth/login.py", "src/models/user.py"]
+
+/nothink
 """
 
 FUNCTION_LOCALIZATION_PROMPT = """\
@@ -54,6 +75,8 @@ Respond with a JSON array of objects, each having:
 - "region": description of the specific function/class/code region
 
 Example: [{{"file": "src/auth.py", "region": "def login() around line 42"}}]
+
+/nothink
 """
 
 REPAIR_PROMPT = """\
@@ -69,6 +92,8 @@ the issue.
 
 Generate a minimal, correct patch in unified diff format.
 Start your response with ```diff and end with ```.
+
+/nothink
 """
 
 
@@ -98,29 +123,31 @@ class AgentlessGatherer(ContextGatherer):
         total_tokens = 0
         ttft: float | None = None
         trace: list[dict[str, Any]] = []
+        conversation: list[dict[str, str]] = []
 
         repo = instance.repo_snapshot
 
         # ── Phase 1: File-level localization ──────────────────────
         file_listing = self._get_file_listing(repo)
 
-        resp = self.llm.chat(
-            [
-                {"role": "system", "content": "You are an expert code analyst."},
-                {
-                    "role": "user",
-                    "content": FILE_LOCALIZATION_PROMPT.format(
-                        query=instance.query[:3000],
-                        file_listing=file_listing[:6000],
-                        top_n=self.top_files,
-                    ),
-                },
-            ]
-        )
+        phase1_msgs = [
+            {"role": "system", "content": "You are an expert code analyst."},
+            {
+                "role": "user",
+                "content": FILE_LOCALIZATION_PROMPT.format(
+                    query=instance.query[:3000],
+                    file_listing=file_listing[:6000],
+                    top_n=self.top_files,
+                ),
+            },
+        ]
+        resp = self.llm.chat(phase1_msgs)
         total_tokens += resp.total_tokens
         ttft = resp.latency_s
+        conversation.extend(phase1_msgs)
+        conversation.append({"role": "assistant", "content": resp.content})
 
-        candidate_files = self._parse_json_list(resp.content)
+        candidate_files = self._parse_json_list(_strip_think_blocks(resp.content))
         # Deduplicate while preserving order (LLM may repeat paths)
         seen: set[str] = set()
         candidate_files = [
@@ -146,24 +173,25 @@ class AgentlessGatherer(ContextGatherer):
         for fpath in candidate_files[:5]:  # Limit to top 5 to fit context
             full_path = repo / fpath
             if full_path.exists():
-                content = _read_file_safe(full_path)
-                file_contents += f"\n### {fpath}\n```\n{content[:3000]}\n```\n"
+                content = _read_file_with_line_numbers(full_path, max_lines=300)
+                file_contents += f"\n### {fpath}\n```\n{content[:4000]}\n```\n"
 
-        resp2 = self.llm.chat(
-            [
-                {"role": "system", "content": "You are an expert code analyst."},
-                {
-                    "role": "user",
-                    "content": FUNCTION_LOCALIZATION_PROMPT.format(
-                        query=instance.query[:2000],
-                        file_contents=file_contents[:8000],
-                    ),
-                },
-            ]
-        )
+        phase2_msgs = [
+            {"role": "system", "content": "You are an expert code analyst."},
+            {
+                "role": "user",
+                "content": FUNCTION_LOCALIZATION_PROMPT.format(
+                    query=instance.query[:2000],
+                    file_contents=file_contents[:8000],
+                ),
+            },
+        ]
+        resp2 = self.llm.chat(phase2_msgs)
         total_tokens += resp2.total_tokens
+        conversation.extend(phase2_msgs)
+        conversation.append({"role": "assistant", "content": resp2.content})
 
-        regions = self._parse_json_list(resp2.content)
+        regions = self._parse_json_list(_strip_think_blocks(resp2.content))
         trace.append(
             {
                 "phase": "function_localization",
@@ -177,24 +205,24 @@ class AgentlessGatherer(ContextGatherer):
         patches: list[str] = []
 
         for sample_idx in range(self.n_samples):
-            resp3 = self.llm.chat(
-                [
-                    {
-                        "role": "system",
-                        "content": "You are an expert software engineer.",
-                    },
-                    {
-                        "role": "user",
-                        "content": REPAIR_PROMPT.format(
-                            query=instance.query[:2000],
-                            code_regions=code_regions[:6000],
-                        ),
-                    },
-                ],
-                temperature=0.8,  # Higher temp for diversity
-            )
+            phase3_msgs = [
+                {
+                    "role": "system",
+                    "content": "You are an expert software engineer.",
+                },
+                {
+                    "role": "user",
+                    "content": REPAIR_PROMPT.format(
+                        query=instance.query[:2000],
+                        code_regions=code_regions[:6000],
+                    ),
+                },
+            ]
+            resp3 = self.llm.chat(phase3_msgs, temperature=0.8)
             total_tokens += resp3.total_tokens
-            patch = self._extract_diff(resp3.content)
+            conversation.extend(phase3_msgs)
+            conversation.append({"role": "assistant", "content": resp3.content})
+            patch = self._extract_diff(_strip_think_blocks(resp3.content))
             if patch:
                 patches.append(patch)
 
@@ -219,6 +247,7 @@ class AgentlessGatherer(ContextGatherer):
             ttft_s=ttft,
             generated_patch=best_patch,
             trace=trace,
+            conversation=conversation,
         )
 
     # ------------------------------------------------------------------

@@ -8,6 +8,7 @@ and locate relevant context for a given issue.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import time
@@ -17,6 +18,8 @@ from typing import Any
 from harness.benchmarks.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.llm_client import LLMClient, LLMConfig
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------
 # Tool implementations (operate within a repo snapshot)
@@ -28,8 +31,10 @@ You have the following tools available:
 1. list_dir(path: str) -> str
    List files and subdirectories in the given directory (relative to repo root).
 
-2. read_file(path: str) -> str
-   Read the contents of a file (relative to repo root). Returns first 200 lines.
+2. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str
+   Read lines of a file (relative to repo root). Returns lines in [start_line, end_line].
+   Each line is prefixed with its line number for reference.
+   Default: lines 1–200. Use start_line/end_line to read deeper into large files.
 
 3. grep(pattern: str, path: str = ".") -> str
    Search for a regex pattern in files under the given path. Returns matching lines.
@@ -56,14 +61,37 @@ Rules:
 - Always start with a Thought.
 - Call exactly ONE action per turn.
 - The finish action's arguments are the relevant file paths you found.
-- You have at most {max_steps} steps.
+- You have at most {max_steps} steps. Use them wisely — don't repeat actions.
+- Do NOT output markdown, code blocks, or analysis — ONLY Thought + Action.
+
+/nothink
 """
+
+WRAP_UP_PROMPT = """\
+You have used all of your investigation steps. You MUST now provide your \
+final answer by calling finish() with the file paths you believe are most \
+relevant to the issue. Base your answer on everything you have found so far.
+
+Respond in EXACTLY this format:
+Thought: <brief summary of relevant files found>
+Action: finish(file1.py, file2.py, ...)
+"""
+
+
+def _strip_think_blocks(text: str) -> str:
+    """Remove <think>...</think> blocks (e.g. Qwen3 chain-of-thought)."""
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
 
 def _tool_list_dir(repo: Path, path: str) -> str:
     target = repo / path.strip().strip("/")
-    if not target.exists() or not target.is_dir():
-        return f"Error: '{path}' is not a valid directory."
+    if not target.exists():
+        return f"Error: '{path}' does not exist."
+    if target.is_file():
+        return (
+            f"Error: '{path}' is a file, not a directory. "
+            f"Use read_file(\"{path}\") to read its contents."
+        )
     entries = []
     for item in sorted(target.iterdir()):
         rel = item.relative_to(repo).as_posix()
@@ -74,15 +102,37 @@ def _tool_list_dir(repo: Path, path: str) -> str:
     return "\n".join(entries) if entries else "(empty directory)"
 
 
-def _tool_read_file(repo: Path, path: str) -> str:
+def _tool_read_file(
+    repo: Path,
+    path: str,
+    start_line: int = 1,
+    end_line: int = 200,
+) -> str:
     target = repo / path.strip().strip("/")
-    if not target.exists() or not target.is_file():
-        return f"Error: '{path}' is not a valid file."
+    if not target.exists():
+        return f"Error: '{path}' does not exist."
+    if target.is_dir():
+        return (
+            f"Error: '{path}' is a directory, not a file. "
+            f"Use list_dir(\"{path}\") to list its contents."
+        )
     try:
-        lines = target.read_text(encoding="utf-8", errors="replace").splitlines()
-        if len(lines) > 200:
-            return "\n".join(lines[:200]) + f"\n... ({len(lines) - 200} more lines)"
-        return "\n".join(lines)
+        all_lines = target.read_text(encoding="utf-8", errors="replace").splitlines()
+        total = len(all_lines)
+        # Clamp bounds
+        start_line = max(1, start_line)
+        end_line = min(total, end_line)
+        if start_line > total:
+            return f"Error: start_line {start_line} exceeds file length ({total} lines)."
+
+        selected = all_lines[start_line - 1 : end_line]
+        numbered = [
+            f"{start_line + i:>4}: {line}" for i, line in enumerate(selected)
+        ]
+        result = "\n".join(numbered)
+        if end_line < total:
+            result += f"\n... ({total - end_line} more lines, total {total})"
+        return result
     except OSError as e:
         return f"Error reading file: {e}"
 
@@ -155,6 +205,27 @@ def _parse_action(text: str) -> tuple[str, list[str]]:
     return tool_name, args
 
 
+def _extract_paths_from_conversation(
+    messages: list[dict[str, str]], repo: Path
+) -> list[str]:
+    """Last-resort: extract file paths mentioned in assistant messages."""
+    # Collect all paths that look like source files
+    path_pattern = re.compile(
+        r"(?:^|[\s\"'`(,])([a-zA-Z_][\w/.-]*\.(?:py|java|ts|js|cs))\b"
+    )
+    seen: set[str] = set()
+    paths: list[str] = []
+    for msg in messages:
+        if msg.get("role") != "assistant":
+            continue
+        for match in path_pattern.finditer(msg.get("content", "")):
+            candidate = match.group(1)
+            if candidate not in seen and (repo / candidate).exists():
+                seen.add(candidate)
+                paths.append(candidate)
+    return paths[:20]  # Cap to avoid noise
+
+
 class ReActGatherer(ContextGatherer):
     """ReAct agent that iteratively explores a repo to find relevant files."""
 
@@ -204,15 +275,17 @@ class ReActGatherer(ContextGatherer):
                 ttft = response.latency_s  # Approximate TTFT as first call latency
 
             content = response.content
-            tool_name, args = _parse_action(content)
+            # Strip <think> blocks before parsing Action
+            cleaned = _strip_think_blocks(content)
+            tool_name, args = _parse_action(cleaned)
 
             trace.append(
                 {
                     "step": step + 1,
                     "thought": (
-                        content.split("Action:")[0].strip()
-                        if "Action:" in content
-                        else content
+                        cleaned.split("Action:")[0].strip()
+                        if "Action:" in cleaned
+                        else cleaned
                     ),
                     "action": tool_name,
                     "args": args,
@@ -227,7 +300,10 @@ class ReActGatherer(ContextGatherer):
             elif tool_name == "list_dir":
                 observation = _tool_list_dir(repo, args[0] if args else ".")
             elif tool_name == "read_file":
-                observation = _tool_read_file(repo, args[0] if args else "")
+                fpath = args[0] if args else ""
+                start = int(args[1]) if len(args) > 1 else 1
+                end = int(args[2]) if len(args) > 2 else start + 199
+                observation = _tool_read_file(repo, fpath, start, end)
             elif tool_name == "grep":
                 pattern = args[0] if args else ""
                 path = args[1] if len(args) > 1 else "."
@@ -243,15 +319,66 @@ class ReActGatherer(ContextGatherer):
                     f"  {path} (score: {score:.4f})" for path, score in results
                 )
             else:
-                observation = f"Unknown tool: {tool_name}. Available: list_dir, read_file, grep, search_codebase, finish."
+                observation = (
+                    f"Error: unknown tool '{tool_name}'. "
+                    f"Available tools: list_dir, read_file, grep, "
+                    f"search_codebase, finish. "
+                    f"Remember: respond with ONLY Thought + Action."
+                )
 
-            # Append observation to conversation
+            # Build observation with step countdown
+            remaining = self.max_steps - step - 1
+            step_header = (
+                f"[Step {step + 1}/{self.max_steps} — "
+                f"{remaining} remaining]"
+            )
+            full_observation = f"{step_header}\n{observation[:3000]}"
+
+            # Append to conversation
             messages.append({"role": "assistant", "content": content})
             messages.append(
-                {"role": "user", "content": f"Observation:\n{observation[:3000]}"}
+                {"role": "user", "content": f"Observation:\n{full_observation}"}
             )
 
             trace[-1]["observation"] = observation[:500]
+
+        else:
+            # Agent exhausted all steps without calling finish().
+            # Give it one more chance with a wrap-up prompt.
+            logger.info("Agent exhausted steps — sending wrap-up prompt.")
+            messages.append(
+                {"role": "user", "content": WRAP_UP_PROMPT}
+            )
+            response = self.llm.chat(messages)
+            total_tokens += response.total_tokens
+            content = response.content
+            cleaned = _strip_think_blocks(content)
+            tool_name, args = _parse_action(cleaned)
+
+            trace.append(
+                {
+                    "step": self.max_steps + 1,
+                    "thought": "WRAP-UP: " + (
+                        cleaned.split("Action:")[0].strip()
+                        if "Action:" in cleaned
+                        else cleaned
+                    ),
+                    "action": tool_name,
+                    "args": args,
+                    "tokens": response.total_tokens,
+                }
+            )
+            messages.append({"role": "assistant", "content": content})
+
+            if tool_name == "finish" and args:
+                retrieved = args
+            else:
+                # Final fallback: extract paths from conversation history
+                logger.warning(
+                    "Wrap-up prompt failed to produce finish(). "
+                    "Falling back to path extraction."
+                )
+                retrieved = _extract_paths_from_conversation(messages, repo)
 
         latency = time.perf_counter() - t0
 
@@ -262,4 +389,5 @@ class ReActGatherer(ContextGatherer):
             ttft_s=ttft,
             generated_patch=None,
             trace=trace,
+            conversation=list(messages),
         )

@@ -73,6 +73,12 @@ def _get_gatherer(cfg: dict, llm_cfg: dict | None = None) -> ContextGatherer:
         raise ValueError(f"Unknown gatherer: {name}")
 
 
+def _resolve_model_name(gcfg: dict, llm_cfg: dict) -> str | None:
+    """Determine the model name used for a gatherer."""
+    # Agentic gatherers may use their own 'llm' key, else fall back to global
+    return gcfg.get("llm") or llm_cfg.get("model")
+
+
 # ------------------------------------------------------------------
 # Main experiment loop
 # ------------------------------------------------------------------
@@ -104,6 +110,9 @@ def run_experiment(config_path: str) -> None:
     dashboard = DashboardState(total=total_steps)
     store = ResultStore(output_dir)
 
+    # Persist run-level metadata (config snapshot)
+    store.save_run_meta(cfg)
+
     # Start live dashboard
     dash_cfg = cfg.get("dashboard", {})
     if dash_cfg.get("enabled", True):
@@ -116,6 +125,7 @@ def run_experiment(config_path: str) -> None:
     # Run
     for gcfg in gatherer_cfgs:
         gatherer = _get_gatherer(gcfg, llm_cfg)
+        model_name = _resolve_model_name(gcfg, llm_cfg)
         logger.info("▶ Running gatherer: %s", gcfg["name"])
 
         for inst in instances:
@@ -133,8 +143,15 @@ def run_experiment(config_path: str) -> None:
 
             all_metrics = {**retrieval_scores, **patch_scores, **efficiency}
 
-            # Store
-            store.store(inst.id, gcfg["name"], all_metrics)
+            # Store with enriched data
+            store.store(
+                inst.id,
+                gcfg["name"],
+                all_metrics,
+                result=result,
+                gold_context=inst.gold_context,
+                model=model_name,
+            )
 
             # Update dashboard
             dashboard.record(

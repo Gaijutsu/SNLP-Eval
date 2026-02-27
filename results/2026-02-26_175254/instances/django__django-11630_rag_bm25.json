@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-11630",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7116141050064471,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/migrations/executor.py",
+    "django/core/management/commands/migrate.py",
+    "django/db/models/base.py",
+    "django/db/models/sql/query.py",
+    "tests/migrations/test_executor.py",
+    "django/core/management/base.py",
+    "django/db/models/options.py",
+    "tests/backends/tests.py",
+    "django/db/migrations/state.py",
+    "django/db/migrations/migration.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2156,
+      "results": [
+        {
+          "file": "django/db/migrations/executor.py",
+          "score": 285.1978
+        },
+        {
+          "file": "django/core/management/commands/migrate.py",
+          "score": 277.122
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 271.0367
+        },
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 270.2204
+        },
+        {
+          "file": "tests/migrations/test_executor.py",
+          "score": 268.1585
+        },
+        {
+          "file": "django/core/management/base.py",
+          "score": 263.6637
+        },
+        {
+          "file": "django/db/models/options.py",
+          "score": 263.4976
+        },
+        {
+          "file": "tests/backends/tests.py",
+          "score": 263.3395
+        },
+        {
+          "file": "django/db/migrations/state.py",
+          "score": 258.892
+        },
+        {
+          "file": "django/db/migrations/migration.py",
+          "score": 257.6934
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7116141050064471,
+  "ttft_s": null,
+  "gold_context": [
+    "django/core/checks/model_checks.py",
+    "tests/check_framework/test_model_checks.py"
+  ]
+}

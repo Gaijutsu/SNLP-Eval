@@ -1,0 +1,98 @@
+{
+  "instance_id": "astropy__astropy-7746",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.700372780993348,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "docs/wcs/examples/from_file.py",
+    "astropy/modeling/tests/test_rotations.py",
+    "astropy/wcs/tests/extension/setup.py",
+    "docs/wcs/examples/programmatic.py",
+    "astropy/visualization/wcsaxes/coordinates_map.py",
+    "astropy/wcs/tests/test_wcsprm.py",
+    "astropy/visualization/wcsaxes/tests/test_misc.py",
+    "astropy/modeling/setup_package.py",
+    "astropy/coordinates/tests/test_representation.py",
+    "astropy/units/required_by_vounit.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 687,
+      "results": [
+        {
+          "file": "docs/wcs/examples/from_file.py",
+          "score": 0.5984
+        },
+        {
+          "file": "astropy/modeling/tests/test_rotations.py",
+          "score": 0.5972
+        },
+        {
+          "file": "astropy/wcs/tests/extension/setup.py",
+          "score": 0.596
+        },
+        {
+          "file": "docs/wcs/examples/programmatic.py",
+          "score": 0.5819
+        },
+        {
+          "file": "astropy/visualization/wcsaxes/coordinates_map.py",
+          "score": 0.5635
+        },
+        {
+          "file": "astropy/wcs/tests/test_wcsprm.py",
+          "score": 0.5526
+        },
+        {
+          "file": "astropy/visualization/wcsaxes/tests/test_misc.py",
+          "score": 0.5407
+        },
+        {
+          "file": "astropy/modeling/setup_package.py",
+          "score": 0.5386
+        },
+        {
+          "file": "astropy/coordinates/tests/test_representation.py",
+          "score": 0.5352
+        },
+        {
+          "file": "astropy/units/required_by_vounit.py",
+          "score": 0.5266
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.700372780993348,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/wcs/wcs.py",
+    "astropy/wcs/tests/test_wcs.py"
+  ]
+}

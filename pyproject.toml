@@ -39,3 +39,4 @@ where = ["src"]
 
 [project.scripts]
 harness = "harness.runner:main"
+harness-viewer = "harness.viewer.app:main"
