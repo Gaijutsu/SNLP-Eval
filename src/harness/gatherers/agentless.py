@@ -20,7 +20,7 @@ from harness.llm_client import LLMClient, LLMConfig
 
 from prompts import (
     get_agentless_file_localization_prompt,
-    get_agentless_function_locatization_prompt,
+    get_agentless_function_localization_prompt,
     get_agentless_repair_prompt,
 )
 
@@ -46,7 +46,7 @@ def _read_file_with_line_numbers(path: Path, max_lines: int = 300) -> str:
 
 FILE_LOCALIZATION_PROMPT = get_agentless_file_localization_prompt()
 
-FUNCTION_LOCALIZATION_PROMPT = get_agentless_function_locatization_prompt()
+FUNCTION_LOCALIZATION_PROMPT = get_agentless_function_localization_prompt()
 
 REPAIR_PROMPT = get_agentless_repair_prompt()
 
