@@ -19,53 +19,12 @@ from harness.benchmarks.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.llm_client import LLMClient, LLMConfig
 
+from prompts import get_react_tool_descriptions, get_react_system_prompt
+
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------
-# Tool implementations (operate within a repo snapshot)
-# ---------------------------------------------------------------------
-
-TOOL_DESCRIPTIONS = """\
-You have the following tools available:
-
-1. list_dir(path: str) -> str
-   List files and subdirectories in the given directory (relative to repo root).
-
-2. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str
-   Read lines of a file (relative to repo root). Returns lines in [start_line, end_line].
-   Each line is prefixed with its line number for reference.
-   Default: lines 1–200. Use start_line/end_line to read deeper into large files.
-
-3. grep(pattern: str, path: str = ".") -> str
-   Search for a regex pattern in files under the given path. Returns matching lines.
-
-4. search_codebase(query: str) -> str
-   Semantic search over all files in the repo. Returns the top-5 most relevant file paths.
-"""
-
-SYSTEM_PROMPT = """\
-You are a code investigation agent. Your job is to find the files most relevant
-to a given issue/query in a code repository.
-
-{tool_descriptions}
-
-On each turn, respond in EXACTLY this format:
-Thought: <your reasoning about what to do next>
-Action: <tool_name>(arg1, arg2, ...)
-
-When you have found all relevant files, respond:
-Thought: <summary of findings>
-Action: finish(file1.py, file2.py, ...)
-
-Rules:
-- Always start with a Thought.
-- Call exactly ONE action per turn.
-- The finish action's arguments are the relevant file paths you found.
-- You have at most {max_steps} steps. Use them wisely — don't repeat actions.
-- Do NOT output markdown, code blocks, or analysis — ONLY Thought + Action.
-
-/nothink
-"""
+TOOL_DESCRIPTIONS = get_react_tool_descriptions()
+SYSTEM_PROMPT = get_react_system_prompt()
 
 WRAP_UP_PROMPT = """\
 You have used all of your investigation steps. You MUST now provide your \

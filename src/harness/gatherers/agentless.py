@@ -18,6 +18,12 @@ from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.gatherers.rag_bm25 import ChunkedIndex, _read_file_safe
 from harness.llm_client import LLMClient, LLMConfig
 
+from prompts import (
+    get_agentless_file_localization_prompt,
+    get_agentless_function_localization_prompt,
+    get_agentless_repair_prompt,
+)
+
 
 def _strip_think_blocks(text: str) -> str:
     """Remove <think>...</think> blocks (e.g. Qwen3 chain-of-thought)."""
@@ -37,64 +43,12 @@ def _read_file_with_line_numbers(path: Path, max_lines: int = 300) -> str:
     except OSError:
         return "(unable to read file)"
 
-# ------------------------------------------------------------------
-# Prompt templates
-# ------------------------------------------------------------------
 
-FILE_LOCALIZATION_PROMPT = """\
-You are an expert software engineer. Given the following issue/bug report
-and repository file listing, identify which files are most likely relevant
-to this issue. Return ONLY a JSON array of file paths, ranked by relevance.
+FILE_LOCALIZATION_PROMPT = get_agentless_file_localization_prompt()
 
-## Issue
-{query}
+FUNCTION_LOCALIZATION_PROMPT = get_agentless_function_localization_prompt()
 
-## Repository Files
-{file_listing}
-
-Respond with a JSON array of up to {top_n} file paths, most relevant first.
-Example: ["src/auth/login.py", "src/models/user.py"]
-
-/nothink
-"""
-
-FUNCTION_LOCALIZATION_PROMPT = """\
-You are an expert software engineer. Given the following issue and file
-contents, identify the specific functions/classes/code regions that need
-to be modified to fix this issue. Return a JSON array of objects with
-"file" and "region" keys.
-
-## Issue
-{query}
-
-## File Contents
-{file_contents}
-
-Respond with a JSON array of objects, each having:
-- "file": the file path
-- "region": description of the specific function/class/code region
-
-Example: [{{"file": "src/auth.py", "region": "def login() around line 42"}}]
-
-/nothink
-"""
-
-REPAIR_PROMPT = """\
-You are an expert software engineer. Given the issue description and the
-relevant code regions, generate a patch in unified diff format to fix
-the issue.
-
-## Issue
-{query}
-
-## Relevant Code
-{code_regions}
-
-Generate a minimal, correct patch in unified diff format.
-Start your response with ```diff and end with ```.
-
-/nothink
-"""
+REPAIR_PROMPT = get_agentless_repair_prompt()
 
 
 class AgentlessGatherer(ContextGatherer):
