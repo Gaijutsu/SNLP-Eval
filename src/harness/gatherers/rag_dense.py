@@ -10,7 +10,7 @@ from typing import Any
 import numpy as np
 import torch
 
-from harness.benchmarks.base import BenchmarkInstance
+from harness.gatherers.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.gatherers.rag_bm25 import _read_file_safe
 
@@ -107,13 +107,20 @@ class DenseRAGGatherer(ContextGatherer):
         self._model = SentenceTransformer(self.model_name, device=device)
         logger.info("DenseRAGGatherer using device: %s", device)
 
+        self._index_cache = {}
+
     def gather(self, instance: BenchmarkInstance) -> GatherResult:
         t0 = time.perf_counter()
 
-        index = DenseIndex(
-            instance.repo_snapshot,
-            model=self._model,
-        )
+        repo_key = str(instance.repo_snapshot.resolve())
+
+        if repo_key not in self._index_cache:
+            self._index_cache[repo_key] = DenseIndex(
+                instance.repo_snapshot,
+                model=self._model,
+            )
+
+        index = self._index_cache[repo_key]
 
         results = index.search(instance.query, top_k=self.top_k)
         retrieved = [path for path, _ in results]
@@ -122,20 +129,18 @@ class DenseRAGGatherer(ContextGatherer):
 
         return GatherResult(
             retrieved_contexts=retrieved,
-            token_usage=0,  # No LLM tokens — embeddings only
+            token_usage=0,
             latency_s=latency,
             ttft_s=None,
             generated_patch=None,
-            trace=[
-                {
-                    "step": "dense_search",
-                    "model": self.model_name,
-                    "top_k": self.top_k,
-                    "num_indexed_files": len(index.file_paths),
-                    "results": [
-                        {"file": path, "score": round(score, 4)}
-                        for path, score in results
-                    ],
-                }
-            ],
+            trace=[{
+                "step": "dense_search",
+                "model": self.model_name,
+                "top_k": self.top_k,
+                "num_indexed_files": len(index.file_paths),
+                "results": [
+                    {"file": path, "score": round(score, 4)}
+                    for path, score in results
+                ],
+            }],
         )
