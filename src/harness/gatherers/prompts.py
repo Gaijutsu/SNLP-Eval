@@ -29,6 +29,8 @@ Respond with a JSON array of up to {top_n} file paths, ranked by relevance
 (most relevant first). Output ONLY the JSON array, with no surrounding text.
 
 Example: ["src/auth/login.py", "tests/test_auth.py", "src/models/user.py"]
+
+/nothink
 """
 
 AGENTLESS_FUNCTION_LOCALIZATION_PROMPT = """\
@@ -57,6 +59,8 @@ Respond with a JSON array. Each element must have:
 Output ONLY the JSON array, with no surrounding text.
 
 Example: [{{"file": "src/auth.py", "symbol": "login", "line_range": "42-65", "reason": "Credential comparison is case-sensitive when it should be case-insensitive."}}]
+
+/nothink
 """
 
 AGENTLESS_REPAIR_PROMPT = """\
@@ -80,6 +84,8 @@ Then generate the patch. Rules:
 - Only change lines directly related to the fix; do not reformat unrelated code.
 - Preserve the existing code style (indentation, naming conventions).
 - If multiple files need changes, include all hunks in one diff block.
+
+/nothink
 """
 
 
@@ -127,6 +133,8 @@ You have the following tools available:
    Read the contents of a file (relative to repo root). Returns first 200 lines.
    Use this to confirm a file's relevance by inspecting its implementation.
    Example: read_file("src/auth/login.py")
+
+/nothink
 """
 
 REACT_SYSTEM_PROMPT = """\
@@ -159,6 +167,8 @@ Action: finish(file1.py, file2.py, ...)
 - The finish() arguments are the relevant file paths — only include files you have direct evidence for.
 - Prefer precision: 3-10 high-confidence files is better than a long uncertain list.
 - You have at most {max_steps} steps. If approaching the limit, call finish() with your best findings so far.
+
+/nothink
 """
 
 

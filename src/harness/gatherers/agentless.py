@@ -18,7 +18,7 @@ from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.gatherers.rag_bm25 import ChunkedIndex, _read_file_safe
 from harness.llm_client import LLMClient, LLMConfig
 
-from prompts import (
+from harness.gatherers.prompts import (
     get_agentless_file_localization_prompt,
     get_agentless_function_localization_prompt,
     get_agentless_repair_prompt,
