@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12589",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.3333333333333333,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.46927872602275644,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.46927872602275644,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.46927872602275644,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.661990776003222,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/query.py",
+    "django/db/models/sql/compiler.py",
+    "django/db/models/sql/datastructures.py",
+    "tests/invalid_models_tests/test_models.py",
+    "tests/migrations/test_operations.py",
+    "django/db/models/base.py",
+    "tests/queries/tests.py",
+    "django/db/models/options.py",
+    "django/db/models/fields/related.py",
+    "django/db/models/query.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2182,
+      "results": [
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 679.7155
+        },
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 579.5701
+        },
+        {
+          "file": "django/db/models/sql/datastructures.py",
+          "score": 550.1028
+        },
+        {
+          "file": "tests/invalid_models_tests/test_models.py",
+          "score": 519.852
+        },
+        {
+          "file": "tests/migrations/test_operations.py",
+          "score": 517.4457
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 504.951
+        },
+        {
+          "file": "tests/queries/tests.py",
+          "score": 503.5963
+        },
+        {
+          "file": "django/db/models/options.py",
+          "score": 491.6659
+        },
+        {
+          "file": "django/db/models/fields/related.py",
+          "score": 484.0893
+        },
+        {
+          "file": "django/db/models/query.py",
+          "score": 483.9271
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.661990776003222,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/query.py",
+    "tests/aggregation/models.py",
+    "tests/aggregation/tests.py"
+  ]
+}

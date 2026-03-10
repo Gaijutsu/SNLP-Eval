@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12308",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.855838709998352,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/contrib/postgres/fields/jsonb.py",
+    "django/contrib/postgres/forms/jsonb.py",
+    "django/contrib/postgres/fields/hstore.py",
+    "tests/postgres_tests/test_json_deprecation.py",
+    "django/db/models/fields/json.py",
+    "django/contrib/postgres/forms/hstore.py",
+    "django/contrib/postgres/fields/array.py",
+    "tests/forms_tests/field_tests/test_jsonfield.py",
+    "django/contrib/admin/options.py",
+    "tests/postgres_tests/test_aggregates.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2194,
+      "results": [
+        {
+          "file": "django/contrib/postgres/fields/jsonb.py",
+          "score": 0.7221
+        },
+        {
+          "file": "django/contrib/postgres/forms/jsonb.py",
+          "score": 0.7024
+        },
+        {
+          "file": "django/contrib/postgres/fields/hstore.py",
+          "score": 0.6911
+        },
+        {
+          "file": "tests/postgres_tests/test_json_deprecation.py",
+          "score": 0.6901
+        },
+        {
+          "file": "django/db/models/fields/json.py",
+          "score": 0.6662
+        },
+        {
+          "file": "django/contrib/postgres/forms/hstore.py",
+          "score": 0.6223
+        },
+        {
+          "file": "django/contrib/postgres/fields/array.py",
+          "score": 0.6126
+        },
+        {
+          "file": "tests/forms_tests/field_tests/test_jsonfield.py",
+          "score": 0.6078
+        },
+        {
+          "file": "django/contrib/admin/options.py",
+          "score": 0.6055
+        },
+        {
+          "file": "tests/postgres_tests/test_aggregates.py",
+          "score": 0.5951
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.855838709998352,
+  "ttft_s": null,
+  "gold_context": [
+    "django/contrib/admin/utils.py",
+    "tests/admin_utils/tests.py"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "instance_id": "django__django-12915",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.25,
+    "ndcg@3": 0.23463936301137822,
+    "precision@5": 0.4,
+    "recall@5": 0.5,
+    "ndcg@5": 0.36331756126716835,
+    "precision@10": 0.2,
+    "recall@10": 0.5,
+    "ndcg@10": 0.36331756126716835,
+    "mrr": 0.3333333333333333,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.9221668440004578,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/core/asgi.py",
+    "django/core/handlers/asgi.py",
+    "django/contrib/staticfiles/handlers.py",
+    "tests/asgi/tests.py",
+    "django/core/handlers/base.py",
+    "django/contrib/staticfiles/management/commands/runserver.py",
+    "django/test/utils.py",
+    "tests/middleware_exceptions/middleware.py",
+    "django/test/client.py",
+    "django/test/testcases.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2195,
+      "results": [
+        {
+          "file": "django/core/asgi.py",
+          "score": 0.6799
+        },
+        {
+          "file": "django/core/handlers/asgi.py",
+          "score": 0.6428
+        },
+        {
+          "file": "django/contrib/staticfiles/handlers.py",
+          "score": 0.6414
+        },
+        {
+          "file": "tests/asgi/tests.py",
+          "score": 0.6407
+        },
+        {
+          "file": "django/core/handlers/base.py",
+          "score": 0.6379
+        },
+        {
+          "file": "django/contrib/staticfiles/management/commands/runserver.py",
+          "score": 0.6109
+        },
+        {
+          "file": "django/test/utils.py",
+          "score": 0.6031
+        },
+        {
+          "file": "tests/middleware_exceptions/middleware.py",
+          "score": 0.6018
+        },
+        {
+          "file": "django/test/client.py",
+          "score": 0.5917
+        },
+        {
+          "file": "django/test/testcases.py",
+          "score": 0.5863
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.9221668440004578,
+  "ttft_s": null,
+  "gold_context": [
+    "django/contrib/staticfiles/handlers.py",
+    "tests/asgi/project/static/file.txt",
+    "tests/asgi/tests.py",
+    "tests/staticfiles_tests/test_handlers.py"
+  ]
+}

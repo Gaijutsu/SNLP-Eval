@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11133",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8511443940005847,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/handlers/views.py",
+    "tests/model_fields/test_binaryfield.py",
+    "tests/responses/tests.py",
+    "django/core/handlers/wsgi.py",
+    "tests/servers/views.py",
+    "tests/middleware_exceptions/middleware.py",
+    "django/test/client.py",
+    "django/db/models/functions/text.py",
+    "tests/requests/tests.py",
+    "django/views/generic/detail.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2126,
+      "results": [
+        {
+          "file": "tests/handlers/views.py",
+          "score": 0.5655
+        },
+        {
+          "file": "tests/model_fields/test_binaryfield.py",
+          "score": 0.5568
+        },
+        {
+          "file": "tests/responses/tests.py",
+          "score": 0.5413
+        },
+        {
+          "file": "django/core/handlers/wsgi.py",
+          "score": 0.5395
+        },
+        {
+          "file": "tests/servers/views.py",
+          "score": 0.5378
+        },
+        {
+          "file": "tests/middleware_exceptions/middleware.py",
+          "score": 0.5286
+        },
+        {
+          "file": "django/test/client.py",
+          "score": 0.5234
+        },
+        {
+          "file": "django/db/models/functions/text.py",
+          "score": 0.5212
+        },
+        {
+          "file": "tests/requests/tests.py",
+          "score": 0.5088
+        },
+        {
+          "file": "django/views/generic/detail.py",
+          "score": 0.5077
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8511443940005847,
+  "ttft_s": null,
+  "gold_context": [
+    "django/http/response.py",
+    "tests/httpwrappers/tests.py"
+  ]
+}

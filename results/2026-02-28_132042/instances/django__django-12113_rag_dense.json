@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12113",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.21840743681816419,
+    "mrr": 0.16666666666666666,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.815683351996995,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/test_sqlite.py",
+    "tests/backends/sqlite/tests.py",
+    "tests/db_utils/tests.py",
+    "tests/backends/mysql/test_creation.py",
+    "tests/delete_regress/tests.py",
+    "django/db/backends/sqlite3/creation.py",
+    "django/db/backends/sqlite3/features.py",
+    "tests/backends/tests.py",
+    "tests/servers/test_liveserverthread.py",
+    "tests/gis_tests/gis_migrations/test_operations.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2167,
+      "results": [
+        {
+          "file": "tests/test_sqlite.py",
+          "score": 0.7323
+        },
+        {
+          "file": "tests/backends/sqlite/tests.py",
+          "score": 0.7005
+        },
+        {
+          "file": "tests/db_utils/tests.py",
+          "score": 0.6662
+        },
+        {
+          "file": "tests/backends/mysql/test_creation.py",
+          "score": 0.6435
+        },
+        {
+          "file": "tests/delete_regress/tests.py",
+          "score": 0.6346
+        },
+        {
+          "file": "django/db/backends/sqlite3/creation.py",
+          "score": 0.6215
+        },
+        {
+          "file": "django/db/backends/sqlite3/features.py",
+          "score": 0.6134
+        },
+        {
+          "file": "tests/backends/tests.py",
+          "score": 0.6122
+        },
+        {
+          "file": "tests/servers/test_liveserverthread.py",
+          "score": 0.6064
+        },
+        {
+          "file": "tests/gis_tests/gis_migrations/test_operations.py",
+          "score": 0.6029
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.815683351996995,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/backends/sqlite3/creation.py",
+    "tests/backends/sqlite/test_creation.py"
+  ]
+}

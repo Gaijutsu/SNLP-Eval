@@ -1,0 +1,98 @@
+{
+  "instance_id": "astropy__astropy-14365",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 1.0,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 1.0,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 1.0,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.8838631570033613,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/io/ascii/qdp.py",
+    "astropy/io/ascii/tests/test_qdp.py",
+    "astropy/io/ascii/connect.py",
+    "astropy/table/tests/test_showtable.py",
+    "astropy/io/ascii/tests/test_c_reader.py",
+    "astropy/io/ascii/ipac.py",
+    "astropy/io/ascii/tests/test_ipac_definitions.py",
+    "astropy/io/misc/tests/test_pandas.py",
+    "astropy/io/registry/tests/test_registry_help.py",
+    "astropy/io/ascii/ui.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 904,
+      "results": [
+        {
+          "file": "astropy/io/ascii/qdp.py",
+          "score": 0.6884
+        },
+        {
+          "file": "astropy/io/ascii/tests/test_qdp.py",
+          "score": 0.631
+        },
+        {
+          "file": "astropy/io/ascii/connect.py",
+          "score": 0.6067
+        },
+        {
+          "file": "astropy/table/tests/test_showtable.py",
+          "score": 0.6052
+        },
+        {
+          "file": "astropy/io/ascii/tests/test_c_reader.py",
+          "score": 0.5971
+        },
+        {
+          "file": "astropy/io/ascii/ipac.py",
+          "score": 0.597
+        },
+        {
+          "file": "astropy/io/ascii/tests/test_ipac_definitions.py",
+          "score": 0.5921
+        },
+        {
+          "file": "astropy/io/misc/tests/test_pandas.py",
+          "score": 0.5862
+        },
+        {
+          "file": "astropy/io/registry/tests/test_registry_help.py",
+          "score": 0.5767
+        },
+        {
+          "file": "astropy/io/ascii/ui.py",
+          "score": 0.5725
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.8838631570033613,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/io/ascii/qdp.py",
+    "astropy/io/ascii/tests/test_qdp.py"
+  ]
+}

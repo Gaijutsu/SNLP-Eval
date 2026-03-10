@@ -1,0 +1,99 @@
+{
+  "instance_id": "django__django-12453",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.9167689959940617,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/serializers/test_natural.py",
+    "tests/test_utils/test_testcase.py",
+    "tests/fixtures_regress/tests.py",
+    "tests/test_utils/test_transactiontestcase.py",
+    "tests/migration_test_data_persistence/tests.py",
+    "tests/migrations/test_operations.py",
+    "tests/serializers/test_yaml.py",
+    "tests/null_fk_ordering/tests.py",
+    "tests/model_fields/test_uuid.py",
+    "tests/serializers/test_xml.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2179,
+      "results": [
+        {
+          "file": "tests/serializers/test_natural.py",
+          "score": 0.6242
+        },
+        {
+          "file": "tests/test_utils/test_testcase.py",
+          "score": 0.6238
+        },
+        {
+          "file": "tests/fixtures_regress/tests.py",
+          "score": 0.6101
+        },
+        {
+          "file": "tests/test_utils/test_transactiontestcase.py",
+          "score": 0.591
+        },
+        {
+          "file": "tests/migration_test_data_persistence/tests.py",
+          "score": 0.5668
+        },
+        {
+          "file": "tests/migrations/test_operations.py",
+          "score": 0.5443
+        },
+        {
+          "file": "tests/serializers/test_yaml.py",
+          "score": 0.5313
+        },
+        {
+          "file": "tests/null_fk_ordering/tests.py",
+          "score": 0.5252
+        },
+        {
+          "file": "tests/model_fields/test_uuid.py",
+          "score": 0.5217
+        },
+        {
+          "file": "tests/serializers/test_xml.py",
+          "score": 0.5183
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.9167689959940617,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/backends/base/creation.py",
+    "tests/backends/base/test_creation.py",
+    "tests/backends/models.py"
+  ]
+}

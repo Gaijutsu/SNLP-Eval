@@ -26,6 +26,10 @@ software-engineering benchmarks.
 - [Gold Set Construction](#gold-set-construction)
   - [Strategies](#strategies)
   - [Import Graph Expansion](#import-graph-expansion)
+- [Metrics Reference](#metrics-reference)
+  - [Retrieval Metrics](#retrieval-metrics)
+  - [Patch Metrics](#patch-metrics)
+  - [Efficiency Metrics](#efficiency-metrics)
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
 - [Configuration](#configuration)
@@ -271,6 +275,61 @@ to concrete files that exist in the repository.  Key design decisions:
   converted to candidate paths (`django/db/models.py` and
   `django/db/models/__init__.py`) and also tried relative to the source
   file's directory.
+
+---
+
+## Metrics Reference
+
+The harness captures three families of metrics for every `(instance, gatherer)` pair.
+Retrieval metrics are computed for all gatherers; patch metrics only when a candidate
+patch is produced (agentic gatherers); efficiency metrics are always recorded.
+
+### Retrieval Metrics
+
+Computed in `metrics/retrieval.py`.  All retrieval metrics compare the gatherer's
+ranked list of **retrieved files** against the **gold set** of ground-truth relevant
+files (see [Gold Set Construction](#gold-set-construction)).  *K* values are
+configurable via the `k_values` config key (default: 1, 3, 5, 10).
+
+| Metric | Key | Range | Definition |
+|--------|-----|-------|------------|
+| **Precision@K** | `precision@{k}` | [0, 1] | Fraction of the top-*K* retrieved files that are in the gold set.  Answers: *"Of the files I returned, how many were actually relevant?"* |
+| **Recall@K** | `recall@{k}` | [0, 1] | Fraction of gold-set files found in the top-*K* results.  Answers: *"Of all the relevant files, how many did I find?"*  Returns 0 when the gold set is empty. |
+| **MRR** | `mrr` | (0, 1] or 0 | Mean Reciprocal Rank — `1 / rank` of the **first** relevant result in the list.  Higher is better; 1.0 means the first result is relevant.  Returns 0 if no relevant file appears at all. |
+| **NDCG@K** | `ndcg@{k}` | [0, 1] | Normalized Discounted Cumulative Gain at *K*.  Uses **binary relevance** (1 if in gold set, else 0).  Rewards placing relevant files earlier (discounted by `1 / log₂(rank + 1)`), normalized against the ideal ranking. |
+
+> [!NOTE]
+> All retrieval functions deduplicate the retrieved list before scoring, so
+> duplicate file paths do not inflate results.
+
+### Patch Metrics
+
+Computed in `metrics/patch.py`.  These evaluate the quality of a generated
+patch (unified diff) against the reference patch from the benchmark.
+
+| Metric | Key | Range | Definition |
+|--------|-----|-------|------------|
+| **Edit Similarity** | `edit_similarity` | [0, 1] | `SequenceMatcher` ratio between the candidate and gold patches as raw text. 1.0 = identical patches; 0.0 = completely different (or either patch is missing). |
+| **Applied** | `applied` | bool | Whether the candidate patch applies cleanly via `git apply --check` against the repo snapshot. |
+| **Tests Passed** | `tests_passed` | bool | Whether the repository's test suite passes after applying the candidate patch. Only meaningful when `applied` is true. |
+| **Fail-to-Pass** | `fail_to_pass` | 0 or 1 | 1 if previously-failing tests now pass after the patch; 0 otherwise. |
+| **Pass-to-Pass** | `pass_to_pass` | 0 or 1 | 1 if previously-passing tests still pass after the patch; 0 otherwise. |
+
+> [!IMPORTANT]
+> Patch metrics require a repo snapshot on disk and are currently only
+> supported for SWE-bench instances.  The `apply_and_test_patch` function
+> automatically reverts the patch after testing.
+
+### Efficiency Metrics
+
+Computed in `metrics/efficiency.py`.  Extracted directly from the `GatherResult`
+returned by each gatherer.
+
+| Metric | Key | Unit | Definition |
+|--------|-----|------|------------|
+| **Token Usage** | `token_usage` | tokens | Total number of LLM tokens consumed (prompt + completion) during context gathering.  Zero for non-LLM gatherers (e.g. BM25). |
+| **Latency** | `latency_s` | seconds | Wall-clock time from the start to the end of the `gather()` call. |
+| **Time-to-First-Token** | `ttft_s` | seconds | Time from the request being issued to receiving the first token back from the LLM.  `null` for non-streaming or non-LLM gatherers. |
 
 ---
 
@@ -539,7 +598,7 @@ The console also prints a rich-formatted summary table:
 │ mrr            │ 0.3521 │ 0.2814 │50 │
 │ precision@1    │ 0.2800 │ 0.4536 │50 │
 │ recall@5       │ 0.5120 │ 0.3127 │50 │
-│ ...            │    ... │    ... │...│
+│ ...            │    ... │    ...http://localhost:11434/v1 │...│
 └────────────────┴────────┴────────┴───┘
 ```
 

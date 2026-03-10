@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-12497",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 1.0,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 1.0,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 1.0,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7123824439986493,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/fields/related.py",
+    "tests/invalid_models_tests/test_relative_fields.py",
+    "django/db/models/base.py",
+    "tests/invalid_models_tests/test_models.py",
+    "django/db/models/fields/related_descriptors.py",
+    "django/db/models/fields/reverse_related.py",
+    "django/forms/models.py",
+    "django/db/models/fields/__init__.py",
+    "tests/m2m_recursive/models.py",
+    "django/db/migrations/state.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2181,
+      "results": [
+        {
+          "file": "django/db/models/fields/related.py",
+          "score": 212.8105
+        },
+        {
+          "file": "tests/invalid_models_tests/test_relative_fields.py",
+          "score": 174.1552
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 152.8048
+        },
+        {
+          "file": "tests/invalid_models_tests/test_models.py",
+          "score": 151.9661
+        },
+        {
+          "file": "django/db/models/fields/related_descriptors.py",
+          "score": 150.9782
+        },
+        {
+          "file": "django/db/models/fields/reverse_related.py",
+          "score": 150.5655
+        },
+        {
+          "file": "django/forms/models.py",
+          "score": 145.0638
+        },
+        {
+          "file": "django/db/models/fields/__init__.py",
+          "score": 143.2011
+        },
+        {
+          "file": "tests/m2m_recursive/models.py",
+          "score": 141.6444
+        },
+        {
+          "file": "django/db/migrations/state.py",
+          "score": 140.7995
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7123824439986493,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/related.py",
+    "tests/invalid_models_tests/test_relative_fields.py"
+  ]
+}

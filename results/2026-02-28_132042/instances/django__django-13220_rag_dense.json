@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-13220",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.38685280723454163,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.38685280723454163,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.38685280723454163,
+    "mrr": 0.5,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8525768839972443,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/validation/__init__.py",
+    "tests/test_exceptions/test_validation_error.py",
+    "tests/validation/test_error_messages.py",
+    "tests/validation/test_custom_messages.py",
+    "tests/validation/test_picklable.py",
+    "django/contrib/postgres/forms/array.py",
+    "tests/validation/test_validators.py",
+    "tests/admin_scripts/app_raising_messages/models.py",
+    "django/contrib/auth/migrations/0008_alter_user_username_max_length.py",
+    "django/contrib/postgres/utils.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2202,
+      "results": [
+        {
+          "file": "tests/validation/__init__.py",
+          "score": 0.7534
+        },
+        {
+          "file": "tests/test_exceptions/test_validation_error.py",
+          "score": 0.7423
+        },
+        {
+          "file": "tests/validation/test_error_messages.py",
+          "score": 0.6303
+        },
+        {
+          "file": "tests/validation/test_custom_messages.py",
+          "score": 0.6227
+        },
+        {
+          "file": "tests/validation/test_picklable.py",
+          "score": 0.6188
+        },
+        {
+          "file": "django/contrib/postgres/forms/array.py",
+          "score": 0.6004
+        },
+        {
+          "file": "tests/validation/test_validators.py",
+          "score": 0.5991
+        },
+        {
+          "file": "tests/admin_scripts/app_raising_messages/models.py",
+          "score": 0.5938
+        },
+        {
+          "file": "django/contrib/auth/migrations/0008_alter_user_username_max_length.py",
+          "score": 0.5888
+        },
+        {
+          "file": "django/contrib/postgres/utils.py",
+          "score": 0.586
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8525768839972443,
+  "ttft_s": null,
+  "gold_context": [
+    "django/core/exceptions.py",
+    "tests/test_exceptions/test_validation_error.py"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "instance_id": "django__django-12470",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.18154179253735267,
+    "precision@10": 0.2,
+    "recall@10": 0.6666666666666666,
+    "ndcg@10": 0.3295827480202853,
+    "mrr": 0.2,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8798773730013636,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/ordering/models.py",
+    "tests/order_with_respect_to/models.py",
+    "tests/null_fk_ordering/models.py",
+    "django/contrib/postgres/aggregates/mixins.py",
+    "django/db/models/sql/compiler.py",
+    "django/db/models/fields/proxy.py",
+    "tests/db_functions/tests.py",
+    "tests/model_inheritance/models.py",
+    "tests/queries/models.py",
+    "tests/order_with_respect_to/tests.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2183,
+      "results": [
+        {
+          "file": "tests/ordering/models.py",
+          "score": 0.618
+        },
+        {
+          "file": "tests/order_with_respect_to/models.py",
+          "score": 0.618
+        },
+        {
+          "file": "tests/null_fk_ordering/models.py",
+          "score": 0.6039
+        },
+        {
+          "file": "django/contrib/postgres/aggregates/mixins.py",
+          "score": 0.5755
+        },
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 0.5742
+        },
+        {
+          "file": "django/db/models/fields/proxy.py",
+          "score": 0.5662
+        },
+        {
+          "file": "tests/db_functions/tests.py",
+          "score": 0.5619
+        },
+        {
+          "file": "tests/model_inheritance/models.py",
+          "score": 0.5577
+        },
+        {
+          "file": "tests/queries/models.py",
+          "score": 0.55
+        },
+        {
+          "file": "tests/order_with_respect_to/tests.py",
+          "score": 0.5462
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8798773730013636,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/compiler.py",
+    "tests/model_inheritance/models.py",
+    "tests/model_inheritance/tests.py"
+  ]
+}

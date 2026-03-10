@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-12983",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.23719771276929622,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.23719771276929622,
+    "mrr": 0.2,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6555136450042482,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/utils/cache.py",
+    "django/utils/html.py",
+    "docs/conf.py",
+    "django/core/servers/basehttp.py",
+    "django/utils/text.py",
+    "django/forms/forms.py",
+    "django/contrib/admin/sites.py",
+    "django/contrib/auth/forms.py",
+    "django/core/management/base.py",
+    "django/contrib/admin/utils.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2194,
+      "results": [
+        {
+          "file": "django/utils/cache.py",
+          "score": 86.3439
+        },
+        {
+          "file": "django/utils/html.py",
+          "score": 80.3204
+        },
+        {
+          "file": "docs/conf.py",
+          "score": 79.0624
+        },
+        {
+          "file": "django/core/servers/basehttp.py",
+          "score": 76.9261
+        },
+        {
+          "file": "django/utils/text.py",
+          "score": 75.6224
+        },
+        {
+          "file": "django/forms/forms.py",
+          "score": 69.1484
+        },
+        {
+          "file": "django/contrib/admin/sites.py",
+          "score": 68.1781
+        },
+        {
+          "file": "django/contrib/auth/forms.py",
+          "score": 68.0805
+        },
+        {
+          "file": "django/core/management/base.py",
+          "score": 67.9311
+        },
+        {
+          "file": "django/contrib/admin/utils.py",
+          "score": 67.0887
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6555136450042482,
+  "ttft_s": null,
+  "gold_context": [
+    "django/utils/text.py",
+    "tests/utils_tests/test_text.py"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "instance_id": "astropy__astropy-14995",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.2640681225725909,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.2640681225725909,
+    "mrr": 0.25,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.9621314329997404,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/utils/masked/function_helpers.py",
+    "astropy/utils/masked/core.py",
+    "astropy/utils/masked/tests/test_masked.py",
+    "astropy/nddata/mixins/ndarithmetic.py",
+    "astropy/utils/masked/__init__.py",
+    "astropy/nddata/bitmask.py",
+    "astropy/table/tests/test_row.py",
+    "astropy/nddata/compat.py",
+    "astropy/utils/masked/tests/test_functions.py",
+    "astropy/nddata/tests/test_bitmask.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 861,
+      "results": [
+        {
+          "file": "astropy/utils/masked/function_helpers.py",
+          "score": 0.6374
+        },
+        {
+          "file": "astropy/utils/masked/core.py",
+          "score": 0.6306
+        },
+        {
+          "file": "astropy/utils/masked/tests/test_masked.py",
+          "score": 0.6255
+        },
+        {
+          "file": "astropy/nddata/mixins/ndarithmetic.py",
+          "score": 0.62
+        },
+        {
+          "file": "astropy/utils/masked/__init__.py",
+          "score": 0.5941
+        },
+        {
+          "file": "astropy/nddata/bitmask.py",
+          "score": 0.5744
+        },
+        {
+          "file": "astropy/table/tests/test_row.py",
+          "score": 0.5712
+        },
+        {
+          "file": "astropy/nddata/compat.py",
+          "score": 0.5694
+        },
+        {
+          "file": "astropy/utils/masked/tests/test_functions.py",
+          "score": 0.5653
+        },
+        {
+          "file": "astropy/nddata/tests/test_bitmask.py",
+          "score": 0.5513
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.9621314329997404,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/nddata/mixins/ndarithmetic.py",
+    "astropy/nddata/mixins/tests/test_ndarithmetic.py"
+  ]
+}

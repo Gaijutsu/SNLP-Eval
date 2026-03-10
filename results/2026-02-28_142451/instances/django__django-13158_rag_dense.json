@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-13158",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8636709470010828,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/many_to_many/models.py",
+    "tests/queries/models.py",
+    "tests/known_related_objects/models.py",
+    "tests/basic/models.py",
+    "tests/managers_regress/models.py",
+    "tests/get_earliest_or_latest/models.py",
+    "tests/queries/test_query.py",
+    "tests/db_functions/migrations/0002_create_test_models.py",
+    "tests/m2m_intermediary/models.py",
+    "tests/queries/test_explain.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2200,
+      "results": [
+        {
+          "file": "tests/many_to_many/models.py",
+          "score": 0.6367
+        },
+        {
+          "file": "tests/queries/models.py",
+          "score": 0.5747
+        },
+        {
+          "file": "tests/known_related_objects/models.py",
+          "score": 0.5728
+        },
+        {
+          "file": "tests/basic/models.py",
+          "score": 0.5654
+        },
+        {
+          "file": "tests/managers_regress/models.py",
+          "score": 0.5608
+        },
+        {
+          "file": "tests/get_earliest_or_latest/models.py",
+          "score": 0.559
+        },
+        {
+          "file": "tests/queries/test_query.py",
+          "score": 0.5552
+        },
+        {
+          "file": "tests/db_functions/migrations/0002_create_test_models.py",
+          "score": 0.5523
+        },
+        {
+          "file": "tests/m2m_intermediary/models.py",
+          "score": 0.5468
+        },
+        {
+          "file": "tests/queries/test_explain.py",
+          "score": 0.5413
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8636709470010828,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/query.py",
+    "tests/queries/test_qs_combinators.py"
+  ]
+}

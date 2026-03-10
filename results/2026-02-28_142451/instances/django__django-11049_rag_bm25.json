@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-11049",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 0.8772153153380493,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.8772153153380493,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6179993830010062,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/fields/__init__.py",
+    "django/forms/fields.py",
+    "django/db/backends/base/features.py",
+    "tests/model_fields/test_durationfield.py",
+    "django/utils/dateparse.py",
+    "django/utils/duration.py",
+    "django/db/backends/base/operations.py",
+    "django/forms/models.py",
+    "django/db/backends/sqlite3/operations.py",
+    "django/db/models/functions/datetime.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2120,
+      "results": [
+        {
+          "file": "django/db/models/fields/__init__.py",
+          "score": 149.3366
+        },
+        {
+          "file": "django/forms/fields.py",
+          "score": 143.8394
+        },
+        {
+          "file": "django/db/backends/base/features.py",
+          "score": 139.9312
+        },
+        {
+          "file": "tests/model_fields/test_durationfield.py",
+          "score": 124.0857
+        },
+        {
+          "file": "django/utils/dateparse.py",
+          "score": 122.2156
+        },
+        {
+          "file": "django/utils/duration.py",
+          "score": 119.4824
+        },
+        {
+          "file": "django/db/backends/base/operations.py",
+          "score": 118.4105
+        },
+        {
+          "file": "django/forms/models.py",
+          "score": 117.8827
+        },
+        {
+          "file": "django/db/backends/sqlite3/operations.py",
+          "score": 117.6528
+        },
+        {
+          "file": "django/db/models/functions/datetime.py",
+          "score": 117.3838
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6179993830010062,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/__init__.py",
+    "tests/model_fields/test_durationfield.py"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12747",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.38685280723454163,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 0.6240505200038379,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.6240505200038379,
+    "mrr": 0.5,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.940121090003231,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/subqueries.py",
+    "tests/delete/tests.py",
+    "tests/model_fields/test_manytomanyfield.py",
+    "tests/model_fields/test_foreignkey.py",
+    "django/db/models/deletion.py",
+    "django/db/models/sql/compiler.py",
+    "django/db/migrations/operations/utils.py",
+    "tests/serializers/models/natural.py",
+    "django/db/models/__init__.py",
+    "tests/nested_foreign_keys/tests.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2191,
+      "results": [
+        {
+          "file": "django/db/models/sql/subqueries.py",
+          "score": 0.5515
+        },
+        {
+          "file": "tests/delete/tests.py",
+          "score": 0.5505
+        },
+        {
+          "file": "tests/model_fields/test_manytomanyfield.py",
+          "score": 0.4907
+        },
+        {
+          "file": "tests/model_fields/test_foreignkey.py",
+          "score": 0.483
+        },
+        {
+          "file": "django/db/models/deletion.py",
+          "score": 0.4824
+        },
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 0.4797
+        },
+        {
+          "file": "django/db/migrations/operations/utils.py",
+          "score": 0.4784
+        },
+        {
+          "file": "tests/serializers/models/natural.py",
+          "score": 0.472
+        },
+        {
+          "file": "django/db/models/__init__.py",
+          "score": 0.4703
+        },
+        {
+          "file": "tests/nested_foreign_keys/tests.py",
+          "score": 0.47
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.940121090003231,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/deletion.py",
+    "tests/delete/tests.py"
+  ]
+}

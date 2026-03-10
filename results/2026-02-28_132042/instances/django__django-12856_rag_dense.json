@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12856",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.865405588003341,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/validation/test_unique.py",
+    "django/db/backends/base/validation.py",
+    "tests/invalid_models_tests/test_relative_fields.py",
+    "tests/model_fields/test_booleanfield.py",
+    "tests/raw_query/models.py",
+    "tests/constraints/models.py",
+    "django/contrib/sites/managers.py",
+    "django/contrib/contenttypes/admin.py",
+    "tests/distinct_on_fields/tests.py",
+    "django/contrib/contenttypes/checks.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2191,
+      "results": [
+        {
+          "file": "tests/validation/test_unique.py",
+          "score": 0.6259
+        },
+        {
+          "file": "django/db/backends/base/validation.py",
+          "score": 0.6184
+        },
+        {
+          "file": "tests/invalid_models_tests/test_relative_fields.py",
+          "score": 0.5782
+        },
+        {
+          "file": "tests/model_fields/test_booleanfield.py",
+          "score": 0.5714
+        },
+        {
+          "file": "tests/raw_query/models.py",
+          "score": 0.5541
+        },
+        {
+          "file": "tests/constraints/models.py",
+          "score": 0.551
+        },
+        {
+          "file": "django/contrib/sites/managers.py",
+          "score": 0.5469
+        },
+        {
+          "file": "django/contrib/contenttypes/admin.py",
+          "score": 0.5459
+        },
+        {
+          "file": "tests/distinct_on_fields/tests.py",
+          "score": 0.5435
+        },
+        {
+          "file": "django/contrib/contenttypes/checks.py",
+          "score": 0.5379
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.865405588003341,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/base.py",
+    "tests/invalid_models_tests/test_models.py"
+  ]
+}

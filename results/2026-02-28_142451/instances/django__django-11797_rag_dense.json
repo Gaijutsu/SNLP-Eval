@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11797",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8373526240029605,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/auth_tests/models/with_foreign_key.py",
+    "django/contrib/auth/backends.py",
+    "tests/db_functions/text/test_substr.py",
+    "tests/auth_tests/models/custom_permissions.py",
+    "tests/m2m_through_regress/models.py",
+    "tests/select_related_onetoone/models.py",
+    "django/contrib/auth/migrations/0003_alter_user_email_max_length.py",
+    "tests/db_functions/text/test_length.py",
+    "tests/auth_tests/models/uuid_pk.py",
+    "django/contrib/auth/migrations/0010_alter_group_name_max_length.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2159,
+      "results": [
+        {
+          "file": "tests/auth_tests/models/with_foreign_key.py",
+          "score": 0.5451
+        },
+        {
+          "file": "django/contrib/auth/backends.py",
+          "score": 0.5446
+        },
+        {
+          "file": "tests/db_functions/text/test_substr.py",
+          "score": 0.5231
+        },
+        {
+          "file": "tests/auth_tests/models/custom_permissions.py",
+          "score": 0.5106
+        },
+        {
+          "file": "tests/m2m_through_regress/models.py",
+          "score": 0.5059
+        },
+        {
+          "file": "tests/select_related_onetoone/models.py",
+          "score": 0.4963
+        },
+        {
+          "file": "django/contrib/auth/migrations/0003_alter_user_email_max_length.py",
+          "score": 0.4919
+        },
+        {
+          "file": "tests/db_functions/text/test_length.py",
+          "score": 0.4897
+        },
+        {
+          "file": "tests/auth_tests/models/uuid_pk.py",
+          "score": 0.4876
+        },
+        {
+          "file": "django/contrib/auth/migrations/0010_alter_group_name_max_length.py",
+          "score": 0.4853
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8373526240029605,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/lookups.py",
+    "tests/lookup/tests.py"
+  ]
+}

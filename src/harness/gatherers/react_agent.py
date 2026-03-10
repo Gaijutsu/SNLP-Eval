@@ -73,7 +73,7 @@ def _tool_read_file(
     if target.is_dir():
         return (
             f"Error: '{path}' is a directory, not a file. "
-            f"Use list_dir(\"{path}\") to list its contents."
+            f"Use list_dir(\"{path}\") to list its contents."hf.co/unsloth
         )
     try:
         all_lines = target.read_text(encoding="utf-8", errors="replace").splitlines()
@@ -161,6 +161,8 @@ def _parse_action(text: str) -> tuple[str, list[str]]:
     if not raw_args:
         return tool_name, []
     args = [a.strip().strip("'\"") for a in raw_args.split(",")]
+    # Strip keyword-argument prefixes (e.g. "start_line=66" → "66")
+    args = [a.split("=", 1)[-1].strip().strip("'\"") if "=" in a else a for a in args]
     return tool_name, args
 
 

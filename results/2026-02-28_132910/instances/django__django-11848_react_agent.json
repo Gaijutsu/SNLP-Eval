@@ -1,0 +1,133 @@
+{
+  "instance_id": "django__django-11848",
+  "gatherer": "react_agent",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.6131471927654584,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 12663.0,
+    "latency_s": 8.743186027000775,
+    "ttft_s": 1.3089784510011668
+  },
+  "retrieved_documents": [
+    "django/utils/http.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are a code investigation agent. Your job is to find the files most relevant\nto a given issue/query in a code repository.\n\nYou have the following tools available:\n\n1. list_dir(path: str) -> str\n   List files and subdirectories in the given directory (relative to repo root).\n\n2. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str\n   Read lines of a file (relative to repo root). Returns lines in [start_line, end_line].\n   Each line is prefixed with its line number for reference.\n   Default: lines 1\u2013200. Use start_line/end_line to read deeper into large files.\n\n3. grep(pattern: str, path: str = \".\") -> str\n   Search for a regex pattern in files under the given path. Returns matching lines.\n\n4. search_codebase(query: str) -> str\n   Semantic search over all files in the repo. Returns the top-5 most relevant file paths.\n\n\nOn each turn, respond in EXACTLY this format:\nThought: <your reasoning about what to do next>\nAction: <tool_name>(arg1, arg2, ...)\n\nWhen you have found all relevant files, respond:\nThought: <summary of findings>\nAction: finish(file1.py, file2.py, ...)\n\nRules:\n- Always start with a Thought.\n- Call exactly ONE action per turn.\n- The finish action's arguments are the relevant file paths you found.\n- You have at most 15 steps. Use them wisely \u2014 don't repeat actions.\n- Do NOT output markdown, code blocks, or analysis \u2014 ONLY Thought + Action.\n\n/nothink\n"
+    },
+    {
+      "role": "user",
+      "content": "Find the files most relevant to this issue:\n\ndjango.utils.http.parse_http_date two digit year check is incorrect\nDescription\n\t \n\t\t(last modified by Ad Timmering)\n\t \nRFC 850 does not mention this, but in RFC 7231 (and there's something similar in RFC 2822), there's the following quote:\nRecipients of a timestamp value in rfc850-date format, which uses a\ntwo-digit year, MUST interpret a timestamp that appears to be more\nthan 50 years in the future as representing the most recent year in\nthe past that had the same last two digits.\nCurrent logic is hard coded to consider 0-69 to be in 2000-2069, and 70-99 to be 1970-1999, instead of comparing versus the current year.\n\n\nHints:\nAccepted, however I don't think your patch is correct. The check should be relative to the current year, if I read the RFC quote correctly.\nCreated a pull request: Created a pull request: \u200bhttps://github.com/django/django/pull/9214\nStill some suggested edits on the PR.\nI added regression test that fails with old code (test_parsing_rfc850_year_69), updated commit message to hopefully follow the guidelines, and added additional comments about the change. Squashed commits as well. Could you review the pull request again?\nsent new pull request\nThis is awaiting for changes from Tim's feedback on PR. (Please uncheck \"Patch needs improvement\" again when that's done. \ud83d\ude42)\nAs this issue hasn't received any updates in the last 8 months, may I work on this ticket?\nGo for it, I don't think I will have time to finish it.\nThanks, I'll pick up from where you left off in the PR and make the recommended changes on a new PR.\nTameesh Biswas Are you working on this ?\nYes, I am.\nI've just picked up from the previous PR and opened a new PR here: \u200bhttps://github.com/django/django/pull/10749 It adds regression tests in the first commit that pass without applying the fix and adds the fix with another test-case that only passes with the fix applied. Could you please review the changes?\nTameesh, I left a comment on the PR regarding the use of non-UTC today.\nAs an issue haven't received an update for 4 months, I'm taking it over (djangocon europe 2019 sprint day 1).\nCreated new PR: \u200bhttps://github.com/django/django/pull/11212\nI think an earlier comment by Simon Charette (about using a fixed year in the tests) still applies to the new PR; I've added it.\nTaking the liberty to reassign due to inactivity (6 months) and adding a pull request with revised code and addressing feedback on prior PRs. Please add give your comments for any concerns:) PR => \u200bhttps://github.com/django/django/pull/11848 Year is now checked in relation to current year, rolling over to the past if more than 50 years in the future Test now uses a patched version of datetime.datetime to pin to a specific year and have static test cases, addressing feedback from charettes@ on PR 10749 in Dec 2018."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The issue is related to the `django.utils.http.parse_http_date` function and its handling of two-digit years. I should search the codebase for files related to this function to find the relevant code.\nAction: search_codebase(\"django.utils.http.parse_http_date\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 1/15 \u2014 14 remaining]\n  django/middleware/http.py (score: 21.5904)\n  django/utils/http.py (score: 21.0203)\n  django/views/static.py (score: 19.5803)\n  tests/utils_tests/test_http.py (score: 18.4140)\n  django/utils/cache.py (score: 18.4113)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The highest scoring file is `django/utils/http.py`, which likely contains the `parse_http_date` function. I will examine this file to find the relevant code.\nAction: read_file(\"django/utils/http.py\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 2/15 \u2014 13 remaining]\n   1: import base64\n   2: import calendar\n   3: import datetime\n   4: import re\n   5: import unicodedata\n   6: import warnings\n   7: from binascii import Error as BinasciiError\n   8: from email.utils import formatdate\n   9: from urllib.parse import (\n  10:     ParseResult, SplitResult, _coerce_args, _splitnetloc, _splitparams, quote,\n  11:     quote_plus, scheme_chars, unquote, unquote_plus,\n  12:     urlencode as original_urlencode, uses_params,\n  13: )\n  14: \n  15: from django.core.exceptions import TooManyFieldsSent\n  16: from django.utils.datastructures import MultiValueDict\n  17: from django.utils.deprecation import RemovedInDjango40Warning\n  18: from django.utils.functional import keep_lazy_text\n  19: \n  20: # based on RFC 7232, Appendix C\n  21: ETAG_MATCH = re.compile(r'''\n  22:     \\A(      # start of string and capture group\n  23:     (?:W/)?  # optional weak indicator\n  24:     \"        # opening quote\n  25:     [^\"]*    # any sequence of non-quote characters\n  26:     \"        # end quote\n  27:     )\\Z      # end of string and capture group\n  28: ''', re.X)\n  29: \n  30: MONTHS = 'jan feb mar apr may jun jul aug sep oct nov dec'.split()\n  31: __D = r'(?P<day>\\d{2})'\n  32: __D2 = r'(?P<day>[ \\d]\\d)'\n  33: __M = r'(?P<mon>\\w{3})'\n  34: __Y = r'(?P<year>\\d{4})'\n  35: __Y2 = r'(?P<year>\\d{2})'\n  36: __T = r'(?P<hour>\\d{2}):(?P<min>\\d{2}):(?P<sec>\\d{2})'\n  37: RFC1123_DATE = re.compile(r'^\\w{3}, %s %s %s %s GMT$' % (__D, __M, __Y, __T))\n  38: RFC850_DATE = re.compile(r'^\\w{6,9}, %s-%s-%s %s GMT$' % (__D, __M, __Y2, __T))\n  39: ASCTIME_DATE = re.compile(r'^\\w{3} %s %s %s %s$' % (__M, __D2, __T, __Y))\n  40: \n  41: RFC3986_GENDELIMS = \":/?#[]@\"\n  42: RFC3986_SUBDELIMS = \"!$&'()*+,;=\"\n  43: \n  44: FIELDS_MATCH = re.compile('[&;]')\n  45: \n  46: \n  47: @keep_lazy_text\n  48: def urlquote(url, safe='/'):\n  49:     \"\"\"\n  50:     A legacy compatibility wrapper to Python's urllib.parse.quote() function.\n  51:     (was used for unicode handling on Python 2)\n  52:     \"\"\"\n  53:     warnings.warn(\n  54:         'django.utils.http.urlquote() is deprecated in favor of '\n  55:         'urllib.parse.quote().',\n  56:         RemovedInDjango40Warning, stacklevel=2,\n  57:     )\n  58:     return quote(url, safe)\n  59: \n  60: \n  61: @keep_lazy_text\n  62: def urlquote_plus(url, safe=''):\n  63:     \"\"\"\n  64:     A legacy compatibility wrapper to Python's urllib.parse.quote_plus()\n  65:     function. (was used for unicode handling on Python 2)\n  66:     \"\"\"\n  67:     warnings.warn(\n  68:         'django.utils.http.urlquote_plus() is deprecated in favor of '\n  69:         'urllib.parse.quote_plus(),',\n  70:         RemovedInDjango40Warning, stacklevel=2,\n  71:     )\n  72:     return quote_plus(url, safe)\n  73: \n  74: \n  75: @keep_lazy_text\n  76: def urlunquote(quoted_url):\n  77:     \"\"\"\n  78:     A legacy compatibility wrapper to Python's urllib.parse.unquote() function.\n  79:     (was used for unicode handling on Python 2)\n  80:     \"\"\"\n  81:     warnings.warn(\n  82:"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The file `django/utils/http.py` contains the `parse_http_date` function, but the code snippet provided does not show the implementation. I will read more lines of the file to locate the function.\nAction: read_file(\"django/utils/http.py\", start_line=100)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 3/15 \u2014 12 remaining]\n 100:     return unquote_plus(quoted_url)\n 101: \n 102: \n 103: def urlencode(query, doseq=False):\n 104:     \"\"\"\n 105:     A version of Python's urllib.parse.urlencode() function that can operate on\n 106:     MultiValueDict and non-string values.\n 107:     \"\"\"\n 108:     if isinstance(query, MultiValueDict):\n 109:         query = query.lists()\n 110:     elif hasattr(query, 'items'):\n 111:         query = query.items()\n 112:     query_params = []\n 113:     for key, value in query:\n 114:         if value is None:\n 115:             raise TypeError(\n 116:                 \"Cannot encode None for key '%s' in a query string. Did you \"\n 117:                 \"mean to pass an empty string or omit the value?\" % key\n 118:             )\n 119:         elif not doseq or isinstance(value, (str, bytes)):\n 120:             query_val = value\n 121:         else:\n 122:             try:\n 123:                 itr = iter(value)\n 124:             except TypeError:\n 125:                 query_val = value\n 126:             else:\n 127:                 # Consume generators and iterators, when doseq=True, to\n 128:                 # work around https://bugs.python.org/issue31706.\n 129:                 query_val = []\n 130:                 for item in itr:\n 131:                     if item is None:\n 132:                         raise TypeError(\n 133:                             \"Cannot encode None for key '%s' in a query \"\n 134:                             \"string. Did you mean to pass an empty string or \"\n 135:                             \"omit the value?\" % key\n 136:                         )\n 137:                     elif not isinstance(item, bytes):\n 138:                         item = str(item)\n 139:                     query_val.append(item)\n 140:         query_params.append((key, query_val))\n 141:     return original_urlencode(query_params, doseq)\n 142: \n 143: \n 144: def http_date(epoch_seconds=None):\n 145:     \"\"\"\n 146:     Format the time to match the RFC1123 date format as specified by HTTP\n 147:     RFC7231 section 7.1.1.1.\n 148: \n 149:     `epoch_seconds` is a floating point number expressed in seconds since the\n 150:     epoch, in UTC - such as that outputted by time.time(). If set to None, it\n 151:     defaults to the current time.\n 152: \n 153:     Output a string in the format 'Wdy, DD Mon YYYY HH:MM:SS GMT'.\n 154:     \"\"\"\n 155:     return formatdate(epoch_seconds, usegmt=True)\n 156: \n 157: \n 158: def parse_http_date(date):\n 159:     \"\"\"\n 160:     Parse a date format as specified by HTTP RFC7231 section 7.1.1.1.\n 161: \n 162:     The three formats allowed by the RFC are accepted, even if only the first\n 163:     one is still in widespread use.\n 164: \n 165:     Return an integer expressed in seconds since the epoch, in UTC.\n 166:     \"\"\"\n 167:     # email.utils.parsedate() does the job for RFC1123 dates; unfortunately\n 168:     # RFC7231 makes it mandatory to support RFC850 dates too. So we roll\n 169:     # our own RFC-compliant parsing.\n 170:     for regex in RFC1123_"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `parse_http_date` function is defined in `django/utils/http.py` starting at line 158. I will read more lines of the file to examine the implementation of this function.\nAction: read_file(\"django/utils/http.py\", start_line=170)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 4/15 \u2014 11 remaining]\n 170:     for regex in RFC1123_DATE, RFC850_DATE, ASCTIME_DATE:\n 171:         m = regex.match(date)\n 172:         if m is not None:\n 173:             break\n 174:     else:\n 175:         raise ValueError(\"%r is not in a valid HTTP date format\" % date)\n 176:     try:\n 177:         year = int(m.group('year'))\n 178:         if year < 100:\n 179:             if year < 70:\n 180:                 year += 2000\n 181:             else:\n 182:                 year += 1900\n 183:         month = MONTHS.index(m.group('mon').lower()) + 1\n 184:         day = int(m.group('day'))\n 185:         hour = int(m.group('hour'))\n 186:         min = int(m.group('min'))\n 187:         sec = int(m.group('sec'))\n 188:         result = datetime.datetime(year, month, day, hour, min, sec)\n 189:         return calendar.timegm(result.utctimetuple())\n 190:     except Exception as exc:\n 191:         raise ValueError(\"%r is not a valid date\" % date) from exc\n 192: \n 193: \n 194: def parse_http_date_safe(date):\n 195:     \"\"\"\n 196:     Same as parse_http_date, but return None if the input is invalid.\n 197:     \"\"\"\n 198:     try:\n 199:         return parse_http_date(date)\n 200:     except Exception:\n 201:         pass\n 202: \n 203: \n 204: # Base 36 functions: useful for generating compact URLs\n 205: \n 206: def base36_to_int(s):\n 207:     \"\"\"\n 208:     Convert a base 36 string to an int. Raise ValueError if the input won't fit\n 209:     into an int.\n 210:     \"\"\"\n 211:     # To prevent overconsumption of server resources, reject any\n 212:     # base36 string that is longer than 13 base36 digits (13 digits\n 213:     # is sufficient to base36-encode any 64-bit integer)\n 214:     if len(s) > 13:\n 215:         raise ValueError(\"Base36 input too large\")\n 216:     return int(s, 36)\n 217: \n 218: \n 219: def int_to_base36(i):\n 220:     \"\"\"Convert an integer to a base36 string.\"\"\"\n 221:     char_set = '0123456789abcdefghijklmnopqrstuvwxyz'\n 222:     if i < 0:\n 223:         raise ValueError(\"Negative base36 conversion input.\")\n 224:     if i < 36:\n 225:         return char_set[i]\n 226:     b36 = ''\n 227:     while i != 0:\n 228:         i, n = divmod(i, 36)\n 229:         b36 = char_set[n] + b36\n 230:     return b36\n 231: \n 232: \n 233: def urlsafe_base64_encode(s):\n 234:     \"\"\"\n 235:     Encode a bytestring to a base64 string for use in URLs. Strip any trailing\n 236:     equal signs.\n 237:     \"\"\"\n 238:     return base64.urlsafe_b64encode(s).rstrip(b'\\n=').decode('ascii')\n 239: \n 240: \n 241: def urlsafe_base64_decode(s):\n 242:     \"\"\"\n 243:     Decode a base64 encoded string. Add back any trailing equal signs that\n 244:     might have been stripped.\n 245:     \"\"\"\n 246:     s = s.encode()\n 247:     try:\n 248:         return base64.urlsafe_b64decode(s.ljust(len(s) + len(s) % 4, b'='))\n 249:     except (LookupError, BinasciiError) as e:\n 250:         raise ValueError(e)\n 251: \n 252: \n 253: def parse_etags(etag_str):\n 254:     \"\"\"\n 255:     Parse a string of ETags given in an If-None-Match or If-Match header "
+    }
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "thought": "Thought: The issue is related to the `django.utils.http.parse_http_date` function and its handling of two-digit years. I should search the codebase for files related to this function to find the relevant code.",
+      "action": "search_codebase",
+      "args": [
+        "django.utils.http.parse_http_date"
+      ],
+      "tokens": 1146,
+      "observation": "  django/middleware/http.py (score: 21.5904)\n  django/utils/http.py (score: 21.0203)\n  django/views/static.py (score: 19.5803)\n  tests/utils_tests/test_http.py (score: 18.4140)\n  django/utils/cache.py (score: 18.4113)"
+    },
+    {
+      "step": 2,
+      "thought": "Thought: The highest scoring file is `django/utils/http.py`, which likely contains the `parse_http_date` function. I will examine this file to find the relevant code.",
+      "action": "read_file",
+      "args": [
+        "django/utils/http.py"
+      ],
+      "tokens": 1305,
+      "observation": "   1: import base64\n   2: import calendar\n   3: import datetime\n   4: import re\n   5: import unicodedata\n   6: import warnings\n   7: from binascii import Error as BinasciiError\n   8: from email.utils import formatdate\n   9: from urllib.parse import (\n  10:     ParseResult, SplitResult, _coerce_args, _splitnetloc, _splitparams, quote,\n  11:     quote_plus, scheme_chars, unquote, unquote_plus,\n  12:     urlencode as original_urlencode, uses_params,\n  13: )\n  14: \n  15: from django.core.exceptions "
+    },
+    {
+      "step": 3,
+      "thought": "Thought: The file `django/utils/http.py` contains the `parse_http_date` function, but the code snippet provided does not show the implementation. I will read more lines of the file to locate the function.",
+      "action": "read_file",
+      "args": [
+        "django/utils/http.py",
+        "100"
+      ],
+      "tokens": 2557,
+      "observation": " 100:     return unquote_plus(quoted_url)\n 101: \n 102: \n 103: def urlencode(query, doseq=False):\n 104:     \"\"\"\n 105:     A version of Python's urllib.parse.urlencode() function that can operate on\n 106:     MultiValueDict and non-string values.\n 107:     \"\"\"\n 108:     if isinstance(query, MultiValueDict):\n 109:         query = query.lists()\n 110:     elif hasattr(query, 'items'):\n 111:         query = query.items()\n 112:     query_params = []\n 113:     for key, value in query:\n 114:         if v"
+    },
+    {
+      "step": 4,
+      "thought": "Thought: The `parse_http_date` function is defined in `django/utils/http.py` starting at line 158. I will read more lines of the file to examine the implementation of this function.",
+      "action": "read_file",
+      "args": [
+        "django/utils/http.py",
+        "170"
+      ],
+      "tokens": 3579,
+      "observation": " 170:     for regex in RFC1123_DATE, RFC850_DATE, ASCTIME_DATE:\n 171:         m = regex.match(date)\n 172:         if m is not None:\n 173:             break\n 174:     else:\n 175:         raise ValueError(\"%r is not in a valid HTTP date format\" % date)\n 176:     try:\n 177:         year = int(m.group('year'))\n 178:         if year < 100:\n 179:             if year < 70:\n 180:                 year += 2000\n 181:             else:\n 182:                 year += 1900\n 183:         month = MONTHS.index(m."
+    },
+    {
+      "step": 5,
+      "thought": "Thought: The `parse_http_date` function in `django/utils/http.py` handles the parsing of HTTP dates. It includes logic for interpreting two-digit years by adding 1900 or 2000 based on the value. This is the relevant code for the issue.",
+      "action": "finish",
+      "args": [
+        "django/utils/http.py"
+      ],
+      "tokens": 4076
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 12663,
+  "latency_s": 8.743186027000775,
+  "ttft_s": 1.3089784510011668,
+  "gold_context": [
+    "django/utils/http.py",
+    "tests/utils_tests/test_http.py"
+  ]
+}

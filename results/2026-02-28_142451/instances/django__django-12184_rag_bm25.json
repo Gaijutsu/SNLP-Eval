@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12184",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6406017150002299,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/core/handlers/base.py",
+    "django/test/client.py",
+    "tests/view_tests/tests/test_debug.py",
+    "django/utils/decorators.py",
+    "tests/urlpatterns_reverse/tests.py",
+    "django/views/debug.py",
+    "django/template/base.py",
+    "django/contrib/staticfiles/handlers.py",
+    "django/test/testcases.py",
+    "django/core/handlers/asgi.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2167,
+      "results": [
+        {
+          "file": "django/core/handlers/base.py",
+          "score": 180.0085
+        },
+        {
+          "file": "django/test/client.py",
+          "score": 151.7949
+        },
+        {
+          "file": "tests/view_tests/tests/test_debug.py",
+          "score": 145.7061
+        },
+        {
+          "file": "django/utils/decorators.py",
+          "score": 142.1268
+        },
+        {
+          "file": "tests/urlpatterns_reverse/tests.py",
+          "score": 141.1873
+        },
+        {
+          "file": "django/views/debug.py",
+          "score": 140.1668
+        },
+        {
+          "file": "django/template/base.py",
+          "score": 134.6375
+        },
+        {
+          "file": "django/contrib/staticfiles/handlers.py",
+          "score": 133.2238
+        },
+        {
+          "file": "django/test/testcases.py",
+          "score": 133.0305
+        },
+        {
+          "file": "django/core/handlers/asgi.py",
+          "score": 130.6619
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6406017150002299,
+  "ttft_s": null,
+  "gold_context": [
+    "django/urls/resolvers.py",
+    "tests/urlpatterns/path_urls.py",
+    "tests/urlpatterns/tests.py"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-13220",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.23719771276929622,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.23719771276929622,
+    "mrr": 0.2,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.733115891001944,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/forms/models.py",
+    "django/forms/fields.py",
+    "django/forms/formsets.py",
+    "django/db/models/fields/__init__.py",
+    "django/core/exceptions.py",
+    "django/db/models/base.py",
+    "django/forms/forms.py",
+    "django/db/backends/base/base.py",
+    "django/test/testcases.py",
+    "django/core/checks/model_checks.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2202,
+      "results": [
+        {
+          "file": "django/forms/models.py",
+          "score": 209.0395
+        },
+        {
+          "file": "django/forms/fields.py",
+          "score": 207.4561
+        },
+        {
+          "file": "django/forms/formsets.py",
+          "score": 204.9854
+        },
+        {
+          "file": "django/db/models/fields/__init__.py",
+          "score": 204.5248
+        },
+        {
+          "file": "django/core/exceptions.py",
+          "score": 203.9514
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 194.1391
+        },
+        {
+          "file": "django/forms/forms.py",
+          "score": 190.4169
+        },
+        {
+          "file": "django/db/backends/base/base.py",
+          "score": 182.517
+        },
+        {
+          "file": "django/test/testcases.py",
+          "score": 178.8418
+        },
+        {
+          "file": "django/core/checks/model_checks.py",
+          "score": 178.7739
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.733115891001944,
+  "ttft_s": null,
+  "gold_context": [
+    "django/core/exceptions.py",
+    "tests/test_exceptions/test_validation_error.py"
+  ]
+}

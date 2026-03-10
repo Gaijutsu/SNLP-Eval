@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-12113",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6803013320022728,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/test_runner/tests.py",
+    "tests/backends/sqlite/tests.py",
+    "tests/admin_scripts/tests.py",
+    "tests/test_sqlite.py",
+    "tests/runtests.py",
+    "django/db/backends/base/base.py",
+    "django/db/migrations/questioner.py",
+    "django/test/testcases.py",
+    "django/test/runner.py",
+    "django/db/utils.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2167,
+      "results": [
+        {
+          "file": "tests/test_runner/tests.py",
+          "score": 856.975
+        },
+        {
+          "file": "tests/backends/sqlite/tests.py",
+          "score": 781.5994
+        },
+        {
+          "file": "tests/admin_scripts/tests.py",
+          "score": 734.1171
+        },
+        {
+          "file": "tests/test_sqlite.py",
+          "score": 725.8248
+        },
+        {
+          "file": "tests/runtests.py",
+          "score": 710.9896
+        },
+        {
+          "file": "django/db/backends/base/base.py",
+          "score": 675.8852
+        },
+        {
+          "file": "django/db/migrations/questioner.py",
+          "score": 658.1835
+        },
+        {
+          "file": "django/test/testcases.py",
+          "score": 647.7095
+        },
+        {
+          "file": "django/test/runner.py",
+          "score": 646.7806
+        },
+        {
+          "file": "django/db/utils.py",
+          "score": 642.5592
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6803013320022728,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/backends/sqlite3/creation.py",
+    "tests/backends/sqlite/test_creation.py"
+  ]
+}

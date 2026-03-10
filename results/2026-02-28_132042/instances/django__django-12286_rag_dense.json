@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12286",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 0.9197207891481876,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 0.9197207891481876,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.9197207891481876,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8860308860021178,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/core/checks/translation.py",
+    "django/utils/translation/__init__.py",
+    "tests/check_framework/test_translation.py",
+    "tests/template_tests/syntax_tests/i18n/test_get_language_info.py",
+    "tests/template_tests/syntax_tests/i18n/test_get_language_info_list.py",
+    "tests/template_tests/syntax_tests/i18n/test_get_available_languages.py",
+    "tests/i18n/test_percents.py",
+    "tests/i18n/sampleproject/update_catalogs.py",
+    "tests/template_tests/syntax_tests/i18n/test_filters.py",
+    "tests/template_tests/syntax_tests/i18n/test_underscore_syntax.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2171,
+      "results": [
+        {
+          "file": "django/core/checks/translation.py",
+          "score": 0.6995
+        },
+        {
+          "file": "django/utils/translation/__init__.py",
+          "score": 0.6527
+        },
+        {
+          "file": "tests/check_framework/test_translation.py",
+          "score": 0.6469
+        },
+        {
+          "file": "tests/template_tests/syntax_tests/i18n/test_get_language_info.py",
+          "score": 0.6176
+        },
+        {
+          "file": "tests/template_tests/syntax_tests/i18n/test_get_language_info_list.py",
+          "score": 0.6167
+        },
+        {
+          "file": "tests/template_tests/syntax_tests/i18n/test_get_available_languages.py",
+          "score": 0.6093
+        },
+        {
+          "file": "tests/i18n/test_percents.py",
+          "score": 0.5985
+        },
+        {
+          "file": "tests/i18n/sampleproject/update_catalogs.py",
+          "score": 0.5913
+        },
+        {
+          "file": "tests/template_tests/syntax_tests/i18n/test_filters.py",
+          "score": 0.5834
+        },
+        {
+          "file": "tests/template_tests/syntax_tests/i18n/test_underscore_syntax.py",
+          "score": 0.5796
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8860308860021178,
+  "ttft_s": null,
+  "gold_context": [
+    "django/core/checks/translation.py",
+    "tests/check_framework/test_translation.py"
+  ]
+}

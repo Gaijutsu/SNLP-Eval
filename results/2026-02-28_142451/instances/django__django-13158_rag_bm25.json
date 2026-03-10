@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-13158",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6617857160017593,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/model_forms/tests.py",
+    "tests/many_to_many/tests.py",
+    "tests/model_forms/test_modelchoicefield.py",
+    "tests/basic/tests.py",
+    "django/forms/models.py",
+    "tests/queries/tests.py",
+    "django/contrib/auth/models.py",
+    "tests/forms_tests/tests/tests.py",
+    "tests/many_to_one/tests.py",
+    "django/db/models/query.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2200,
+      "results": [
+        {
+          "file": "tests/model_forms/tests.py",
+          "score": 294.2476
+        },
+        {
+          "file": "tests/many_to_many/tests.py",
+          "score": 254.7965
+        },
+        {
+          "file": "tests/model_forms/test_modelchoicefield.py",
+          "score": 238.4526
+        },
+        {
+          "file": "tests/basic/tests.py",
+          "score": 229.4651
+        },
+        {
+          "file": "django/forms/models.py",
+          "score": 225.6897
+        },
+        {
+          "file": "tests/queries/tests.py",
+          "score": 218.6507
+        },
+        {
+          "file": "django/contrib/auth/models.py",
+          "score": 212.1613
+        },
+        {
+          "file": "tests/forms_tests/tests/tests.py",
+          "score": 211.9833
+        },
+        {
+          "file": "tests/many_to_one/tests.py",
+          "score": 209.2905
+        },
+        {
+          "file": "django/db/models/query.py",
+          "score": 208.3417
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6617857160017593,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/query.py",
+    "tests/queries/test_qs_combinators.py"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "instance_id": "django__django-12184",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.14126697285982898,
+    "mrr": 0.1111111111111111,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.856481351002003,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/check_framework/urls/bad_error_handlers_invalid_path.py",
+    "tests/logging_tests/urls.py",
+    "tests/urlpatterns_reverse/urls_without_handlers.py",
+    "tests/middleware_exceptions/urls.py",
+    "django/conf/urls/__init__.py",
+    "tests/test_client_regress/views.py",
+    "tests/urlpatterns_reverse/views_broken.py",
+    "tests/generic_views/test_base.py",
+    "django/urls/resolvers.py",
+    "django/views/debug.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2167,
+      "results": [
+        {
+          "file": "tests/check_framework/urls/bad_error_handlers_invalid_path.py",
+          "score": 0.7411
+        },
+        {
+          "file": "tests/logging_tests/urls.py",
+          "score": 0.7073
+        },
+        {
+          "file": "tests/urlpatterns_reverse/urls_without_handlers.py",
+          "score": 0.704
+        },
+        {
+          "file": "tests/middleware_exceptions/urls.py",
+          "score": 0.6779
+        },
+        {
+          "file": "django/conf/urls/__init__.py",
+          "score": 0.6736
+        },
+        {
+          "file": "tests/test_client_regress/views.py",
+          "score": 0.6558
+        },
+        {
+          "file": "tests/urlpatterns_reverse/views_broken.py",
+          "score": 0.6471
+        },
+        {
+          "file": "tests/generic_views/test_base.py",
+          "score": 0.6461
+        },
+        {
+          "file": "django/urls/resolvers.py",
+          "score": 0.6444
+        },
+        {
+          "file": "django/views/debug.py",
+          "score": 0.6432
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.856481351002003,
+  "ttft_s": null,
+  "gold_context": [
+    "django/urls/resolvers.py",
+    "tests/urlpatterns/path_urls.py",
+    "tests/urlpatterns/tests.py"
+  ]
+}

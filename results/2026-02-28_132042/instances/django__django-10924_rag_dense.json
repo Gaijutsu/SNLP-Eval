@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-10924",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8463678190018982,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/utils/_os.py",
+    "tests/forms_tests/field_tests/test_filepathfield.py",
+    "tests/file_storage/models.py",
+    "django/contrib/staticfiles/utils.py",
+    "tests/file_storage/test_generate_filename.py",
+    "django/contrib/staticfiles/management/commands/collectstatic.py",
+    "tests/staticfiles_tests/settings.py",
+    "django/core/files/move.py",
+    "tests/i18n/test_management.py",
+    "tests/file_storage/tests.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2128,
+      "results": [
+        {
+          "file": "django/utils/_os.py",
+          "score": 0.623
+        },
+        {
+          "file": "tests/forms_tests/field_tests/test_filepathfield.py",
+          "score": 0.6136
+        },
+        {
+          "file": "tests/file_storage/models.py",
+          "score": 0.5675
+        },
+        {
+          "file": "django/contrib/staticfiles/utils.py",
+          "score": 0.5632
+        },
+        {
+          "file": "tests/file_storage/test_generate_filename.py",
+          "score": 0.5469
+        },
+        {
+          "file": "django/contrib/staticfiles/management/commands/collectstatic.py",
+          "score": 0.5424
+        },
+        {
+          "file": "tests/staticfiles_tests/settings.py",
+          "score": 0.5421
+        },
+        {
+          "file": "django/core/files/move.py",
+          "score": 0.5307
+        },
+        {
+          "file": "tests/i18n/test_management.py",
+          "score": 0.5269
+        },
+        {
+          "file": "tests/file_storage/tests.py",
+          "score": 0.5261
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8463678190018982,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/__init__.py",
+    "tests/model_fields/test_filepathfield.py"
+  ]
+}
