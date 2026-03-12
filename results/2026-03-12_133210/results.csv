@@ -1,0 +1,6 @@
+applied,fail_to_pass,gatherer,instance_id,latency_s,mrr,ndcg@1,ndcg@10,ndcg@3,ndcg@5,pass_to_pass,precision@1,precision@10,precision@3,precision@5,recall@1,recall@10,recall@3,recall@5,tests_passed,token_usage,ttft_s
+False,0,agentic_bm25,astropy__astropy-12907,58.3589182079304,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,False,26382.0,9.96209316700697
+False,0,agentic_bm25,astropy__astropy-14182,53.06321220798418,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,False,31310.0,4.19387454201933
+False,0,agentic_bm25,astropy__astropy-14365,44.91073425009381,1.0,1.0,0.6131471927654584,0.6131471927654584,0.6131471927654584,0,1.0,0.1,0.3333333333333333,0.2,0.5,0.5,0.5,0.5,False,32187.0,5.559257333050482
+False,0,agentic_bm25,astropy__astropy-14995,45.26411545800511,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,False,36987.0,6.492763416026719
+False,0,agentic_bm25,astropy__astropy-6938,50.12776720896363,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,False,24872.0,3.942256666952744

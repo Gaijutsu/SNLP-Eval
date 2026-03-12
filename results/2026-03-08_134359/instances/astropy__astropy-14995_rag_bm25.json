@@ -1,0 +1,97 @@
+{
+  "instance_id": "astropy__astropy-14995",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 0.8503449055347546,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.8503449055347546,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7438617500010878,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/nddata/mixins/ndarithmetic.py",
+    "astropy/nddata/bitmask.py",
+    "astropy/nddata/ccddata.py",
+    "astropy/convolution/convolve.py",
+    "astropy/nddata/mixins/tests/test_ndarithmetic.py",
+    "astropy/table/column.py",
+    "astropy/table/table.py",
+    "astropy/nddata/nddata.py",
+    "astropy/nddata/tests/test_nddata.py",
+    "astropy/nddata/nduncertainty.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 861,
+      "results": [
+        {
+          "file": "astropy/nddata/mixins/ndarithmetic.py",
+          "score": 1389.5388
+        },
+        {
+          "file": "astropy/nddata/bitmask.py",
+          "score": 1165.2448
+        },
+        {
+          "file": "astropy/nddata/ccddata.py",
+          "score": 1052.7393
+        },
+        {
+          "file": "astropy/convolution/convolve.py",
+          "score": 1046.8345
+        },
+        {
+          "file": "astropy/nddata/mixins/tests/test_ndarithmetic.py",
+          "score": 1027.0622
+        },
+        {
+          "file": "astropy/table/column.py",
+          "score": 1015.5481
+        },
+        {
+          "file": "astropy/table/table.py",
+          "score": 1001.6383
+        },
+        {
+          "file": "astropy/nddata/nddata.py",
+          "score": 989.0756
+        },
+        {
+          "file": "astropy/nddata/tests/test_nddata.py",
+          "score": 981.3639
+        },
+        {
+          "file": "astropy/nddata/nduncertainty.py",
+          "score": 951.8959
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7438617500010878,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/nddata/mixins/ndarithmetic.py",
+    "astropy/nddata/mixins/tests/test_ndarithmetic.py"
+  ]
+}

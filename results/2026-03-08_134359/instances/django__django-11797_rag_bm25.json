@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-11797",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.1045324580045417,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/query.py",
+    "django/db/models/sql/compiler.py",
+    "django/db/models/query.py",
+    "tests/queries/tests.py",
+    "django/db/backends/base/features.py",
+    "tests/aggregation_regress/tests.py",
+    "tests/gis_tests/relatedapp/tests.py",
+    "django/db/backends/oracle/operations.py",
+    "tests/raw_query/tests.py",
+    "django/contrib/auth/models.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2159,
+      "results": [
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 674.313
+        },
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 596.5889
+        },
+        {
+          "file": "django/db/models/query.py",
+          "score": 584.1697
+        },
+        {
+          "file": "tests/queries/tests.py",
+          "score": 572.0517
+        },
+        {
+          "file": "django/db/backends/base/features.py",
+          "score": 570.5573
+        },
+        {
+          "file": "tests/aggregation_regress/tests.py",
+          "score": 570.0796
+        },
+        {
+          "file": "tests/gis_tests/relatedapp/tests.py",
+          "score": 515.5174
+        },
+        {
+          "file": "django/db/backends/oracle/operations.py",
+          "score": 510.3755
+        },
+        {
+          "file": "tests/raw_query/tests.py",
+          "score": 509.265
+        },
+        {
+          "file": "django/contrib/auth/models.py",
+          "score": 507.9629
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.1045324580045417,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/lookups.py",
+    "tests/lookup/tests.py"
+  ]
+}

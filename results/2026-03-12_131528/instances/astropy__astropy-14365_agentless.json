@@ -1,0 +1,163 @@
+{
+  "instance_id": "astropy__astropy-14365",
+  "gatherer": "agentless",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 0.9197207891481876,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 0.9197207891481876,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.9197207891481876,
+    "mrr": 1.0,
+    "edit_similarity": 0.19490586932447398,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 6908.0,
+    "latency_s": 47.95230479200836,
+    "ttft_s": 7.972920874948613
+  },
+  "retrieved_documents": [
+    "astropy/io/ascii/qdp.py",
+    "astropy/io/ascii/__init__.py",
+    "astropy/io/ascii/tests/test_qdp.py",
+    "astropy/io/ascii/ascii.py",
+    "astropy/io/ascii/ascii_utils.py",
+    "astropy/io/ascii/ascii_table.py",
+    "astropy/io/ascii/ascii_core.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are an expert code analyst."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer performing fault localization on a code repository.\n\n## Issue\nascii.qdp Table format assumes QDP commands are upper case\n### Description\n\nascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be \"READ SERR 1 2\" whereas QDP itself is not case sensitive and case use \"read serr 1 2\". \r\n\r\nAs many QDP files are created by hand, the expectation that all commands be all-caps should be removed.\n\n### Expected behavior\n\nThe following qdp file should read into a `Table` with errors, rather than crashing.\r\n```\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n```\n\n### How to Reproduce\n\nCreate a QDP file:\r\n```\r\n> cat > test.qdp\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n<EOF>\r\n\r\n > python\r\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from astropy.table import Table\r\n>>> Table.read('test.qdp',format='ascii.qdp')\r\nWARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]\r\nTraceback (most recent call last):\r\n...\r\n    raise ValueError(f'Unrecognized QDP line: {line}')\r\nValueError: Unrecognized QDP line: read serr 1 2\r\n```\r\n\r\nRunning \"qdp test.qdp\" works just fine.\r\n\n\n### Versions\n\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nastropy 5.1\r\nNumpy 1.24.1\r\npyerfa 2.0.0.1\r\nScipy 1.10.0\r\nMatplotlib 3.6.3\r\n\n\n\nHints:\nWelcome to Astropy \ud83d\udc4b and thank you for your first issue!\n\nA project member will respond to you as soon as possible; in the meantime, please double-check the [guidelines for submitting issues](https://github.com/astropy/astropy/blob/main/CONTRIBUTING.md#reporting-issues) and make sure you've provided the requested details.\n\nGitHub issues in the Astropy repository are used to track bug reports and feature requests; If your issue poses a question about how to use Astropy, please instead raise your question in the [Astropy Discourse user forum](https://community.openastronomy.org/c/astropy/8) and close this issue.\n\nIf you feel that this issue has not been responded to in a timely manner, please send a message directly to the [development mailing list](http://groups.google.com/group/astropy-dev).  If the issue is urgent or sensitive in nature (e.g., a security vulnerability) please send an e-mail directly to the private e-mail feedback@astropy.org.\nHuh, so we do have this format... https://docs.astropy.org/en/stable/io/ascii/index.html\r\n\r\n@taldcroft , you know anything about this?\nThis is the format I'm using, which has the issue: https://docs.astropy.org/en/stable/api/astropy.io.ascii.QDP.html\r\n\nThe issue is that the regex that searches for QDP commands is not case insensitive. \r\n\r\nThis attached patch fixes the issue, but I'm sure there's a better way of doing it.\r\n\r\n[qdp.patch](https://github.com/astropy/astropy/files/10667923/qdp.patch)\r\n\n@jak574 - the fix is probably as simple as that. Would you like to put in a bugfix PR?\n\n## Repository Files\n\n\n## Task\nIdentify which files are most relevant to this issue. Reason step by step:\n\n1. Extract key identifiers from the issue: function/class names, error messages,\n   feature keywords, and module names that appear in the issue description.\n2. Match those identifiers against the file listing using path names and directory\n   structure (e.g. an auth bug likely lives under `auth/` or `login`).\n3. Consider indirect relevance: configuration files, shared utilities, and test\n   files that the primary file depends on or exercises.\n\nRespond with a JSON array of up to 10 file paths, ranked by relevance\n(most relevant first). Output ONLY the JSON array, with no surrounding text.\n\nExample: [\"src/auth/login.py\", \"tests/test_auth.py\", \"src/models/user.py\"]\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n[\"astropy/io/ascii/qdp.py\", \"astropy/io/ascii/__init__.py\", \"astropy/io/ascii/tests/test_qdp.py\", \"astropy/io/ascii/ascii.py\", \"astropy/io/ascii/ascii_utils.py\", \"astropy/io/ascii/ascii_table.py\", \"astropy/io/ascii/ascii_core.py\", \"astropy/io/ascii/ascii_utils.py\", \"astropy/io/ascii/ascii_table.py\", \"astropy/io/ascii/ascii_core.py\"]"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert code analyst."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Given the issue and the retrieved file\ncontents below, identify the precise code regions that need to be modified\nto fix this issue.\n\n## Issue\nascii.qdp Table format assumes QDP commands are upper case\n### Description\n\nascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be \"READ SERR 1 2\" whereas QDP itself is not case sensitive and case use \"read serr 1 2\". \r\n\r\nAs many QDP files are created by hand, the expectation that all commands be all-caps should be removed.\n\n### Expected behavior\n\nThe following qdp file should read into a `Table` with errors, rather than crashing.\r\n```\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n```\n\n### How to Reproduce\n\nCreate a QDP file:\r\n```\r\n> cat > test.qdp\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n<EOF>\r\n\r\n > python\r\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from astropy.table import Table\r\n>>> Table.read('test.qdp',format='ascii.qdp')\r\nWARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]\r\nTraceback (most recent call last):\r\n...\r\n    raise ValueError(f'Unrecognized QDP line: {line}')\r\nValueError: Unrecognized QDP line: read serr 1 2\r\n```\r\n\r\nRunning \"qdp test.qdp\" works just fine.\r\n\n\n### Versions\n\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nastropy 5.1\r\nNumpy 1.24.1\r\npyerfa 2.0.0.1\r\nScipy 1.10.0\r\nMatplotlib 3.6.3\r\n\n\n\nHints:\nWelcome to Astropy \ud83d\udc4b and thank you for your first issue!\n\nA project member will respond to you as soon as possible; in the meantime, please double-check the [guidelines for submitting issues](https://github.com/astropy/astropy/blob/main/CONTRIBUTING.md#reporting-issues) and make sure you've provided the requested details.\n\nGitHub issues in the Astropy repository are used to track bug reports and feature requests; If your issue poses a question about how to use Astropy, please instead raise your question in the [Astropy Discourse user forum](https://community.openastronomy.org/c/astropy/8) and close this issue.\n\nIf you feel that this issue has n\n\n## File Contents\n\n\n## Task\nFor each file that requires changes, pinpoint the exact code region:\n- The function, method, or class name involved\n- An approximate line range (e.g. \"42-78\")\n- A brief reason explaining why this region is responsible for the issue\n\nRespond with a JSON array. Each element must have:\n- \"file\": the file path\n- \"symbol\": the function, method, or class name (use \"module-level\" for top-level code)\n- \"line_range\": approximate line range as a string, e.g. \"42-78\"\n- \"reason\": one sentence explaining why this region needs to change\n\nOutput ONLY the JSON array, with no surrounding text.\n\nExample: [{\"file\": \"src/auth.py\", \"symbol\": \"login\", \"line_range\": \"42-65\", \"reason\": \"Credential comparison is case-sensitive when it should be case-insensitive.\"}]\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n[{\"file\": \"astropy/io/ascii/qdp.py\", \"symbol\": \"read_qdp\", \"line_range\": \"42-78\", \"reason\": \"The code checks for uppercase QDP commands, which should be modified to handle case-insensitive commands as QDP is not case sensitive.\"}]"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nascii.qdp Table format assumes QDP commands are upper case\n### Description\n\nascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be \"READ SERR 1 2\" whereas QDP itself is not case sensitive and case use \"read serr 1 2\". \r\n\r\nAs many QDP files are created by hand, the expectation that all commands be all-caps should be removed.\n\n### Expected behavior\n\nThe following qdp file should read into a `Table` with errors, rather than crashing.\r\n```\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n```\n\n### How to Reproduce\n\nCreate a QDP file:\r\n```\r\n> cat > test.qdp\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n<EOF>\r\n\r\n > python\r\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from astropy.table import Table\r\n>>> Table.read('test.qdp',format='ascii.qdp')\r\nWARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]\r\nTraceback (most recent call last):\r\n...\r\n    raise ValueError(f'Unrecognized QDP line: {line}')\r\nValueError: Unrecognized QDP line: read serr 1 2\r\n```\r\n\r\nRunning \"qdp test.qdp\" works just fine.\r\n\n\n### Versions\n\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nastropy 5.1\r\nNumpy 1.24.1\r\npyerfa 2.0.0.1\r\nScipy 1.10.0\r\nMatplotlib 3.6.3\r\n\n\n\nHints:\nWelcome to Astropy \ud83d\udc4b and thank you for your first issue!\n\nA project member will respond to you as soon as possible; in the meantime, please double-check the [guidelines for submitting issues](https://github.com/astropy/astropy/blob/main/CONTRIBUTING.md#reporting-issues) and make sure you've provided the requested details.\n\nGitHub issues in the Astropy repository are used to track bug reports and feature requests; If your issue poses a question about how to use Astropy, please instead raise your question in the [Astropy Discourse user forum](https://community.openastronomy.org/c/astropy/8) and close this issue.\n\nIf you feel that this issue has n\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py\n--- a/astropy/io/ascii/qdp.py\n+++ b/astropy/io/ascii/qdp.py\n@@ -124,7 +124,7 @@ class QDPReader(ascii.BaseReader):\n         self._lines = lines\n         self._line_index = 0\n         self._current_line = None\n-        self._command = None\n+        self._command = None\n         self._data = []\n         self._table = None\n         self._table_id = None\n@@ -159,7 +159,7 @@ class QDPReader(ascii.BaseReader):\n         self._line_index += 1\n         self._current_line = self._lines[self._line_index]\n         if self._current_line.strip().startswith('#'):\n-            self._command = self._current_line.strip().split()[0].upper()\n+            self._command = self._current_line.strip().split()[0].lower()\n         else:\n             self._command = None\n         return self._current_line\n```"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nascii.qdp Table format assumes QDP commands are upper case\n### Description\n\nascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be \"READ SERR 1 2\" whereas QDP itself is not case sensitive and case use \"read serr 1 2\". \r\n\r\nAs many QDP files are created by hand, the expectation that all commands be all-caps should be removed.\n\n### Expected behavior\n\nThe following qdp file should read into a `Table` with errors, rather than crashing.\r\n```\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n```\n\n### How to Reproduce\n\nCreate a QDP file:\r\n```\r\n> cat > test.qdp\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n<EOF>\r\n\r\n > python\r\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from astropy.table import Table\r\n>>> Table.read('test.qdp',format='ascii.qdp')\r\nWARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]\r\nTraceback (most recent call last):\r\n...\r\n    raise ValueError(f'Unrecognized QDP line: {line}')\r\nValueError: Unrecognized QDP line: read serr 1 2\r\n```\r\n\r\nRunning \"qdp test.qdp\" works just fine.\r\n\n\n### Versions\n\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nastropy 5.1\r\nNumpy 1.24.1\r\npyerfa 2.0.0.1\r\nScipy 1.10.0\r\nMatplotlib 3.6.3\r\n\n\n\nHints:\nWelcome to Astropy \ud83d\udc4b and thank you for your first issue!\n\nA project member will respond to you as soon as possible; in the meantime, please double-check the [guidelines for submitting issues](https://github.com/astropy/astropy/blob/main/CONTRIBUTING.md#reporting-issues) and make sure you've provided the requested details.\n\nGitHub issues in the Astropy repository are used to track bug reports and feature requests; If your issue poses a question about how to use Astropy, please instead raise your question in the [Astropy Discourse user forum](https://community.openastronomy.org/c/astropy/8) and close this issue.\n\nIf you feel that this issue has n\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py\n--- a/astropy/io/ascii/qdp.py\n+++ b/astropy/io/ascii/qdp.py\n@@ -144,7 +144,7 @@ class QDPReader(ascii.BaseReader):\n         if line.strip().startswith('#'):\n             continue\n         if line.strip().startswith('READ'):\n-            if not line.strip().upper().startswith('READ'):\n+            if not line.strip().startswith('READ'):\n                 raise ValueError(f'Unrecognized QDP line: {line}')\n             command = line.strip().split()\n             if command[0] == 'READ':\n```"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nascii.qdp Table format assumes QDP commands are upper case\n### Description\n\nascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be \"READ SERR 1 2\" whereas QDP itself is not case sensitive and case use \"read serr 1 2\". \r\n\r\nAs many QDP files are created by hand, the expectation that all commands be all-caps should be removed.\n\n### Expected behavior\n\nThe following qdp file should read into a `Table` with errors, rather than crashing.\r\n```\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n```\n\n### How to Reproduce\n\nCreate a QDP file:\r\n```\r\n> cat > test.qdp\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n<EOF>\r\n\r\n > python\r\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from astropy.table import Table\r\n>>> Table.read('test.qdp',format='ascii.qdp')\r\nWARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]\r\nTraceback (most recent call last):\r\n...\r\n    raise ValueError(f'Unrecognized QDP line: {line}')\r\nValueError: Unrecognized QDP line: read serr 1 2\r\n```\r\n\r\nRunning \"qdp test.qdp\" works just fine.\r\n\n\n### Versions\n\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nastropy 5.1\r\nNumpy 1.24.1\r\npyerfa 2.0.0.1\r\nScipy 1.10.0\r\nMatplotlib 3.6.3\r\n\n\n\nHints:\nWelcome to Astropy \ud83d\udc4b and thank you for your first issue!\n\nA project member will respond to you as soon as possible; in the meantime, please double-check the [guidelines for submitting issues](https://github.com/astropy/astropy/blob/main/CONTRIBUTING.md#reporting-issues) and make sure you've provided the requested details.\n\nGitHub issues in the Astropy repository are used to track bug reports and feature requests; If your issue poses a question about how to use Astropy, please instead raise your question in the [Astropy Discourse user forum](https://community.openastronomy.org/c/astropy/8) and close this issue.\n\nIf you feel that this issue has n\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py\n--- a/astropy/io/ascii/qdp.py\n+++ b/astropy/io/ascii/qdp.py\n@@ -128,7 +128,7 @@ class QDPReader(AsciiReader):\n         line = line.strip()\n         if not line:\n             continue\n-        if line[0].isupper():\n+        if line[0].isalpha():\n             # This is a command line\n             cmd = line.split()\n             if cmd[0] == 'READ':\n```"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nascii.qdp Table format assumes QDP commands are upper case\n### Description\n\nascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be \"READ SERR 1 2\" whereas QDP itself is not case sensitive and case use \"read serr 1 2\". \r\n\r\nAs many QDP files are created by hand, the expectation that all commands be all-caps should be removed.\n\n### Expected behavior\n\nThe following qdp file should read into a `Table` with errors, rather than crashing.\r\n```\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n```\n\n### How to Reproduce\n\nCreate a QDP file:\r\n```\r\n> cat > test.qdp\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n<EOF>\r\n\r\n > python\r\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from astropy.table import Table\r\n>>> Table.read('test.qdp',format='ascii.qdp')\r\nWARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]\r\nTraceback (most recent call last):\r\n...\r\n    raise ValueError(f'Unrecognized QDP line: {line}')\r\nValueError: Unrecognized QDP line: read serr 1 2\r\n```\r\n\r\nRunning \"qdp test.qdp\" works just fine.\r\n\n\n### Versions\n\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nastropy 5.1\r\nNumpy 1.24.1\r\npyerfa 2.0.0.1\r\nScipy 1.10.0\r\nMatplotlib 3.6.3\r\n\n\n\nHints:\nWelcome to Astropy \ud83d\udc4b and thank you for your first issue!\n\nA project member will respond to you as soon as possible; in the meantime, please double-check the [guidelines for submitting issues](https://github.com/astropy/astropy/blob/main/CONTRIBUTING.md#reporting-issues) and make sure you've provided the requested details.\n\nGitHub issues in the Astropy repository are used to track bug reports and feature requests; If your issue poses a question about how to use Astropy, please instead raise your question in the [Astropy Discourse user forum](https://community.openastronomy.org/c/astropy/8) and close this issue.\n\nIf you feel that this issue has n\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py\n--- a/astropy/io/ascii/qdp.py\n+++ b/astropy/io/ascii/qdp.py\n@@ -165,7 +165,7 @@ class QDPReader(ascii.BaseReader):\n         if line.strip() == '':\n             continue\n         line = line.strip()\n-        if not line.startswith(('READ', 'TABLE', 'END')):\n+        if not line.startswith(('READ', 'TABLE', 'END', 'read', 'table', 'end')):\n             raise ValueError(f'Unrecognized QDP line: {line}')\n         if line.startswith('READ'):\n             if line.split()[1] == 'SERR':\n```"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nascii.qdp Table format assumes QDP commands are upper case\n### Description\n\nascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be \"READ SERR 1 2\" whereas QDP itself is not case sensitive and case use \"read serr 1 2\". \r\n\r\nAs many QDP files are created by hand, the expectation that all commands be all-caps should be removed.\n\n### Expected behavior\n\nThe following qdp file should read into a `Table` with errors, rather than crashing.\r\n```\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n```\n\n### How to Reproduce\n\nCreate a QDP file:\r\n```\r\n> cat > test.qdp\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n<EOF>\r\n\r\n > python\r\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from astropy.table import Table\r\n>>> Table.read('test.qdp',format='ascii.qdp')\r\nWARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]\r\nTraceback (most recent call last):\r\n...\r\n    raise ValueError(f'Unrecognized QDP line: {line}')\r\nValueError: Unrecognized QDP line: read serr 1 2\r\n```\r\n\r\nRunning \"qdp test.qdp\" works just fine.\r\n\n\n### Versions\n\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nastropy 5.1\r\nNumpy 1.24.1\r\npyerfa 2.0.0.1\r\nScipy 1.10.0\r\nMatplotlib 3.6.3\r\n\n\n\nHints:\nWelcome to Astropy \ud83d\udc4b and thank you for your first issue!\n\nA project member will respond to you as soon as possible; in the meantime, please double-check the [guidelines for submitting issues](https://github.com/astropy/astropy/blob/main/CONTRIBUTING.md#reporting-issues) and make sure you've provided the requested details.\n\nGitHub issues in the Astropy repository are used to track bug reports and feature requests; If your issue poses a question about how to use Astropy, please instead raise your question in the [Astropy Discourse user forum](https://community.openastronomy.org/c/astropy/8) and close this issue.\n\nIf you feel that this issue has n\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py\n--- a/astropy/io/ascii/qdp.py\n+++ b/astropy/io/ascii/qdp.py\n@@ -144,7 +144,7 @@ class QDPReader(ascii.BaseReader):\n         if line.strip() == '':\n             continue\n         if line.startswith('READ'):\n-            if not line.startswith('READ SERR'):\n+            if not line.startswith('READ SERR') and not line.startswith('read serr'):\n                 raise ValueError(f'Unrecognized QDP line: {line}')\n             # parse the read command\n             parts = line.split()\n```"
+    }
+  ],
+  "trace": [
+    {
+      "phase": "file_localization",
+      "candidate_files": [
+        "astropy/io/ascii/qdp.py",
+        "astropy/io/ascii/__init__.py",
+        "astropy/io/ascii/tests/test_qdp.py",
+        "astropy/io/ascii/ascii.py",
+        "astropy/io/ascii/ascii_utils.py",
+        "astropy/io/ascii/ascii_table.py",
+        "astropy/io/ascii/ascii_core.py"
+      ],
+      "tokens": 1170
+    },
+    {
+      "phase": "function_localization",
+      "regions": [
+        {
+          "file": "astropy/io/ascii/qdp.py",
+          "symbol": "read_qdp",
+          "line_range": "42-78",
+          "reason": "The code checks for uppercase QDP commands, which should be modified to handle case-insensitive commands as QDP is not case sensitive."
+        }
+      ],
+      "tokens": 947
+    },
+    {
+      "phase": "repair",
+      "n_patches_generated": 5,
+      "tokens_per_sample": 939
+    }
+  ],
+  "generated_patch": "diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py\n--- a/astropy/io/ascii/qdp.py\n+++ b/astropy/io/ascii/qdp.py\n@@ -124,7 +124,7 @@ class QDPReader(ascii.BaseReader):\n         self._lines = lines\n         self._line_index = 0\n         self._current_line = None\n-        self._command = None\n+        self._command = None\n         self._data = []\n         self._table = None\n         self._table_id = None\n@@ -159,7 +159,7 @@ class QDPReader(ascii.BaseReader):\n         self._line_index += 1\n         self._current_line = self._lines[self._line_index]\n         if self._current_line.strip().startswith('#'):\n-            self._command = self._current_line.strip().split()[0].upper()\n+            self._command = self._current_line.strip().split()[0].lower()\n         else:\n             self._command = None\n         return self._current_line",
+  "token_usage": 6908,
+  "latency_s": 47.95230479200836,
+  "ttft_s": 7.972920874948613,
+  "gold_context": [
+    "astropy/io/ascii/qdp.py",
+    "astropy/io/ascii/tests/test_qdp.py"
+  ]
+}

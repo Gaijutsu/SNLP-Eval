@@ -1,0 +1,169 @@
+{
+  "instance_id": "astropy__astropy-14995",
+  "gatherer": "agentless",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "edit_similarity": 0.2130030959752322,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 7076.0,
+    "latency_s": 62.126284374971874,
+    "ttft_s": 8.546653208089992
+  },
+  "retrieved_documents": [
+    "astropy/nddata/nddata.py",
+    "astropy/nddata/tests/test_nddata.py",
+    "astropy/utils/exceptions.py",
+    "astropy/nddata/nddata_ref.py",
+    "astropy/nddata/nddata_core.py",
+    "astropy/nddata/nddata_utils.py",
+    "astropy/nddata/nddata_mask.py",
+    "astropy/nddata/nddata_array.py",
+    "astropy/nddata/nddata_operators.py",
+    "astropy/nddata/nddata_mask_utils.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are an expert code analyst."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer performing fault localization on a code repository.\n\n## Issue\nIn v5.3, NDDataRef mask propagation fails when one of the operand does not have a mask\n### Description\n\nThis applies to v5.3. \r\n\r\nIt looks like when one of the operand does not have a mask, the mask propagation when doing arithmetic, in particular with `handle_mask=np.bitwise_or` fails.  This is not a problem in v5.2.\r\n\r\nI don't know enough about how all that works, but it seems from the error that the operand without a mask is set as a mask of None's and then the bitwise_or tries to operate on an integer and a None and fails.\n\n### Expected behavior\n\nWhen one of the operand does not have mask, the mask that exists should just be copied over to the output.  Or whatever was done in that situation in v5.2 where there's no problem.\n\n### How to Reproduce\n\nThis is with v5.3.   With v5.2, there are no errors.\r\n\r\n```\r\n>>> import numpy as np\r\n>>> from astropy.nddata import NDDataRef\r\n\r\n>>> array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])\r\n>>> mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])\r\n\r\n>>> nref_nomask = NDDataRef(array)\r\n>>> nref_mask = NDDataRef(array, mask=mask)\r\n\r\n# multiply no mask by constant (no mask * no mask)\r\n>>> nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask   # returns nothing, no mask,  OK\r\n\r\n# multiply no mask by itself (no mask * no mask)\r\n>>> nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask # return nothing, no mask, OK\r\n\r\n# multiply mask by constant (mask * no mask)\r\n>>> nref_mask.multiply(1., handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n\r\n# multiply mask by itself (mask * mask)\r\n>>> nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask\r\narray([[ 0,  1, 64],\r\n       [ 8,  0,  1],\r\n       [ 2,  1,  0]])\r\n\r\n# multiply mask by no mask (mask * no mask)\r\n>>> nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n```\r\n\n\n### Versions\n\n>>> import sys; print(\"Python\", sys.version)\r\nPython 3.10.11 | packaged by conda-forge | (main, May 10 2023, 19:07:22) [Clang 14.0.6 ]\r\n>>> import astropy; print(\"astropy\", astropy.__version__)\r\nastropy 5.3\r\n>>> import numpy; print(\"Numpy\", numpy.__version__)\r\nNumpy 1.24.3\r\n>>> import erfa; print(\"pyerfa\", erfa.__version__)\r\npyerfa 2.0.0.3\r\n>>> import scipy; print(\"Scipy\", scipy.__version__)\r\nScipy 1.10.1\r\n>>> import matplotlib; print(\"Matplotlib\", matplotlib.__version__)\r\nMatplotlib 3.7.1\r\n\n\n\nHints:\nWelcome to Astropy \ud83d\udc4b and thank you for your first issue!\n\nA project member will respond to you as soon as possible; in the meantime, please double-check the [guidelines for submitting issues](https://github.com/astropy/astropy/blob/main/CONTRIBUTING.md#reporting-issues) and make sure you've provided the requested details.\n\nGitHub issues in the Astropy repository are used to track bug reports and feature requests; If your issue poses a question about how to use Astropy, please instead raise your question in the [Astropy Discourse u\n\n## Repository Files\n\n\n## Task\nIdentify which files are most relevant to this issue. Reason step by step:\n\n1. Extract key identifiers from the issue: function/class names, error messages,\n   feature keywords, and module names that appear in the issue description.\n2. Match those identifiers against the file listing using path names and directory\n   structure (e.g. an auth bug likely lives under `auth/` or `login`).\n3. Consider indirect relevance: configuration files, shared utilities, and test\n   files that the primary file depends on or exercises.\n\nRespond with a JSON array of up to 10 file paths, ranked by relevance\n(most relevant first). Output ONLY the JSON array, with no surrounding text.\n\nExample: [\"src/auth/login.py\", \"tests/test_auth.py\", \"src/models/user.py\"]\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n[\"astropy/nddata/nddata.py\", \"astropy/nddata/tests/test_nddata.py\", \"astropy/utils/exceptions.py\", \"astropy/nddata/nddata_ref.py\", \"astropy/nddata/nddata_core.py\", \"astropy/nddata/nddata_utils.py\", \"astropy/nddata/nddata_mask.py\", \"astropy/nddata/nddata_array.py\", \"astropy/nddata/nddata_operators.py\", \"astropy/nddata/nddata_mask_utils.py\"]"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert code analyst."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Given the issue and the retrieved file\ncontents below, identify the precise code regions that need to be modified\nto fix this issue.\n\n## Issue\nIn v5.3, NDDataRef mask propagation fails when one of the operand does not have a mask\n### Description\n\nThis applies to v5.3. \r\n\r\nIt looks like when one of the operand does not have a mask, the mask propagation when doing arithmetic, in particular with `handle_mask=np.bitwise_or` fails.  This is not a problem in v5.2.\r\n\r\nI don't know enough about how all that works, but it seems from the error that the operand without a mask is set as a mask of None's and then the bitwise_or tries to operate on an integer and a None and fails.\n\n### Expected behavior\n\nWhen one of the operand does not have mask, the mask that exists should just be copied over to the output.  Or whatever was done in that situation in v5.2 where there's no problem.\n\n### How to Reproduce\n\nThis is with v5.3.   With v5.2, there are no errors.\r\n\r\n```\r\n>>> import numpy as np\r\n>>> from astropy.nddata import NDDataRef\r\n\r\n>>> array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])\r\n>>> mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])\r\n\r\n>>> nref_nomask = NDDataRef(array)\r\n>>> nref_mask = NDDataRef(array, mask=mask)\r\n\r\n# multiply no mask by constant (no mask * no mask)\r\n>>> nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask   # returns nothing, no mask,  OK\r\n\r\n# multiply no mask by itself (no mask * no mask)\r\n>>> nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask # return nothing, no mask, OK\r\n\r\n# multiply mask by constant (mask * no mask)\r\n>>> nref_mask.multiply(1., handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n\r\n# multiply mask by itself (mask * mask)\r\n>>> nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask\r\narray([[ 0,  1, 64],\r\n       [ 8,  0,  1],\r\n       [ 2,  1,  0]])\r\n\r\n# multiply mask by no mask (mask * no mask)\r\n>>> nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n```\r\n\n\n### Versions\n\n>>> import sys; print(\"Python\", sys.versio\n\n## File Contents\n\n\n## Task\nFor each file that requires changes, pinpoint the exact code region:\n- The function, method, or class name involved\n- An approximate line range (e.g. \"42-78\")\n- A brief reason explaining why this region is responsible for the issue\n\nRespond with a JSON array. Each element must have:\n- \"file\": the file path\n- \"symbol\": the function, method, or class name (use \"module-level\" for top-level code)\n- \"line_range\": approximate line range as a string, e.g. \"42-78\"\n- \"reason\": one sentence explaining why this region needs to change\n\nOutput ONLY the JSON array, with no surrounding text.\n\nExample: [{\"file\": \"src/auth.py\", \"symbol\": \"login\", \"line_range\": \"42-65\", \"reason\": \"Credential comparison is case-sensitive when it should be case-insensitive.\"}]\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n[{\"file\": \"astropy/nddata/nddata.py\", \"symbol\": \"NDDataRef.multiply\", \"line_range\": \"120-150\", \"reason\": \"The multiply method's mask handling logic fails when one operand does not have a mask, leading to a TypeError when performing bitwise operations with NoneType.\"}]"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nIn v5.3, NDDataRef mask propagation fails when one of the operand does not have a mask\n### Description\n\nThis applies to v5.3. \r\n\r\nIt looks like when one of the operand does not have a mask, the mask propagation when doing arithmetic, in particular with `handle_mask=np.bitwise_or` fails.  This is not a problem in v5.2.\r\n\r\nI don't know enough about how all that works, but it seems from the error that the operand without a mask is set as a mask of None's and then the bitwise_or tries to operate on an integer and a None and fails.\n\n### Expected behavior\n\nWhen one of the operand does not have mask, the mask that exists should just be copied over to the output.  Or whatever was done in that situation in v5.2 where there's no problem.\n\n### How to Reproduce\n\nThis is with v5.3.   With v5.2, there are no errors.\r\n\r\n```\r\n>>> import numpy as np\r\n>>> from astropy.nddata import NDDataRef\r\n\r\n>>> array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])\r\n>>> mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])\r\n\r\n>>> nref_nomask = NDDataRef(array)\r\n>>> nref_mask = NDDataRef(array, mask=mask)\r\n\r\n# multiply no mask by constant (no mask * no mask)\r\n>>> nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask   # returns nothing, no mask,  OK\r\n\r\n# multiply no mask by itself (no mask * no mask)\r\n>>> nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask # return nothing, no mask, OK\r\n\r\n# multiply mask by constant (mask * no mask)\r\n>>> nref_mask.multiply(1., handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n\r\n# multiply mask by itself (mask * mask)\r\n>>> nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask\r\narray([[ 0,  1, 64],\r\n       [ 8,  0,  1],\r\n       [ 2,  1,  0]])\r\n\r\n# multiply mask by no mask (mask * no mask)\r\n>>> nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n```\r\n\n\n### Versions\n\n>>> import sys; print(\"Python\", sys.versio\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThe issue arises because in v5.3, when one operand does not have a mask, the mask propagation logic incorrectly attempts to perform a bitwise OR operation between an integer and `None`, resulting in a `TypeError`. In v5.2, this situation was handled correctly by copying the mask from the operand that had one.\n\n### Root Cause\nThe `NDDataRef` class's `multiply` method, when `handle_mask=np.bitwise_or`, expects both operands to have masks. If one operand lacks a mask, it's incorrectly treated as `None`, leading to the error.\n\n### Minimal Fix\nThe fix is to ensure that when one operand does not have a mask, we simply propagate the mask from the operand that has one, rather than attempting to perform a bitwise operation on `None`.\n\n### Edge Cases\n- One operand has a mask, the other does not.\n- Both operands have masks.\n- No operands have masks.\n\n### Patch\n```diff\ndiff --git a/astropy/nddata/nddata.py b/astropy/nddata/nddata.py\n--- a/astropy/nddata/nddata.py\n+++ b/astropy/nddata/nddata.py\n@@ -357,7 +357,10 @@ def multiply(self, other, mask= None, error=None, handle_mask=None, **kwargs):\n         if handle_mask is None:\n             handle_mask = np.bitwise_or\n         elif handle_mask not in (np.bitwise_or, np.bitwise_and):\n-            raise ValueError(\"handle_mask must be either np.bitwise_or or np.bitwise_and\")\n+            raise ValueError(\"handle_mask must be either np.bitwise_or or np.bitwise_and\")\n+\n+        if self.mask is None and other.mask is None:\n+            return self._new_data(mask=None, **kwargs)\n \n         if mask is None:\n             # Use the handle_mask to combine the masks\n```"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nIn v5.3, NDDataRef mask propagation fails when one of the operand does not have a mask\n### Description\n\nThis applies to v5.3. \r\n\r\nIt looks like when one of the operand does not have a mask, the mask propagation when doing arithmetic, in particular with `handle_mask=np.bitwise_or` fails.  This is not a problem in v5.2.\r\n\r\nI don't know enough about how all that works, but it seems from the error that the operand without a mask is set as a mask of None's and then the bitwise_or tries to operate on an integer and a None and fails.\n\n### Expected behavior\n\nWhen one of the operand does not have mask, the mask that exists should just be copied over to the output.  Or whatever was done in that situation in v5.2 where there's no problem.\n\n### How to Reproduce\n\nThis is with v5.3.   With v5.2, there are no errors.\r\n\r\n```\r\n>>> import numpy as np\r\n>>> from astropy.nddata import NDDataRef\r\n\r\n>>> array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])\r\n>>> mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])\r\n\r\n>>> nref_nomask = NDDataRef(array)\r\n>>> nref_mask = NDDataRef(array, mask=mask)\r\n\r\n# multiply no mask by constant (no mask * no mask)\r\n>>> nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask   # returns nothing, no mask,  OK\r\n\r\n# multiply no mask by itself (no mask * no mask)\r\n>>> nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask # return nothing, no mask, OK\r\n\r\n# multiply mask by constant (mask * no mask)\r\n>>> nref_mask.multiply(1., handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n\r\n# multiply mask by itself (mask * mask)\r\n>>> nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask\r\narray([[ 0,  1, 64],\r\n       [ 8,  0,  1],\r\n       [ 2,  1,  0]])\r\n\r\n# multiply mask by no mask (mask * no mask)\r\n>>> nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n```\r\n\n\n### Versions\n\n>>> import sys; print(\"Python\", sys.versio\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/nddata/core.py b/astropy/nddata/core.py\n--- a/astropy/nddata/core.py\n+++ b/astropy/nddata/core.py\n@@ -437,7 +437,7 @@ def multiply(self, other, out=None, order='C',\n         if handle_mask is not None:\n             # Handle mask propagation\n             if self.mask is None and other.mask is None:\n-                new_mask = None\n+                new_mask = self.mask\n             elif self.mask is None:\n                 new_mask = other.mask\n             elif other.mask is None:\n```"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nIn v5.3, NDDataRef mask propagation fails when one of the operand does not have a mask\n### Description\n\nThis applies to v5.3. \r\n\r\nIt looks like when one of the operand does not have a mask, the mask propagation when doing arithmetic, in particular with `handle_mask=np.bitwise_or` fails.  This is not a problem in v5.2.\r\n\r\nI don't know enough about how all that works, but it seems from the error that the operand without a mask is set as a mask of None's and then the bitwise_or tries to operate on an integer and a None and fails.\n\n### Expected behavior\n\nWhen one of the operand does not have mask, the mask that exists should just be copied over to the output.  Or whatever was done in that situation in v5.2 where there's no problem.\n\n### How to Reproduce\n\nThis is with v5.3.   With v5.2, there are no errors.\r\n\r\n```\r\n>>> import numpy as np\r\n>>> from astropy.nddata import NDDataRef\r\n\r\n>>> array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])\r\n>>> mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])\r\n\r\n>>> nref_nomask = NDDataRef(array)\r\n>>> nref_mask = NDDataRef(array, mask=mask)\r\n\r\n# multiply no mask by constant (no mask * no mask)\r\n>>> nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask   # returns nothing, no mask,  OK\r\n\r\n# multiply no mask by itself (no mask * no mask)\r\n>>> nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask # return nothing, no mask, OK\r\n\r\n# multiply mask by constant (mask * no mask)\r\n>>> nref_mask.multiply(1., handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n\r\n# multiply mask by itself (mask * mask)\r\n>>> nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask\r\narray([[ 0,  1, 64],\r\n       [ 8,  0,  1],\r\n       [ 2,  1,  0]])\r\n\r\n# multiply mask by no mask (mask * no mask)\r\n>>> nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n```\r\n\n\n### Versions\n\n>>> import sys; print(\"Python\", sys.versio\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/nddata/nddata.py b/astropy/nddata/nddata.py\n--- a/astropy/nddata/nddata.py\n+++ b/astropy/nddata/nddata.py\n@@ -1213,7 +1213,8 @@ def multiply(self, other, *, out=None, mask=None, handle_mask=None):\n         if self._mask is None and other._mask is None:\n             new_mask = None\n         elif self._mask is None:\n-            new_mask = other._mask\n+            new_mask = other._mask if other._mask is not None else None\n+            # Ensure that the mask is properly initialized\n         elif other._mask is None:\n-            new_mask = self._mask\n+            new_mask = self._mask if self._mask is not None else None\n+            # Ensure that the mask is properly initialized\n         else:\n             if handle_mask is None:\n                 handle_mask = np.bitwise_or\n```"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nIn v5.3, NDDataRef mask propagation fails when one of the operand does not have a mask\n### Description\n\nThis applies to v5.3. \r\n\r\nIt looks like when one of the operand does not have a mask, the mask propagation when doing arithmetic, in particular with `handle_mask=np.bitwise_or` fails.  This is not a problem in v5.2.\r\n\r\nI don't know enough about how all that works, but it seems from the error that the operand without a mask is set as a mask of None's and then the bitwise_or tries to operate on an integer and a None and fails.\n\n### Expected behavior\n\nWhen one of the operand does not have mask, the mask that exists should just be copied over to the output.  Or whatever was done in that situation in v5.2 where there's no problem.\n\n### How to Reproduce\n\nThis is with v5.3.   With v5.2, there are no errors.\r\n\r\n```\r\n>>> import numpy as np\r\n>>> from astropy.nddata import NDDataRef\r\n\r\n>>> array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])\r\n>>> mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])\r\n\r\n>>> nref_nomask = NDDataRef(array)\r\n>>> nref_mask = NDDataRef(array, mask=mask)\r\n\r\n# multiply no mask by constant (no mask * no mask)\r\n>>> nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask   # returns nothing, no mask,  OK\r\n\r\n# multiply no mask by itself (no mask * no mask)\r\n>>> nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask # return nothing, no mask, OK\r\n\r\n# multiply mask by constant (mask * no mask)\r\n>>> nref_mask.multiply(1., handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n\r\n# multiply mask by itself (mask * mask)\r\n>>> nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask\r\narray([[ 0,  1, 64],\r\n       [ 8,  0,  1],\r\n       [ 2,  1,  0]])\r\n\r\n# multiply mask by no mask (mask * no mask)\r\n>>> nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n```\r\n\n\n### Versions\n\n>>> import sys; print(\"Python\", sys.versio\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/nddata/nddata.py b/astropy/nddata/nddata.py\nindex 1234567..89abcde 100644\n--- a/astropy/nddata/nddata.py\n+++ b/astropy/nddata/nddata.py\n@@ -123,6 +123,9 @@ class NDDataRef:\n         if handle_mask is not None:\n             if self.mask is None and other.mask is None:\n                 new_mask = None\n+            elif self.mask is None:\n+                new_mask = other.mask\n+            elif other.mask is None:\n+                new_mask = self.mask\n             else:\n                 new_mask = handle_mask(self.mask, other.mask)\n         else:\n```"
+    },
+    {
+      "role": "system",
+      "content": "You are an expert software engineer."
+    },
+    {
+      "role": "user",
+      "content": "You are an expert software engineer. Your task is to generate a minimal,\ncorrect patch in unified diff format to fix the issue described below.\n\n## Issue\nIn v5.3, NDDataRef mask propagation fails when one of the operand does not have a mask\n### Description\n\nThis applies to v5.3. \r\n\r\nIt looks like when one of the operand does not have a mask, the mask propagation when doing arithmetic, in particular with `handle_mask=np.bitwise_or` fails.  This is not a problem in v5.2.\r\n\r\nI don't know enough about how all that works, but it seems from the error that the operand without a mask is set as a mask of None's and then the bitwise_or tries to operate on an integer and a None and fails.\n\n### Expected behavior\n\nWhen one of the operand does not have mask, the mask that exists should just be copied over to the output.  Or whatever was done in that situation in v5.2 where there's no problem.\n\n### How to Reproduce\n\nThis is with v5.3.   With v5.2, there are no errors.\r\n\r\n```\r\n>>> import numpy as np\r\n>>> from astropy.nddata import NDDataRef\r\n\r\n>>> array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])\r\n>>> mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])\r\n\r\n>>> nref_nomask = NDDataRef(array)\r\n>>> nref_mask = NDDataRef(array, mask=mask)\r\n\r\n# multiply no mask by constant (no mask * no mask)\r\n>>> nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask   # returns nothing, no mask,  OK\r\n\r\n# multiply no mask by itself (no mask * no mask)\r\n>>> nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask # return nothing, no mask, OK\r\n\r\n# multiply mask by constant (mask * no mask)\r\n>>> nref_mask.multiply(1., handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n\r\n# multiply mask by itself (mask * mask)\r\n>>> nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask\r\narray([[ 0,  1, 64],\r\n       [ 8,  0,  1],\r\n       [ 2,  1,  0]])\r\n\r\n# multiply mask by no mask (mask * no mask)\r\n>>> nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n```\r\n\n\n### Versions\n\n>>> import sys; print(\"Python\", sys.versio\n\n## Relevant Code\n\n\n## Instructions\nBefore writing the patch, briefly plan your fix:\n- What is the root cause?\n- What is the minimal change needed?\n- Are there edge cases to handle?\n\nThen generate the patch. Rules:\n- Output a single unified diff block, starting with ```diff and ending with ```.\n- Only change lines directly related to the fix; do not reformat unrelated code.\n- Preserve the existing code style (indentation, naming conventions).\n- If multiple files need changes, include all hunks in one diff block.\n\n/nothink\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n```diff\ndiff --git a/astropy/nddata/nddata.py b/astropy/nddata/nddata.py\n--- a/astropy/nddata/nddata.py\n+++ b/astropy/nddata/nddata.py\n@@ -1234,7 +1234,10 @@ def multiply(self, other, out=None, handle_mask=None, **kwargs):\n         if handle_mask is None:\n             handle_mask = np.bitwise_or\n         else:\n+            # Ensure that handle_mask is a callable, in case it's a string or other type\n+            if not callable(handle_mask):\n+                handle_mask = np.bitwise_or\n             handle_mask = handle_mask\n \n         # Handle the mask propagation\n@@ -1243,7 +1246,10 @@ def multiply(self, other, out=None, handle_mask=None, **kwargs):\n         if self.mask is None and other.mask is None:\n             new_mask = None\n         elif self.mask is None:\n+            # If self has no mask, copy the other's mask\n+            new_mask = other.mask.copy()\n+        elif other.mask is None:\n+            # If other has no mask, copy the self's mask\n             new_mask = self.mask.copy()\n         else:\n             # Both have masks, apply the handle_mask function\n```"
+    }
+  ],
+  "trace": [
+    {
+      "phase": "file_localization",
+      "candidate_files": [
+        "astropy/nddata/nddata.py",
+        "astropy/nddata/tests/test_nddata.py",
+        "astropy/utils/exceptions.py",
+        "astropy/nddata/nddata_ref.py",
+        "astropy/nddata/nddata_core.py",
+        "astropy/nddata/nddata_utils.py",
+        "astropy/nddata/nddata_mask.py",
+        "astropy/nddata/nddata_array.py",
+        "astropy/nddata/nddata_operators.py",
+        "astropy/nddata/nddata_mask_utils.py"
+      ],
+      "tokens": 1204
+    },
+    {
+      "phase": "function_localization",
+      "regions": [
+        {
+          "file": "astropy/nddata/nddata.py",
+          "symbol": "NDDataRef.multiply",
+          "line_range": "120-150",
+          "reason": "The multiply method's mask handling logic fails when one operand does not have a mask, leading to a TypeError when performing bitwise operations with NoneType."
+        }
+      ],
+      "tokens": 911
+    },
+    {
+      "phase": "repair",
+      "n_patches_generated": 5,
+      "tokens_per_sample": 1037
+    }
+  ],
+  "generated_patch": "diff --git a/astropy/nddata/nddata.py b/astropy/nddata/nddata.py\n--- a/astropy/nddata/nddata.py\n+++ b/astropy/nddata/nddata.py\n@@ -357,7 +357,10 @@ def multiply(self, other, mask= None, error=None, handle_mask=None, **kwargs):\n         if handle_mask is None:\n             handle_mask = np.bitwise_or\n         elif handle_mask not in (np.bitwise_or, np.bitwise_and):\n-            raise ValueError(\"handle_mask must be either np.bitwise_or or np.bitwise_and\")\n+            raise ValueError(\"handle_mask must be either np.bitwise_or or np.bitwise_and\")\n+\n+        if self.mask is None and other.mask is None:\n+            return self._new_data(mask=None, **kwargs)\n \n         if mask is None:\n             # Use the handle_mask to combine the masks",
+  "token_usage": 7076,
+  "latency_s": 62.126284374971874,
+  "ttft_s": 8.546653208089992,
+  "gold_context": [
+    "astropy/nddata/mixins/ndarithmetic.py",
+    "astropy/nddata/mixins/tests/test_ndarithmetic.py"
+  ]
+}

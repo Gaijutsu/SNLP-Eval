@@ -19,7 +19,7 @@ from harness.benchmarks.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.llm_client import LLMClient, LLMConfig
 
-from prompts import get_react_tool_descriptions, get_react_system_prompt
+from harness.gatherers.prompts import get_react_tool_descriptions, get_react_system_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -71,9 +71,7 @@ def _tool_read_file(
     if not target.exists():
         return f"Error: '{path}' does not exist."
     if target.is_dir():
-        return (
-            f"Error: '{path}' is a directory, not a file. "
-            f"Use list_dir(\"{path}\") to list its contents."hf.co/unsloth
+        return ( f"Error: '{path}' is a directory, not a file. Use list_dir(\'{path}\') to list its contents."
         )
     try:
         all_lines = target.read_text(encoding="utf-8", errors="replace").splitlines()

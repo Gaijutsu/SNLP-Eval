@@ -1,0 +1,98 @@
+{
+  "instance_id": "astropy__astropy-6938",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.3333333333333333,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.46927872602275644,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.46927872602275644,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.46927872602275644,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.4752752500353381,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/io/fits/fitsrec.py",
+    "astropy/io/fits/hdu/table.py",
+    "astropy/io/fits/column.py",
+    "astropy/io/fits/tests/test_header.py",
+    "astropy/io/fits/card.py",
+    "astropy/io/fits/util.py",
+    "astropy/io/fits/hdu/compressed.py",
+    "astropy/io/fits/hdu/base.py",
+    "astropy/io/fits/hdu/hdulist.py",
+    "astropy/io/fits/convenience.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 668,
+      "results": [
+        {
+          "file": "astropy/io/fits/fitsrec.py",
+          "score": 154.3116
+        },
+        {
+          "file": "astropy/io/fits/hdu/table.py",
+          "score": 129.0734
+        },
+        {
+          "file": "astropy/io/fits/column.py",
+          "score": 128.4059
+        },
+        {
+          "file": "astropy/io/fits/tests/test_header.py",
+          "score": 123.3977
+        },
+        {
+          "file": "astropy/io/fits/card.py",
+          "score": 118.4926
+        },
+        {
+          "file": "astropy/io/fits/util.py",
+          "score": 117.0838
+        },
+        {
+          "file": "astropy/io/fits/hdu/compressed.py",
+          "score": 111.8606
+        },
+        {
+          "file": "astropy/io/fits/hdu/base.py",
+          "score": 111.8562
+        },
+        {
+          "file": "astropy/io/fits/hdu/hdulist.py",
+          "score": 111.5787
+        },
+        {
+          "file": "astropy/io/fits/convenience.py",
+          "score": 108.4179
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.4752752500353381,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/io/fits/fitsrec.py",
+    "astropy/io/fits/tests/test_checksum.py",
+    "astropy/io/fits/tests/test_table.py"
+  ]
+}

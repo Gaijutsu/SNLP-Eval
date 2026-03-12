@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-11283",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.1142561670858413,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/migrations/executor.py",
+    "django/db/migrations/autodetector.py",
+    "django/db/models/base.py",
+    "django/contrib/auth/models.py",
+    "django/core/management/commands/migrate.py",
+    "tests/auth_tests/test_management.py",
+    "django/contrib/admin/options.py",
+    "django/db/models/options.py",
+    "django/db/models/sql/query.py",
+    "tests/migrations/test_executor.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2128,
+      "results": [
+        {
+          "file": "django/db/migrations/executor.py",
+          "score": 1137.0007
+        },
+        {
+          "file": "django/db/migrations/autodetector.py",
+          "score": 1088.6237
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 1065.1573
+        },
+        {
+          "file": "django/contrib/auth/models.py",
+          "score": 1055.3735
+        },
+        {
+          "file": "django/core/management/commands/migrate.py",
+          "score": 1037.3924
+        },
+        {
+          "file": "tests/auth_tests/test_management.py",
+          "score": 1032.1756
+        },
+        {
+          "file": "django/contrib/admin/options.py",
+          "score": 1029.9125
+        },
+        {
+          "file": "django/db/models/options.py",
+          "score": 1026.4822
+        },
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 1017.9118
+        },
+        {
+          "file": "tests/migrations/test_executor.py",
+          "score": 1003.2999
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.1142561670858413,
+  "ttft_s": null,
+  "gold_context": [
+    "django/contrib/auth/migrations/0011_update_proxy_permissions.py",
+    "tests/auth_tests/test_migrations.py"
+  ]
+}

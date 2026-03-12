@@ -1,0 +1,100 @@
+{
+  "instance_id": "django__django-11019",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.25,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 0.5,
+    "ndcg@3": 0.7039180890341347,
+    "precision@5": 0.4,
+    "recall@5": 0.5,
+    "ndcg@5": 0.5855700749881525,
+    "precision@10": 0.2,
+    "recall@10": 0.5,
+    "ndcg@10": 0.5855700749881525,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 16.041055166977458,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/forms_tests/tests/test_media.py",
+    "django/forms/forms.py",
+    "django/forms/widgets.py",
+    "django/contrib/admin/widgets.py",
+    "django/contrib/postgres/forms/ranges.py",
+    "tests/forms_tests/widget_tests/test_clearablefileinput.py",
+    "tests/forms_tests/widget_tests/base.py",
+    "tests/generic_relations/test_forms.py",
+    "tests/forms_tests/tests/test_forms.py",
+    "django/forms/models.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2120,
+      "results": [
+        {
+          "file": "tests/forms_tests/tests/test_media.py",
+          "score": 0.5842
+        },
+        {
+          "file": "django/forms/forms.py",
+          "score": 0.5741
+        },
+        {
+          "file": "django/forms/widgets.py",
+          "score": 0.4957
+        },
+        {
+          "file": "django/contrib/admin/widgets.py",
+          "score": 0.4903
+        },
+        {
+          "file": "django/contrib/postgres/forms/ranges.py",
+          "score": 0.4636
+        },
+        {
+          "file": "tests/forms_tests/widget_tests/test_clearablefileinput.py",
+          "score": 0.4601
+        },
+        {
+          "file": "tests/forms_tests/widget_tests/base.py",
+          "score": 0.4527
+        },
+        {
+          "file": "tests/generic_relations/test_forms.py",
+          "score": 0.4503
+        },
+        {
+          "file": "tests/forms_tests/tests/test_forms.py",
+          "score": 0.4377
+        },
+        {
+          "file": "django/forms/models.py",
+          "score": 0.4366
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 16.041055166977458,
+  "ttft_s": null,
+  "gold_context": [
+    "django/forms/widgets.py",
+    "tests/admin_inlines/tests.py",
+    "tests/admin_widgets/test_autocomplete_widget.py",
+    "tests/forms_tests/tests/test_media.py"
+  ]
+}

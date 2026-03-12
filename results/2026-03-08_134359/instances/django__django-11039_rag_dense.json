@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11039",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.19342640361727081,
+    "mrr": 0.125,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 16.25636754196603,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/test_utils/test_transactiontestcase.py",
+    "tests/test_utils/test_testcase.py",
+    "tests/migration_test_data_persistence/tests.py",
+    "tests/migrations/test_executor.py",
+    "tests/migrations/test_migrations_atomic_operation/0001_initial.py",
+    "tests/migrations/test_base.py",
+    "tests/migrations/test_operations.py",
+    "tests/migrations/test_commands.py",
+    "tests/migrations/test_migrations_non_atomic/0001_initial.py",
+    "tests/migrations/test_loader.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2120,
+      "results": [
+        {
+          "file": "tests/test_utils/test_transactiontestcase.py",
+          "score": 0.6149
+        },
+        {
+          "file": "tests/test_utils/test_testcase.py",
+          "score": 0.5833
+        },
+        {
+          "file": "tests/migration_test_data_persistence/tests.py",
+          "score": 0.5559
+        },
+        {
+          "file": "tests/migrations/test_executor.py",
+          "score": 0.5549
+        },
+        {
+          "file": "tests/migrations/test_migrations_atomic_operation/0001_initial.py",
+          "score": 0.5546
+        },
+        {
+          "file": "tests/migrations/test_base.py",
+          "score": 0.5426
+        },
+        {
+          "file": "tests/migrations/test_operations.py",
+          "score": 0.5405
+        },
+        {
+          "file": "tests/migrations/test_commands.py",
+          "score": 0.5352
+        },
+        {
+          "file": "tests/migrations/test_migrations_non_atomic/0001_initial.py",
+          "score": 0.5298
+        },
+        {
+          "file": "tests/migrations/test_loader.py",
+          "score": 0.5275
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 16.25636754196603,
+  "ttft_s": null,
+  "gold_context": [
+    "django/core/management/commands/sqlmigrate.py",
+    "tests/migrations/test_commands.py"
+  ]
+}

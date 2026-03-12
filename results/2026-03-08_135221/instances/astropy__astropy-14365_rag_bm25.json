@@ -1,0 +1,97 @@
+{
+  "instance_id": "astropy__astropy-14365",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 1.0,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 1.0,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 1.0,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7040160000324249,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/io/ascii/qdp.py",
+    "astropy/io/ascii/tests/test_qdp.py",
+    "astropy/wcs/wcs.py",
+    "astropy/utils/misc.py",
+    "astropy/io/ascii/ui.py",
+    "docs/conf.py",
+    "astropy/io/ascii/ipac.py",
+    "astropy/io/ascii/cds.py",
+    "astropy/utils/iers/iers.py",
+    "astropy/extern/configobj/configobj.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 904,
+      "results": [
+        {
+          "file": "astropy/io/ascii/qdp.py",
+          "score": 565.9505
+        },
+        {
+          "file": "astropy/io/ascii/tests/test_qdp.py",
+          "score": 375.5348
+        },
+        {
+          "file": "astropy/wcs/wcs.py",
+          "score": 341.3996
+        },
+        {
+          "file": "astropy/utils/misc.py",
+          "score": 326.5914
+        },
+        {
+          "file": "astropy/io/ascii/ui.py",
+          "score": 325.2155
+        },
+        {
+          "file": "docs/conf.py",
+          "score": 320.6233
+        },
+        {
+          "file": "astropy/io/ascii/ipac.py",
+          "score": 303.1482
+        },
+        {
+          "file": "astropy/io/ascii/cds.py",
+          "score": 300.5056
+        },
+        {
+          "file": "astropy/utils/iers/iers.py",
+          "score": 300.0177
+        },
+        {
+          "file": "astropy/extern/configobj/configobj.py",
+          "score": 295.3701
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7040160000324249,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/io/ascii/qdp.py",
+    "astropy/io/ascii/tests/test_qdp.py"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11422",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.38685280723454163,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.38685280723454163,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.38685280723454163,
+    "mrr": 0.5,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 6.784143333090469,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/admin_scripts/tests.py",
+    "django/utils/autoreload.py",
+    "django/__init__.py",
+    "django/contrib/admin/apps.py",
+    "django/test/signals.py",
+    "django/__main__.py",
+    "tests/i18n/sampleproject/manage.py",
+    "django/core/management/commands/shell.py",
+    "django/core/management/__init__.py",
+    "django/conf/__init__.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2129,
+      "results": [
+        {
+          "file": "tests/admin_scripts/tests.py",
+          "score": 0.559
+        },
+        {
+          "file": "django/utils/autoreload.py",
+          "score": 0.5264
+        },
+        {
+          "file": "django/__init__.py",
+          "score": 0.5188
+        },
+        {
+          "file": "django/contrib/admin/apps.py",
+          "score": 0.5165
+        },
+        {
+          "file": "django/test/signals.py",
+          "score": 0.5135
+        },
+        {
+          "file": "django/__main__.py",
+          "score": 0.5087
+        },
+        {
+          "file": "tests/i18n/sampleproject/manage.py",
+          "score": 0.5066
+        },
+        {
+          "file": "django/core/management/commands/shell.py",
+          "score": 0.5038
+        },
+        {
+          "file": "django/core/management/__init__.py",
+          "score": 0.5009
+        },
+        {
+          "file": "django/conf/__init__.py",
+          "score": 0.5001
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 6.784143333090469,
+  "ttft_s": null,
+  "gold_context": [
+    "django/utils/autoreload.py",
+    "tests/utils_tests/test_autoreload.py"
+  ]
+}

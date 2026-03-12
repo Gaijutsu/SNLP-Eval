@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11001",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.2640681225725909,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.2640681225725909,
+    "mrr": 0.25,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 16.031748125096783,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/constants.py",
+    "django/contrib/postgres/aggregates/mixins.py",
+    "django/db/models/constants.py",
+    "django/db/models/sql/compiler.py",
+    "django/db/backends/sqlite3/introspection.py",
+    "django/contrib/gis/db/models/aggregates.py",
+    "django/contrib/postgres/search.py",
+    "django/test/runner.py",
+    "tests/db_functions/text/test_substr.py",
+    "django/db/backends/mysql/introspection.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2129,
+      "results": [
+        {
+          "file": "django/db/models/sql/constants.py",
+          "score": 0.6303
+        },
+        {
+          "file": "django/contrib/postgres/aggregates/mixins.py",
+          "score": 0.6192
+        },
+        {
+          "file": "django/db/models/constants.py",
+          "score": 0.5045
+        },
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 0.4973
+        },
+        {
+          "file": "django/db/backends/sqlite3/introspection.py",
+          "score": 0.4614
+        },
+        {
+          "file": "django/contrib/gis/db/models/aggregates.py",
+          "score": 0.4421
+        },
+        {
+          "file": "django/contrib/postgres/search.py",
+          "score": 0.4404
+        },
+        {
+          "file": "django/test/runner.py",
+          "score": 0.4395
+        },
+        {
+          "file": "tests/db_functions/text/test_substr.py",
+          "score": 0.4361
+        },
+        {
+          "file": "django/db/backends/mysql/introspection.py",
+          "score": 0.4321
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 16.031748125096783,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/compiler.py",
+    "tests/expressions/tests.py"
+  ]
+}

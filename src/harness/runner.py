@@ -69,6 +69,10 @@ def _get_gatherer(cfg: dict, llm_cfg: dict | None = None) -> ContextGatherer:
         from harness.gatherers.agentless import AgentlessGatherer
 
         return AgentlessGatherer(llm_config=llm_cfg, **kwargs)
+    elif name == "agentic_bm25":
+        from harness.gatherers.react_bm25_agent import AgenticBM25Gatherer
+
+        return AgenticBM25Gatherer(llm_config=llm_cfg, **kwargs)
     else:
         raise ValueError(f"Unknown gatherer: {name}")
 
