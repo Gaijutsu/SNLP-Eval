@@ -57,7 +57,12 @@ class HybridRAGGatherer(ContextGatherer):
         self.model_name = model
         self.top_k = top_k
         self.rrf_k = rrf_k
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        if torch.cuda.is_available():
+            device = "cuda"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        else:
+            device = "cpu"
         self._model = SentenceTransformer(self.model_name, device=device)
         logger.info("HybridRAGGatherer using device: %s", device)
 
