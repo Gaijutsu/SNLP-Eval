@@ -22,7 +22,7 @@ def precision_at_k(
     gold: Sequence[str],
     k: int,
 ) -> float:
-    """Precision@K — fraction of top-K retrieved items that are relevant.
+    """Precision@K — fraction of retrieved items up to rank K that are relevant.
 
     Args:
         retrieved: Ordered list of retrieved item identifiers (most relevant first).
@@ -34,10 +34,13 @@ def precision_at_k(
     """
     if k <= 0:
         return 0.0
+    effective_k = min(k, len(retrieved))
+    if effective_k == 0:
+        return 0.0
     top_k = _deduplicate(retrieved)[:k]
     gold_set = set(gold)
     relevant_count = sum(1 for item in top_k if item in gold_set)
-    return relevant_count / k
+    return relevant_count / effective_k
 
 
 def recall_at_k(
@@ -45,7 +48,7 @@ def recall_at_k(
     gold: Sequence[str],
     k: int,
 ) -> float:
-    """Recall@K — fraction of relevant items found in top-K results.
+    """Recall@K — fraction of relevant items recoverable within rank K that are found.
 
     Returns:
         Recall value in [0, 1].  Returns 0.0 if gold is empty.
@@ -55,7 +58,8 @@ def recall_at_k(
     top_k = _deduplicate(retrieved)[:k]
     gold_set = set(gold)
     relevant_count = sum(1 for item in top_k if item in gold_set)
-    return relevant_count / len(gold_set)
+    max_relevant_at_k = min(len(gold_set), k)
+    return relevant_count / max_relevant_at_k
 
 
 def mrr(

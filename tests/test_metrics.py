@@ -24,10 +24,16 @@ class TestPrecisionAtK:
         assert precision_at_k(["a", "x", "b"], ["a", "b", "c"], k=3) == pytest.approx(2 / 3)
 
     def test_k_larger_than_retrieved(self):
-        assert precision_at_k(["a", "b"], ["a", "b", "c"], k=5) == pytest.approx(2 / 5)
+        assert precision_at_k(["a", "b"], ["a", "b", "c"], k=5) == pytest.approx(1.0)
+
+    def test_k_larger_than_retrieved_partial(self):
+        assert precision_at_k(["a", "x"], ["a", "b", "c"], k=5) == pytest.approx(0.5)
 
     def test_k_zero(self):
         assert precision_at_k(["a"], ["a"], k=0) == 0.0
+
+    def test_empty_retrieved(self):
+        assert precision_at_k([], ["a"], k=5) == 0.0
 
     def test_k_one(self):
         assert precision_at_k(["a", "b"], ["a"], k=1) == 1.0
@@ -38,11 +44,17 @@ class TestRecallAtK:
     def test_perfect_recall(self):
         assert recall_at_k(["a", "b", "c"], ["a", "b", "c"], k=3) == 1.0
 
+    def test_perfect_recall_when_k_less_than_gold_size(self):
+        assert recall_at_k(["a", "b", "c"], ["a", "b", "c", "d", "e"], k=3) == 1.0
+
     def test_no_overlap(self):
         assert recall_at_k(["x", "y", "z"], ["a", "b"], k=3) == 0.0
 
     def test_partial(self):
         assert recall_at_k(["a", "x"], ["a", "b"], k=2) == pytest.approx(0.5)
+
+    def test_partial_when_k_less_than_gold_size(self):
+        assert recall_at_k(["a", "x", "b"], ["a", "b", "c", "d"], k=3) == pytest.approx(2 / 3)
 
     def test_empty_gold(self):
         assert recall_at_k(["a", "b"], [], k=3) == 0.0
@@ -103,6 +115,26 @@ class TestComputeAll:
         )
         for key, value in result.items():
             assert 0.0 <= value <= 1.0, f"{key}={value} out of range"
+
+    def test_precision_not_penalized_for_short_result_list(self):
+        result = compute_all_retrieval_metrics(
+            ["a", "b"],
+            ["a", "b", "c"],
+            k_values=[1, 3, 5],
+        )
+        assert result["precision@1"] == 1.0
+        assert result["precision@3"] == 1.0
+        assert result["precision@5"] == 1.0
+
+    def test_recall_can_reach_one_when_k_less_than_gold_size(self):
+        result = compute_all_retrieval_metrics(
+            ["a", "b", "c"],
+            ["a", "b", "c", "d", "e"],
+            k_values=[1, 3, 5],
+        )
+        assert result["recall@1"] == 1.0
+        assert result["recall@3"] == 1.0
+        assert result["recall@5"] == 0.6
 
 
 class TestDuplicateRetrievedItems:
