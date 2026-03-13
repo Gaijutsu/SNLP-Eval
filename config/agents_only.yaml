@@ -13,7 +13,7 @@ llm:
 gatherers:
   - name: react_agent
     llm: hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M
-    max_steps: 15
+    max_steps: 30
   - name: agentless
     llm: hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M
     n_samples: 5

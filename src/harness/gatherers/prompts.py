@@ -8,6 +8,9 @@ Python file that gatherers can use to get their prompts
 
 AGENTLESS_FILE_LOCALIZATION_PROMPT = """\
 You are an expert software engineer performing fault localization on a code repository.
+- Sort candidate files by relevance, with the most relevant first. Relevance is based on how strongly the file is connected to the issue through identifiers, directory structure, and content.
+- You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.
+
 
 ## Issue
 {query}
@@ -89,26 +92,6 @@ Then generate the patch. Rules:
 """
 
 
-def get_agentless_file_localization_prompt():
-    return AGENTLESS_FILE_LOCALIZATION_PROMPT
-
-
-def get_agentless_function_localization_prompt():
-    return AGENTLESS_FUNCTION_LOCALIZATION_PROMPT
-
-
-def get_agentless_repair_prompt():
-    return AGENTLESS_REPAIR_PROMPT
-
-
-def get_agentless_prompts():
-    return (
-        get_agentless_file_localization_prompt,
-        get_agentless_function_localization_prompt,
-        get_agentless_repair_prompt,
-    )
-
-
 REACT_TOOL_DESCRIPTIONS = """\
 You have the following tools available:
 
@@ -121,13 +104,14 @@ You have the following tools available:
    Search for a regex pattern in source files (.py/.java/.ts/.js/.cs) under the
    given path. Returns matching lines with file:line format. Use this to find
    where a specific function, class, or error message is defined or called.
-   Only the first 100 matches are returned, so be specific with your pattern.
    Example: grep("def authenticate", "src/")
 
-3. read_file(path: str) -> str
-   Read the contents of a file (relative to repo root). Returns first 200 lines.
-   Use this to confirm a file's relevance by inspecting its implementation.
+3. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str
+   Read the contents of a file (relative to repo root). Use this to confirm a
+   file's relevance by inspecting its implementation. You may optionally pass a
+   start and end line range when grep already showed the interesting region.
    Example: read_file("src/auth/login.py")
+   Example: read_file("src/auth/login.py", 120, 220)
 
 /nothink
 """
@@ -140,11 +124,11 @@ relevant to a given issue in a code repository.
 
 ## Exploration Strategy
 Follow this general approach:
-1. Start with search_codebase() to get an initial set of candidate files.
-2. Use list_dir() to understand the directory structure around candidates.
-3. Use grep() to find where relevant symbols (functions, classes, errors) are defined or called.
-4. Use read_file() to confirm relevance by inspecting implementation details.
-5. Repeat until you have sufficient evidence, then call finish().
+1. Start with one focused grep() using the most distinctive identifier from the issue.
+2. Use list_dir() only when you need to understand a promising directory.
+3. Use read_file() to inspect the most relevant candidate files, optionally with line ranges.
+4. As soon as you identify the main source file, actively look for matching tests.
+5. Stop early once you have enough evidence, then call finish().
 
 ## Response Format
 On EVERY turn, respond in EXACTLY this format:
@@ -159,17 +143,11 @@ Action: finish(file1.py, file2.py, ...)
 - Always start with a Thought.
 - Call exactly ONE action per turn.
 - If a tool returns an error or no results, try a different query or tool rather than repeating the same call.
-- The finish() arguments are the relevant file paths — only include files you have direct evidence for.
-- Prefer precision: 3-10 high-confidence files is better than a long uncertain list.
+- Never repeat the exact same tool call with the exact same arguments.
+- Prefer 2-6 total tool calls; do not keep exploring once the likely source file and its test are known.
+- The finish() arguments are the relevant file paths, which should include the file where the error likely is, and the test for that file if it exists.
 - You have at most {max_steps} steps. If approaching the limit, call finish() with your best findings so far.
+- You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.
 
 /nothink
 """
-
-
-def get_react_tool_descriptions():
-    return REACT_TOOL_DESCRIPTIONS
-
-
-def get_react_system_prompt():
-    return REACT_SYSTEM_PROMPT

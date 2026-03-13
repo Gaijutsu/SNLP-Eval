@@ -19,9 +19,9 @@ from harness.gatherers.rag_bm25 import ChunkedIndex, _read_file_safe
 from harness.llm_client import LLMClient, LLMConfig
 
 from harness.gatherers.prompts import (
-    get_agentless_file_localization_prompt,
-    get_agentless_function_localization_prompt,
-    get_agentless_repair_prompt,
+    AGENTLESS_FILE_LOCALIZATION_PROMPT,
+    AGENTLESS_FUNCTION_LOCALIZATION_PROMPT,
+    AGENTLESS_REPAIR_PROMPT,
 )
 
 ISSUE_TRUNCATION_LIMIT = 999999999
@@ -45,13 +45,6 @@ def _read_file_with_line_numbers(path: Path, max_lines: int = 300) -> str:
         return result
     except OSError:
         return "(unable to read file)"
-
-
-FILE_LOCALIZATION_PROMPT = get_agentless_file_localization_prompt()
-
-FUNCTION_LOCALIZATION_PROMPT = get_agentless_function_localization_prompt()
-
-REPAIR_PROMPT = get_agentless_repair_prompt()
 
 
 class AgentlessGatherer(ContextGatherer):
@@ -91,9 +84,9 @@ class AgentlessGatherer(ContextGatherer):
             {"role": "system", "content": "You are an expert code analyst."},
             {
                 "role": "user",
-                "content": FILE_LOCALIZATION_PROMPT.format(
+                "content": AGENTLESS_FILE_LOCALIZATION_PROMPT.format(
                     query=instance.query[:ISSUE_TRUNCATION_LIMIT],
-                    file_listing=file_listing[FILE_CONTENT_TRUNCATION_LIMIT],
+                    file_listing=file_listing[:FILE_CONTENT_TRUNCATION_LIMIT],
                     top_n=self.top_files,
                 ),
             },
@@ -137,7 +130,7 @@ class AgentlessGatherer(ContextGatherer):
             {"role": "system", "content": "You are an expert code analyst."},
             {
                 "role": "user",
-                "content": FUNCTION_LOCALIZATION_PROMPT.format(
+                "content": AGENTLESS_FUNCTION_LOCALIZATION_PROMPT.format(
                     query=instance.query[:ISSUE_TRUNCATION_LIMIT],
                     file_contents=file_contents[:FILE_CONTENT_TRUNCATION_LIMIT],
                 ),
@@ -169,7 +162,7 @@ class AgentlessGatherer(ContextGatherer):
                 },
                 {
                     "role": "user",
-                    "content": REPAIR_PROMPT.format(
+                    "content": AGENTLESS_REPAIR_PROMPT.format(
                         query=instance.query[:ISSUE_TRUNCATION_LIMIT],
                         code_regions=code_regions[:FILE_CONTENT_TRUNCATION_LIMIT],
                     ),

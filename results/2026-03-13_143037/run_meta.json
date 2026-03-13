@@ -1,0 +1,40 @@
+{
+  "run_id": "2026-03-13_143037",
+  "timestamp": "2026-03-13T14:30:37.082851+00:00",
+  "config": {
+    "benchmark": {
+      "name": "swebench_lite",
+      "split": "test",
+      "limit": 50,
+      "gold_context_strategy": "patch_and_tests"
+    },
+    "llm": {
+      "provider": "local",
+      "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+      "base_url": "http://localhost:11434/v1"
+    },
+    "gatherers": [
+      {
+        "name": "react_agent",
+        "llm": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+        "max_steps": 30
+      },
+      {
+        "name": "agentless",
+        "llm": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+        "n_samples": 5
+      }
+    ],
+    "k_values": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "dashboard": {
+      "enabled": true,
+      "port": 8765
+    },
+    "output_dir": "./results"
+  }
+}
