@@ -121,6 +121,7 @@ You have the following tools available:
    Search for a regex pattern in source files (.py/.java/.ts/.js/.cs) under the
    given path. Returns matching lines with file:line format. Use this to find
    where a specific function, class, or error message is defined or called.
+   Only the first 100 matches are returned, so be specific with your pattern.
    Example: grep("def authenticate", "src/")
 
 3. read_file(path: str) -> str

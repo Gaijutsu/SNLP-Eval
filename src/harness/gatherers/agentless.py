@@ -24,6 +24,9 @@ from harness.gatherers.prompts import (
     get_agentless_repair_prompt,
 )
 
+ISSUE_TRUNCATION_LIMIT = 999999999
+FILE_CONTENT_TRUNCATION_LIMIT = 999999999
+
 
 def _strip_think_blocks(text: str) -> str:
     """Remove <think>...</think> blocks (e.g. Qwen3 chain-of-thought)."""
@@ -89,8 +92,8 @@ class AgentlessGatherer(ContextGatherer):
             {
                 "role": "user",
                 "content": FILE_LOCALIZATION_PROMPT.format(
-                    query=instance.query[:3000],
-                    file_listing=file_listing[:6000],
+                    query=instance.query[:ISSUE_TRUNCATION_LIMIT],
+                    file_listing=file_listing[FILE_CONTENT_TRUNCATION_LIMIT],
                     top_n=self.top_files,
                 ),
             },
@@ -135,8 +138,8 @@ class AgentlessGatherer(ContextGatherer):
             {
                 "role": "user",
                 "content": FUNCTION_LOCALIZATION_PROMPT.format(
-                    query=instance.query[:2000],
-                    file_contents=file_contents[:8000],
+                    query=instance.query[:ISSUE_TRUNCATION_LIMIT],
+                    file_contents=file_contents[:FILE_CONTENT_TRUNCATION_LIMIT],
                 ),
             },
         ]
@@ -167,8 +170,8 @@ class AgentlessGatherer(ContextGatherer):
                 {
                     "role": "user",
                     "content": REPAIR_PROMPT.format(
-                        query=instance.query[:2000],
-                        code_regions=code_regions[:6000],
+                        query=instance.query[:ISSUE_TRUNCATION_LIMIT],
+                        code_regions=code_regions[:FILE_CONTENT_TRUNCATION_LIMIT],
                     ),
                 },
             ]

@@ -56,8 +56,6 @@ def _tool_list_dir(repo: Path, path: str) -> str:
         rel = item.relative_to(repo).as_posix()
         suffix = "/" if item.is_dir() else ""
         entries.append(f"  {rel}{suffix}")
-    if len(entries) > 100:
-        entries = entries[:100] + [f"  ... and {len(entries) - 100} more"]
     return "\n".join(entries) if entries else "(empty directory)"
 
 
@@ -120,8 +118,8 @@ def _tool_grep(repo: Path, pattern: str, path: str = ".") -> str:
         )
         output = result.stdout.strip()
         lines = output.splitlines()
-        if len(lines) > 50:
-            return "\n".join(lines[:50]) + f"\n... ({len(lines) - 50} more matches)"
+        if len(lines) > 100:
+            return "\n".join(lines[:100]) + f"\n... ({len(lines) - 100} more matches)"
         return output if output else "No matches found."
     except (subprocess.TimeoutExpired, FileNotFoundError):
         # Fallback: simple Python grep
@@ -142,11 +140,11 @@ def _tool_grep(repo: Path, pattern: str, path: str = ".") -> str:
                     if compiled.search(line):
                         rel = f.relative_to(repo).as_posix()
                         matches.append(f"{rel}:{i}: {line.strip()}")
-                        if len(matches) >= 50:
+                        if len(matches) >= 100:
                             break
             except OSError:
                 continue
-            if len(matches) >= 50:
+            if len(matches) >= 100:
                 break
         return "\n".join(matches) if matches else "No matches found."
 
@@ -222,7 +220,7 @@ class ReActGatherer(ContextGatherer):
             {"role": "system", "content": system},
             {
                 "role": "user",
-                "content": f"Find the files most relevant to this issue:\n\n{instance.query[:4000]}",
+                "content": f"Find the files most relevant to this issue:\n\n{instance.query}",
             },
         ]
 
@@ -283,7 +281,7 @@ class ReActGatherer(ContextGatherer):
                 f"[Step {step + 1}/{self.max_steps} — "
                 f"{remaining} remaining]"
             )
-            full_observation = f"{step_header}\n{observation[:3000]}"
+            full_observation = f"{step_header}\n{observation}"
 
             # Append to conversation
             messages.append({"role": "assistant", "content": content})
@@ -291,7 +289,7 @@ class ReActGatherer(ContextGatherer):
                 {"role": "user", "content": f"Observation:\n{full_observation}"}
             )
 
-            trace[-1]["observation"] = observation[:500]
+            trace[-1]["observation"] = observation
 
         else:
             # Agent exhausted all steps without calling finish().
