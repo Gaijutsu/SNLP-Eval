@@ -112,6 +112,11 @@ You have the following tools available:
    Example: read_file("src/auth/login.py")
    Example: read_file("src/auth/login.py", 120, 220)
 
+4. find_tests(source_path: str) -> str
+   Find likely test files for a given source file path.
+   Use this after you have identified a likely source file.
+   Example: find_tests("src/auth/login.py")
+
 /nothink
 """
 
@@ -126,7 +131,7 @@ Follow this general approach:
 1. Start with one focused grep() using the most distinctive identifier from the issue.
 2. Use list_dir() only when you need to understand a promising directory.
 3. Use read_file() to inspect the most relevant candidate files, optionally with line ranges.
-4. As soon as you identify the main source file, actively look for matching tests.
+4. As soon as you identify the main source file, call find_tests() for it.
 5. Stop early once you have enough evidence, then call finish().
 
 ## Response Format

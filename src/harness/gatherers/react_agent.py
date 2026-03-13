@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 import re
-import shlex
 import time
 from pathlib import Path
 from typing import Any
@@ -33,8 +32,7 @@ Action: finish(file1.py, file2.py, ...)
 """
 
 STAGNATION_PROMPT = """\
-You are repeating actions or not discovering new files.
-Do NOT call the same tool again.
+You are no longer making useful progress.
 Based on the evidence already gathered, provide your final answer now by calling finish() with the most relevant source file(s) and matching test file(s) if they exist.
 
 Likely candidate files already seen:
@@ -46,8 +44,9 @@ Action: finish(file1.py, file2.py, ...)
 """
 
 SOURCE_FILE_SUFFIXES = {".py", ".java", ".ts", ".js", ".cs"}
-MAX_REPEAT_ACTIONS = 2
+MAX_REPEAT_ACTIONS = 3
 MAX_STAGNATION_STEPS = 3
+MAX_AUTO_TEST_LOOKUPS = 3
 
 
 def _strip_think_blocks(text: str) -> str:
@@ -160,6 +159,18 @@ def _tool_grep(repo: Path, pattern: str, path: str = ".") -> str:
             if len(matches) >= 100:
                 break
         return "\n".join(matches) if matches else "No matches found."
+
+
+def _tool_find_tests(repo: Path, source_path: str) -> str:
+    """Find likely test files for a given source file path."""
+    normalized = _normalize_candidate_path(source_path, repo)
+    if normalized is None:
+        return f"Error: '{source_path}' is not a valid source file path in the repository."
+
+    test_paths = _find_likely_tests_for_source(normalized, repo)
+    if not test_paths:
+        return "No likely test files found."
+    return "\n".join(test_paths)
 
 
 def _is_file_path(s: str) -> bool:
@@ -346,7 +357,7 @@ def _finalize_retrieved_paths(
     candidate_paths: list[str] | None = None,
     messages: list[dict[str, str]] | None = None,
 ) -> list[str]:
-    """Deduplicate paths, keep only valid repo files, and add likely tests."""
+    """Finalize from finish() paths only and add likely tests for those paths."""
     ordered: list[str] = []
     seen: set[str] = set()
 
@@ -354,11 +365,42 @@ def _finalize_retrieved_paths(
         for path in paths:
             _add_candidate_path(path, repo, ordered, seen)
 
+    # Intentionally only use finish() paths for final retrieval.
+    # This avoids candidate aggregation changing ranking/contents post-finish.
     add_many(raw_paths)
-    if candidate_paths:
-        add_many(candidate_paths)
-    if messages:
-        add_many(_extract_paths_from_conversation(messages, repo))
+
+    sources_for_auto_tests: list[str] = []
+    sources_for_auto_tests_seen: set[str] = set()
+    raw_normalized: list[str] = []
+    raw_seen: set[str] = set()
+    for path in raw_paths:
+        normalized = _normalize_candidate_path(path, repo)
+        if normalized and normalized not in raw_seen:
+            raw_seen.add(normalized)
+            raw_normalized.append(normalized)
+
+    for path in raw_normalized:
+        path_parts = path.split("/")
+        if path_parts and path_parts[-1].startswith("test_"):
+            continue
+        if "tests" in path_parts:
+            continue
+        if path not in sources_for_auto_tests_seen:
+            sources_for_auto_tests_seen.add(path)
+            sources_for_auto_tests.append(path)
+
+    if not sources_for_auto_tests:
+        for path in ordered:
+            path_parts = path.split("/")
+            if path_parts and path_parts[-1].startswith("test_"):
+                continue
+            if "tests" in path_parts:
+                continue
+            if path not in sources_for_auto_tests_seen:
+                sources_for_auto_tests_seen.add(path)
+                sources_for_auto_tests.append(path)
+            if len(sources_for_auto_tests) >= MAX_AUTO_TEST_LOOKUPS:
+                break
 
     finalized: list[str] = []
     finalized_seen: set[str] = set()
@@ -367,7 +409,8 @@ def _finalize_retrieved_paths(
             finalized.append(path)
             finalized_seen.add(path)
 
-        for test_path in _find_likely_tests_for_source(path, repo):
+    for source_path in sources_for_auto_tests[:MAX_AUTO_TEST_LOOKUPS]:
+        for test_path in _find_likely_tests_for_source(source_path, repo):
             if test_path not in finalized_seen:
                 finalized.append(test_path)
                 finalized_seen.add(test_path)
@@ -380,6 +423,27 @@ def _build_stagnation_prompt(candidate_paths: list[str]) -> str:
     if not candidates:
         candidates = "- (none found)"
     return STAGNATION_PROMPT.format(candidates=candidates)
+
+
+def _is_non_progress_step(
+    *,
+    tool_name: str,
+    observation: str,
+    repeated_action: bool,
+    new_candidates: int,
+) -> bool:
+    observation_clean = observation.strip()
+    if tool_name == "error":
+        return True
+    if observation_clean.startswith("Error:"):
+        return True
+    if "Respond in EXACTLY this format" in observation_clean:
+        return True
+    if observation_clean in {"No matches found.", "No likely test files found."}:
+        return True
+    if repeated_action and new_candidates == 0:
+        return True
+    return False
 
 
 class ReActGatherer(ContextGatherer):
@@ -455,7 +519,8 @@ class ReActGatherer(ContextGatherer):
             )
 
             action_key = (tool_name, tuple(args))
-            if action_key == last_action:
+            repeated_action = action_key == last_action
+            if repeated_action:
                 repeat_count += 1
             else:
                 repeat_count = 1
@@ -481,10 +546,13 @@ class ReActGatherer(ContextGatherer):
                 pattern = args[0] if args else ""
                 path = args[1] if len(args) > 1 else "."
                 observation = _tool_grep(repo, pattern, path)
+            elif tool_name == "find_tests":
+                source_path = args[0] if args else ""
+                observation = _tool_find_tests(repo, source_path)
             else:
                 observation = (
                     f"Error: unknown tool '{tool_name}'. "
-                    f"Available tools: list_dir, read_file, grep, finish. "
+                    f"Available tools: list_dir, read_file, grep, find_tests, finish. "
                     f"Remember: respond with ONLY Thought + Action."
                 )
 
@@ -496,14 +564,19 @@ class ReActGatherer(ContextGatherer):
                 candidate_paths,
                 candidate_seen,
             )
-            if tool_name == "error" or new_candidates == 0:
+            if _is_non_progress_step(
+                tool_name=tool_name,
+                observation=observation,
+                repeated_action=repeated_action,
+                new_candidates=new_candidates,
+            ):
                 stagnation_count += 1
             else:
                 stagnation_count = 0
 
             if repeat_count >= MAX_REPEAT_ACTIONS:
                 observation += (
-                    "\nLoop warning: this exact tool call was already used. "
+                    "\nLoop warning: this exact tool call was already used repeatedly. "
                     "Do not repeat it again; inspect a different file or call finish(...)."
                 )
 
@@ -526,15 +599,13 @@ class ReActGatherer(ContextGatherer):
             should_force_wrap_up = (
                 candidate_paths
                 and step + 1 < self.max_steps
-                and (
-                    repeat_count >= MAX_REPEAT_ACTIONS
-                    or stagnation_count >= MAX_STAGNATION_STEPS
-                )
+                and stagnation_count >= MAX_STAGNATION_STEPS
             )
             if should_force_wrap_up:
-                logger.info("Agent stagnated — forcing early wrap-up.")
+                logger.info("Agent made limited progress — forcing early wrap-up.")
+                early_prompt = _build_stagnation_prompt(candidate_paths)
                 wrap_response = self.llm.chat(
-                    messages + [{"role": "user", "content": _build_stagnation_prompt(candidate_paths)}]
+                    messages + [{"role": "user", "content": early_prompt}]
                 )
                 total_tokens += wrap_response.total_tokens
                 wrap_content = wrap_response.content
@@ -554,7 +625,7 @@ class ReActGatherer(ContextGatherer):
                         "tokens": wrap_response.total_tokens,
                     }
                 )
-                messages.append({"role": "user", "content": _build_stagnation_prompt(candidate_paths)})
+                messages.append({"role": "user", "content": early_prompt})
                 messages.append({"role": "assistant", "content": wrap_content})
 
                 if wrap_tool_name == "finish":
