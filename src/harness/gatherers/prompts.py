@@ -112,24 +112,18 @@ def get_agentless_prompts():
 REACT_TOOL_DESCRIPTIONS = """\
 You have the following tools available:
 
-1. search_codebase(query: str) -> str
-   Keyword/semantic search over all files in the repo. Returns the top-5 most
-   relevant file paths with scores. Use this first to identify candidate files
-   before diving into specifics.
-   Example: search_codebase("user authentication token validation")
-
-2. list_dir(path: str) -> str
+1. list_dir(path: str) -> str
    List files and subdirectories in the given directory (relative to repo root).
    Use this to understand project layout around a candidate directory.
    Example: list_dir("src/auth")
 
-3. grep(pattern: str, path: str = ".") -> str
+2. grep(pattern: str, path: str = ".") -> str
    Search for a regex pattern in source files (.py/.java/.ts/.js/.cs) under the
    given path. Returns matching lines with file:line format. Use this to find
    where a specific function, class, or error message is defined or called.
    Example: grep("def authenticate", "src/")
 
-4. read_file(path: str) -> str
+3. read_file(path: str) -> str
    Read the contents of a file (relative to repo root). Returns first 200 lines.
    Use this to confirm a file's relevance by inspecting its implementation.
    Example: read_file("src/auth/login.py")

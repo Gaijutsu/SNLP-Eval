@@ -19,7 +19,7 @@ from harness.benchmarks.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
 from harness.llm_client import LLMClient, LLMConfig
 
-from prompts import get_react_tool_descriptions, get_react_system_prompt
+from harness.gatherers.prompts import get_react_tool_descriptions, get_react_system_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -269,16 +269,6 @@ class ReActGatherer(ContextGatherer):
                 pattern = args[0] if args else ""
                 path = args[1] if len(args) > 1 else "."
                 observation = _tool_grep(repo, pattern, path)
-            elif tool_name == "search_codebase":
-                # Use BM25 as a simple search backend
-                from harness.gatherers.rag_bm25 import ChunkedIndex
-
-                idx = ChunkedIndex(repo)
-                query = args[0] if args else instance.query
-                results = idx.search(query, top_k=5)
-                observation = "\n".join(
-                    f"  {path} (score: {score:.4f})" for path, score in results
-                )
             else:
                 observation = (
                     f"Error: unknown tool '{tool_name}'. "
