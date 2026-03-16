@@ -36,6 +36,7 @@ class SWEBenchAdapter(BenchmarkAdapter):
         self,
         split: str = "test",
         limit: int | None = None,
+        task_ids: list[str] | None = None,
     ) -> list[BenchmarkInstance]:
         import os
 
@@ -43,7 +44,13 @@ class SWEBenchAdapter(BenchmarkAdapter):
         from datasets import load_dataset
 
         ds = load_dataset(self.HF_DATASET, split=split)
-        if limit:
+
+        # Filter to pinned task IDs if provided (for reproducible subsets)
+        if task_ids:
+            task_id_set = set(task_ids)
+            ds = ds.filter(lambda row: row["instance_id"] in task_id_set)
+            logger.info("Filtered to %d pinned task IDs", len(ds))
+        elif limit:
             ds = ds.select(range(min(limit, len(ds))))
 
         instances: list[BenchmarkInstance] = []

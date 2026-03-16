@@ -1,0 +1,295 @@
+# Mert's Workplan – RAG Baseline + Evaluation Lead
+
+## 1. Current State of the Codebase
+
+The scaffold repo is **fully implemented** at the code level. Every module described in [README.md](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/README.md) exists and is functional:
+
+| Component | Status | Key Files |
+|---|---|---|
+| BM25 gatherer | ✅ Complete | [rag_bm25.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/gatherers/rag_bm25.py) |
+| Dense gatherer | ✅ Complete | [rag_dense.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/gatherers/rag_dense.py) |
+| Hybrid (RRF) gatherer | ✅ Complete | [rag_hybrid.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/gatherers/rag_hybrid.py) |
+| Retrieval metrics | ✅ Complete | [retrieval.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/metrics/retrieval.py) — Precision@K, Recall@K, MRR, NDCG@K |
+| SWE-bench adapter | ✅ Complete | [swebench.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/benchmarks/swebench.py) |
+| Runner + reporting | ✅ Complete | [runner.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/runner.py), [reporting.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/reporting.py) |
+| Unit tests | ✅ Complete | [test_metrics.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/tests/test_metrics.py), [test_adapters.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/tests/test_adapters.py) |
+
+### What's Missing (Your Deliverables)
+
+| Gap | Why It Matters |
+|---|---|
+| No `config/rag_baseline_week1.yaml` | The team plan requires a dedicated "golden config" for N=30 tasks |
+| No pinned task-ID subset | `limit: 30` gives non-deterministic subsets; need a fixed list |
+| No `results/` output | No baseline run has been executed yet |
+| No ablation configs | BM25 vs Dense, BM25 vs Hybrid comparisons not set up |
+| No results table or failure-mode analysis | Required for the progress report |
+
+---
+
+## 2. Your Role (from the Team Plan)
+
+You are the **RAG Baseline + Evaluation Lead**. Your deliverables:
+
+1. **RAG baseline spec + integration** — define baseline retrieval (BM25 first), ensure gatherer produces ranked file paths compatible with evaluation
+2. **Evaluation output** — Recall@K for K=5/10/20 over files, produce first results table
+3. **Two cheap ablations** — BM25 vs Dense OR BM25 vs Hybrid, plus K sensitivity
+4. **Write-up contribution** — methods paragraph (retrieval + Recall@K definition), early results paragraph + 3–5 failure-mode notes
+
+> **Definition of done:** A reproducible run inside the scaffold repo that outputs Recall@K results for ≥2 retrieval variants on N=30 tasks.
+
+---
+
+## 3. Research Findings
+
+### 3.1 BM25 for Code Retrieval
+- BM25 is the standard baseline retriever used in the original SWE-bench paper
+- The scaffold's custom BM25-Okapi implementation (no `rank-bm25` dependency) uses an inverted index with IDF + camelCase-aware tokenization — this is solid
+- SWE-bench provides pre-processed BM25 retrieval datasets (`SWE-bench_bm25_13K`, `SWE-bench_bm25_27K`) but your scaffold does its own indexing, which is more evaluable
+
+### 3.2 Dense Retrieval
+- `all-MiniLM-L6-v2` (the default) is a reasonable lightweight model, but it has a **max sequence length of 256 tokens** — the scaffold truncates files to 8000 chars (~2000 tokens), but the model internally truncates further
+- For code, specialized models like `microsoft/codebert-base` or `Salesforce/codet5p-110m-embedding` would likely outperform, but `all-MiniLM-L6-v2` is fine for a Week 1 baseline
+- Dense retrieval is expected to capture semantic intent better (e.g., "authentication bug" → `auth.py`) but may miss exact identifiers
+
+### 3.3 Hybrid (BM25 + Dense via RRF)
+- Already implemented with RRF (k=60), fetching 3× top_k from each method
+- Research consensus (2024-2025): hybrid is the "safest default for production RAG" — combining lexical precision with semantic understanding
+- **This is nearly free to add as an ablation** since the code already exists
+
+### 3.4 Key Risk: Path Normalization
+> [!CAUTION]
+> The retrieval metrics in [metrics/retrieval.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/metrics/retrieval.py) do **exact string matching** between retrieved and gold contexts. A mismatch like `src/foo.py` vs `./src/foo.py` will **silently tank Recall@K**.
+
+The SWE-bench adapter extracts gold files from patches using [b/](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/gatherers/rag_bm25.py#100-126) prefix stripping (line 134 of [swebench.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/benchmarks/swebench.py)), producing paths like `src/auth.py`. The BM25 gatherer uses `fpath.relative_to(repo_path).as_posix()` which also produces `src/auth.py`. **These should match**, but verify on Day 1.
+
+### 3.5 SWE-bench Repo Cloning Risk
+- The adapter clones repos via `git clone --depth 1` + `git fetch --depth 1 origin <commit>` + `git checkout <commit>`
+- Shallow clones + specific commit fetch can fail for older/force-pushed commits
+- First run on N=30 will be slow (many git clones); subsequent runs use cached repos
+
+### 3.6 Failure Modes to Watch For
+1. **Path mismatch** — retrieved vs gold file paths not normalized identically
+2. **Single-file issues dominate** — most SWE-bench Lite tasks modify 1–2 files, so Recall@K can be saturated at small K
+3. **Query quality** — problem statements vary in specificity; vague ones hurt all retrieval methods
+4. **Large repos** — BM25 indexing is fast, but dense embedding of large repos is slow (hundreds of files × 8000 chars each)
+5. **Missing file types** — the gatherers only index [.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/runner.py), `.java`, `.ts`, `.cs`, `.js`; SWE-bench Lite is all Python, so this is fine
+
+---
+
+## 4. Step-by-Step Workplan
+
+### Day 1–2: Setup + Proof-of-Life
+
+#### Step 1: Environment Setup
+```bash
+cd /Users/mertalbeyoglu/yr4/snlp/SNLP-Eval
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+```
+
+#### Step 2: Run Existing Tests
+```bash
+pytest -v
+```
+Confirm all 12 tests pass. If any fail, fix before proceeding.
+
+#### Step 3: Create Golden Config
+Create `config/rag_baseline_week1.yaml`:
+```yaml
+benchmark:
+  name: swebench_lite
+  split: test
+  limit: 30          # Fixed subset size
+
+llm:
+  provider: local
+  model: qwen3:0.6b
+  base_url: http://localhost:11434/v1
+
+gatherers:
+  - name: rag_bm25
+    top_k: 20         # Use 20 to evaluate K=5/10/20
+
+k_values: [5, 10, 20]  # Match team plan's K values
+
+dashboard:
+  enabled: false       # Non-blocking for proof-of-life
+
+output_dir: ./results/baseline_bm25
+```
+
+#### Step 4: Proof-of-Life Run (5 tasks first)
+Create a quick-test variant `config/rag_proof_of_life.yaml` with `limit: 5` and run:
+```bash
+harness --config config/rag_proof_of_life.yaml
+```
+**Expected output:** `results/baseline_bm25/results.csv` with Recall@5, Recall@10, Recall@20 for 5 instances.
+
+#### Step 5: Verify Path Normalization
+After the proof-of-life run, manually inspect a few `results/baseline_bm25/instances/*.json` files:
+- Check that `retrieved_contexts` paths match `gold_context` format
+- Look for any `./` prefixes, trailing slashes, or case mismatches
+
+---
+
+### Day 2–3: Baseline Results (N=30)
+
+#### Step 6: Full Baseline Run
+```bash
+harness --config config/rag_baseline_week1.yaml
+```
+This will take longer (30 × repo cloning on first run). Monitor for:
+- Git clone failures (log warnings)
+- Memory usage for large repos
+
+#### Step 7: Pin the Task Subset
+After a successful run, extract the actual instance IDs used and save them:
+```python
+# scripts/pin_subset.py
+import json, csv
+with open("results/baseline_bm25/results.csv") as f:
+    reader = csv.DictReader(f)
+    ids = sorted(set(row["instance_id"] for row in reader))
+with open("data/subset_30.json", "w") as f:
+    json.dump(ids, f, indent=2)
+print(f"Pinned {len(ids)} instance IDs")
+```
+
+> [!IMPORTANT]
+> Once pinned, update `config/rag_baseline_week1.yaml` to use this fixed list (requires adding `task_ids` support to the SWE-bench adapter, or filtering in the runner). This ensures reproducibility.
+
+#### Step 8: Produce Baseline Results Table
+The [ResultStore](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/reporting.py#15-141) already generates `summary.json` with mean/std. Extract key metrics:
+
+| Metric | Mean | Std |
+|---|---|---|
+| Recall@5 | ? | ? |
+| Recall@10 | ? | ? |
+| Recall@20 | ? | ? |
+| MRR | ? | ? |
+| Precision@5 | ? | ? |
+
+---
+
+### Day 3–4: Ablations
+
+#### Step 9: Dense Ablation
+Create `config/rag_ablation_dense.yaml`:
+```yaml
+benchmark:
+  name: swebench_lite
+  split: test
+  limit: 30
+
+gatherers:
+  - name: rag_dense
+    model: all-MiniLM-L6-v2
+    top_k: 20
+
+k_values: [5, 10, 20]
+dashboard:
+  enabled: false
+output_dir: ./results/ablation_dense
+```
+Run: `harness --config config/rag_ablation_dense.yaml`
+
+#### Step 10: Hybrid Ablation
+Create `config/rag_ablation_hybrid.yaml`:
+```yaml
+benchmark:
+  name: swebench_lite
+  split: test
+  limit: 30
+
+gatherers:
+  - name: rag_hybrid
+    model: all-MiniLM-L6-v2
+    top_k: 20
+
+k_values: [5, 10, 20]
+dashboard:
+  enabled: false
+output_dir: ./results/ablation_hybrid
+```
+Run: `harness --config config/rag_ablation_hybrid.yaml`
+
+#### Step 11: Comparison Table
+Combine results from all three `summary.json` files:
+
+| Method | Recall@5 | Recall@10 | Recall@20 | MRR | Latency (s) |
+|---|---|---|---|---|---|
+| BM25 | ? | ? | ? | ? | ? |
+| Dense | ? | ? | ? | ? | ? |
+| Hybrid (RRF) | ? | ? | ? | ? | ? |
+
+---
+
+### Day 4–5: Analysis + Write-Up
+
+#### Step 12: Failure Mode Analysis
+Pick 5–10 instances where BM25 Recall@10 = 0 and investigate:
+1. **What files were needed?** Check `gold_context` in the instance JSON
+2. **What was retrieved instead?** Check `retrieved_contexts`
+3. **Why did retrieval fail?** Categories:
+   - Query too vague / no code-specific terms
+   - Gold file is a test file, not indexed
+   - Gold file has unusual naming not matching query terms
+   - Multiple files needed, only some found
+
+#### Step 13: Write-Up Contribution
+Draft two paragraphs for the progress report:
+
+**Methods paragraph:**
+- Describe BM25-Okapi with camelCase-aware tokenization
+- Describe dense retrieval with `all-MiniLM-L6-v2`
+- Describe Hybrid via RRF (k=60)
+- Define Recall@K evaluation protocol
+
+**Results paragraph:**
+- Report Recall@5/10/20 for all three methods
+- Highlight which method wins and by how much
+- Note 3–5 failure modes observed
+
+#### Step 14: K-Sensitivity Analysis (already included)
+Since you're computing K=5, 10, 20, the K sensitivity is automatic. Plot:
+```
+Recall vs K for each method (3 lines, K on x-axis)
+```
+
+---
+
+## 5. Coordination with Sara & Jonas
+
+| Person | What You Need From Them | When |
+|---|---|---|
+| **Sara** | Finalized task subset (N=30) with verified `gold_files` — check path format! | Day 1 |
+| **Jonas** | Confirm BM25 gatherer works end-to-end on 5 tasks (proof-of-life) | Day 2 |
+| **Both** | Review your results table before the team meeting | Day 5 |
+
+> [!TIP]
+> If Sara provides a `data/subset_30.json` with pinned instance IDs, you'll need to modify the SWE-bench adapter or runner to accept a `task_ids` filter. This is a small change (~5 lines in [runner.py](file:///Users/mertalbeyoglu/yr4/snlp/SNLP-Eval/src/harness/runner.py)).
+
+---
+
+## 6. Risk Mitigation Checklist
+
+- [ ] Verify `pip install -e .` succeeds without errors  
+- [ ] Run `pytest -v` — all tests pass  
+- [ ] Proof-of-life on 5 tasks produces `results.csv`  
+- [ ] Path normalization: retrieved paths match gold paths exactly  
+- [ ] Git clone doesn't fail for any of the 30 instances  
+- [ ] Dense retrieval doesn't OOM on large repos  
+- [ ] Results are reproducible (same inputs → same outputs for BM25)  
+
+---
+
+## 7. Priority Order (If Time Is Short)
+
+1. 🔴 **BM25 baseline on 5 tasks** (proof-of-life) — this is the absolute minimum
+2. 🔴 **BM25 baseline on 30 tasks** with Recall@5/10/20 table
+3. 🟡 **One ablation** (Dense or Hybrid) on same 30 tasks
+4. 🟡 **Failure mode analysis** (3–5 notes)
+5. 🟢 **Second ablation** + comparison table
+6. 🟢 **Write-up paragraphs**
+7. 🟢 **K-sensitivity plot**

@@ -89,7 +89,18 @@ def run_experiment(config_path: str) -> None:
     benchmark = _get_adapter(cfg["benchmark"])
     split = cfg["benchmark"].get("split", "test")
     limit = cfg["benchmark"].get("limit")
-    instances = benchmark.load(split=split, limit=limit)
+
+    # Support pinned task-ID subsets for reproducibility
+    task_ids = None
+    task_ids_file = cfg["benchmark"].get("task_ids_file")
+    if task_ids_file:
+        import json
+
+        with open(task_ids_file, "r", encoding="utf-8") as f:
+            task_ids = json.load(f)
+        logger.info("Using pinned task IDs from %s (%d IDs)", task_ids_file, len(task_ids))
+
+    instances = benchmark.load(split=split, limit=limit, task_ids=task_ids)
     logger.info("Loaded %d benchmark instances.", len(instances))
 
     gatherer_cfgs = cfg.get("gatherers", [])
