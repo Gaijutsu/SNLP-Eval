@@ -151,7 +151,8 @@ class AgentlessGatherer(ContextGatherer):
         )
 
         # ── Phase 3: Repair (generate candidate patches) ─────────
-        code_regions = file_contents  # Reuse the file contents
+        # Build targeted code_regions from Phase 2 identified regions
+        code_regions = self._build_targeted_regions(regions, repo, file_contents)
         patches: list[str] = []
 
         for sample_idx in range(self.n_samples):
@@ -203,6 +204,70 @@ class AgentlessGatherer(ContextGatherer):
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _build_targeted_regions(
+        regions: list,
+        repo: Path,
+        fallback_file_contents: str,
+        max_lines: int = 80,
+    ) -> str:
+        """Build targeted code snippets from Phase 2 localization results.
+
+        For each region, extract the function/class around the identified line range
+        so the repair prompt gets focused context rather than full file dumps.
+        Falls back to full file_contents if no usable regions are found.
+        """
+        if not regions or not isinstance(regions, list):
+            return fallback_file_contents
+
+        snippets: list[str] = []
+        for region in regions:
+            if not isinstance(region, dict):
+                continue
+            fpath = region.get("file", "")
+            line_range = region.get("line_range", "")
+            symbol = region.get("symbol", "")
+            reason = region.get("reason", "")
+
+            full_path = repo / fpath if fpath else None
+            if not full_path or not full_path.exists():
+                continue
+
+            # Parse line range (e.g. "42-78" or "42")
+            start, end = 1, max_lines
+            if line_range:
+                parts = str(line_range).split("-")
+                try:
+                    start = max(1, int(parts[0]) - 5)  # 5-line buffer before
+                    end = int(parts[-1]) + 10  # 10-line buffer after
+                except (ValueError, IndexError):
+                    pass
+
+            # Cap end so we never exceed max_lines per region
+            end = min(end, start + max_lines)
+            try:
+                all_lines = full_path.read_text(encoding="utf-8", errors="replace").splitlines()
+                total = len(all_lines)
+                s = max(0, start - 1)
+                e = min(total, end)
+                numbered = [f"{s+1+i:>4}: {line}" for i, line in enumerate(all_lines[s:e])]
+                content = "\n".join(numbered)
+                if e < total:
+                    content += f"\n... ({total - e} more lines)"
+            except OSError:
+                content = "(unable to read file)"
+
+            header = f"### {fpath}"
+            if symbol:
+                header += f" — {symbol}"
+            if reason:
+                header += f"\n# Reason: {reason}"
+            snippets.append(f"{header}\n```\n{content}\n```")
+
+        if snippets:
+            return "\n\n".join(snippets)
+        return fallback_file_contents
 
     @staticmethod
     def _get_file_listing(repo: Path) -> str:

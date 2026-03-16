@@ -77,18 +77,17 @@ correct patch in unified diff format to fix the issue described below.
 {code_regions}
 
 ## Instructions
-Before writing the patch, briefly plan your fix:
-- What is the root cause?
-- What is the minimal change needed?
-- Are there edge cases to handle?
+Think step by step:
+1. Identify the root cause of the bug in the code above.
+2. Determine the minimal change needed to fix it.
+3. Consider edge cases (e.g. None inputs, empty collections, type mismatches).
 
 Then generate the patch. Rules:
 - Output a single unified diff block, starting with ```diff and ending with ```.
 - Only change lines directly related to the fix; do not reformat unrelated code.
 - Preserve the existing code style (indentation, naming conventions).
 - If multiple files need changes, include all hunks in one diff block.
-
-/nothink
+- The patch must actually fix the described bug, not just reformat comments or docstrings.
 """
 
 
@@ -145,7 +144,8 @@ Action: finish(file1.py, file2.py, ...)
 - If a tool returns an error or no results, try a different query or tool rather than repeating the same call.
 - Never repeat the exact same tool call with the exact same arguments.
 - Prefer 2-6 total tool calls; do not keep exploring once the likely source file and its test are known.
-- The finish() arguments are the relevant file paths, which should include the file where the error likely is, and the test for that file if it exists.
+- The finish() arguments must be actual file paths only (e.g. "src/foo.py"). Do NOT pass descriptions, sentences, or list literals.
+- The finish() arguments should include the file where the error likely is, and the test for that file if it exists.
 - You have at most {max_steps} steps. If approaching the limit, call finish() with your best findings so far.
 - You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.
 
