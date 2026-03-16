@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gc
 import logging
 import time
 from pathlib import Path
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class DenseIndex:
-    """FAISS-backed dense vector index over repo files."""
+    """Dense vector index over repo files."""
 
     def __init__(
         self,
@@ -28,18 +29,20 @@ class DenseIndex:
     ):
         self.model = model
         self.file_paths: list[str] = []
-        self.file_contents: list[str] = []
         self.embeddings: np.ndarray | None = None
         self._build(repo_path, extensions)
 
     def _build(self, repo_path: Path, extensions: tuple[str, ...]) -> None:
         """Walk the repo, read files, and compute embeddings."""
+        logger.info("Building dense index: %s", repo_path.name)
+
         file_contents: list[str] = []
         for fpath in sorted(repo_path.rglob("*")):
             if not fpath.is_file():
                 continue
             if fpath.suffix not in extensions:
                 continue
+
             rel = fpath.relative_to(repo_path).as_posix()
             if any(part.startswith(".") for part in rel.split("/")):
                 continue
@@ -49,40 +52,41 @@ class DenseIndex:
                 continue
 
             self.file_paths.append(rel)
-            # Truncate long files heavily to avoid SentenceTransformer tokenization crashes
-            # 8000 chars is ~2000 tokens, which easily fits in all-MiniLM's max sequence length
-            # Note: The model internally truncates to max_seq_length (e.g. 256/512 tokens)
-            # but providing massively long strings causes tokenizer padding/tensor creation bugs.
+            # Keep inputs bounded to avoid tokenizer / tensor blowups on very large files.
             file_contents.append(content[:8000])
 
-        if file_contents:
-            self.embeddings = self.model.encode(
-                file_contents,
-                show_progress_bar=False,
-                normalize_embeddings=True,
-            )
-            # Help the garbage collector promptly reclaim the large string lists
-            # and PyTorch intermediate tensors from CPU RAM.
-            import gc
+        if not file_contents:
+            logger.warning("Dense index empty: %s", repo_path.name)
+            return
 
-            file_contents.clear()
-            gc.collect()
+        self.embeddings = self.model.encode(
+            file_contents,
+            show_progress_bar=False,
+            normalize_embeddings=True,
+        )
+
+        file_contents.clear()
+        gc.collect()
+
+        logger.info(
+            "Built dense index: %s (%d files)",
+            repo_path.name,
+            len(self.file_paths),
+        )
 
     def search(self, query: str, top_k: int = 10) -> list[tuple[str, float]]:
         """Return top-K file paths with cosine similarity scores."""
-        if self.embeddings is None or len(self.file_paths) == 0:
+        if self.embeddings is None or not self.file_paths:
             return []
 
-        # Also truncate query just to be safe
         query_emb = self.model.encode(
             [query[:8000]],
             show_progress_bar=False,
             normalize_embeddings=True,
         )
 
-        # Cosine similarity (embeddings are already normalized)
+        # Cosine similarity since embeddings are normalized.
         scores = (self.embeddings @ query_emb.T).flatten()
-
         top_indices = np.argsort(scores)[::-1][:top_k]
         return [(self.file_paths[i], float(scores[i])) for i in top_indices]
 
@@ -102,12 +106,17 @@ class DenseRAGGatherer(ContextGatherer):
 
         self.model_name = model
         self.top_k = top_k
-        # Load the model EXACTLY ONCE globally for this gatherer instance
+
         device = "cuda" if torch.cuda.is_available() else "cpu"
         self._model = SentenceTransformer(self.model_name, device=device)
-        logger.info("DenseRAGGatherer using device: %s", device)
+        self._index_cache: dict[str, DenseIndex] = {}
 
-        self._index_cache = {}
+        logger.info(
+            "DenseRAG ready | model=%s | device=%s | top_k=%d",
+            self.model_name,
+            device,
+            self.top_k,
+        )
 
     def gather(self, instance: BenchmarkInstance) -> GatherResult:
         t0 = time.perf_counter()
@@ -119,13 +128,21 @@ class DenseRAGGatherer(ContextGatherer):
                 instance.repo_snapshot,
                 model=self._model,
             )
+        else:
+            logger.debug("Dense index cache hit: %s", instance.repo_snapshot.name)
 
         index = self._index_cache[repo_key]
-
         results = index.search(instance.query, top_k=self.top_k)
         retrieved = [path for path, _ in results]
 
         latency = time.perf_counter() - t0
+
+        logger.debug(
+            "Dense search complete: repo=%s results=%d latency=%.2fs",
+            instance.repo_snapshot.name,
+            len(retrieved),
+            latency,
+        )
 
         return GatherResult(
             retrieved_contexts=retrieved,
