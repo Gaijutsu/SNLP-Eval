@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 import warnings
@@ -113,6 +114,12 @@ def run_experiment(config_path: str) -> None:
     split = cfg["benchmark"].get("split", "test")
     limit = cfg["benchmark"].get("limit")
     instances = benchmark.load(split=split, limit=limit)
+
+    task_ids_file = cfg["benchmark"].get("task_ids_file")
+    if task_ids_file:
+        with open(task_ids_file, "r", encoding="utf-8") as f:
+            task_ids = json.load(f)
+        instances = [inst for inst in instances if inst.id in set(task_ids)]
 
     gatherer_cfgs = cfg.get("gatherers", [])
     llm_cfg = cfg.get("llm", {})
