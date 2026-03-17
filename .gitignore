@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+merts_workplan.md
+walkthrough.md
+rag_team_plan.md

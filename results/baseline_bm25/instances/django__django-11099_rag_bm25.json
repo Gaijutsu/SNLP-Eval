@@ -1,0 +1,21 @@
+{
+  "instance_id": "django__django-11099",
+  "gatherer": "rag_bm25",
+  "precision@5": 0.0,
+  "recall@5": 0.0,
+  "ndcg@5": 0.0,
+  "precision@10": 0.1,
+  "recall@10": 1.0,
+  "ndcg@10": 0.2890648263178879,
+  "precision@20": 0.05,
+  "recall@20": 1.0,
+  "ndcg@20": 0.2890648263178879,
+  "mrr": 0.1,
+  "applied": false,
+  "tests_passed": false,
+  "fail_to_pass": 0,
+  "pass_to_pass": 0,
+  "token_usage": 0.0,
+  "latency_s": 0.5213523299898952,
+  "ttft_s": null
+}

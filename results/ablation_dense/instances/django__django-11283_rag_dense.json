@@ -1,0 +1,21 @@
+{
+  "instance_id": "django__django-11283",
+  "gatherer": "rag_dense",
+  "precision@5": 0.2,
+  "recall@5": 1.0,
+  "ndcg@5": 1.0,
+  "precision@10": 0.1,
+  "recall@10": 1.0,
+  "ndcg@10": 1.0,
+  "precision@20": 0.05,
+  "recall@20": 1.0,
+  "ndcg@20": 1.0,
+  "mrr": 1.0,
+  "applied": false,
+  "tests_passed": false,
+  "fail_to_pass": 0,
+  "pass_to_pass": 0,
+  "token_usage": 0.0,
+  "latency_s": 1.2945901409257203,
+  "ttft_s": null
+}
