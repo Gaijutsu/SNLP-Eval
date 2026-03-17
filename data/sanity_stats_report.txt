@@ -1,0 +1,50 @@
+======================================================================
+SANITY STATS — SWE-bench Lite Task Subset (Sara's Deliverable)
+======================================================================
+
+Total tasks:       30
+Unique repos:      12
+
+--- Gold File Statistics ---
+  Mean:   1.0
+  Median: 1
+  Min:    1
+  Max:    1
+  Std:    0.0
+
+--- Gold File Count Distribution ---
+    1 files:  30 tasks  ##############################
+
+--- Repo Distribution ---
+  django/django                             11 tasks
+  sympy/sympy                                7 tasks
+  matplotlib/matplotlib                      2 tasks
+  scikit-learn/scikit-learn                  2 tasks
+  astropy/astropy                            1 tasks
+  mwaskom/seaborn                            1 tasks
+  pallets/flask                              1 tasks
+  psf/requests                               1 tasks
+  pydata/xarray                              1 tasks
+  pylint-dev/pylint                          1 tasks
+  pytest-dev/pytest                          1 tasks
+  sphinx-doc/sphinx                          1 tasks
+
+--- Parsing Caveats ---
+  ⚠ No parsing caveats detected — paths look clean.
+
+--- Task Summary (first 10) ---
+  task_id                                            repo                           #gold
+  -------------------------------------------------- ------------------------------ -----
+  astropy__astropy-12907                             astropy/astropy                    1
+  django__django-10914                               django/django                      1
+  django__django-11422                               django/django                      1
+  django__django-11910                               django/django                      1
+  django__django-12497                               django/django                      1
+  django__django-13033                               django/django                      1
+  django__django-13551                               django/django                      1
+  django__django-14017                               django/django                      1
+  django__django-14730                               django/django                      1
+  django__django-15252                               django/django                      1
+  ... (20 more)
+
+======================================================================

@@ -3,8 +3,7 @@
 benchmark:
   name: swebench_lite
   split: test
-  limit: 30
-  # task_ids_file: data/subset_30.json  # Uncomment after pinning subset
+  task_ids_file: data/subset_30.json
 
 llm:
   provider: local
@@ -21,4 +20,4 @@ k_values: [5, 10, 20]
 dashboard:
   enabled: false
 
-output_dir: ./results/ablation_dense
+output_dir: ./results/v2_ablation_dense
