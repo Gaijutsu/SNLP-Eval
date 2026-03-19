@@ -1,0 +1,91 @@
+# Walkthrough: RAG Baseline Experiments — Final Results
+
+## Summary
+
+Ran BM25, Dense, and Hybrid retrieval experiments. Initially on a naive first-30 subset (v1), then re-ran on Sara's diversity-aware subset (v2). The v2 results are the **official numbers**.
+
+---
+
+## Official Results (v2 — Sara's Diverse Subset, 12 repos)
+
+### Comparison Table (N=30)
+
+| Method | Recall@5 | Recall@10 | Recall@20 | MRR | Latency |
+|---|---|---|---|---|---|
+| **BM25** | **0.800** | **0.900** | **0.900** | **0.592** | **0.42s** |
+| Dense | 0.400 | 0.467 | 0.467 | 0.299 | 0.89s |
+| Hybrid | 0.667 | 0.733 | 0.867 | 0.470 | 1.31s |
+
+### K-Sensitivity
+
+```
+Method         K=5      K=10      K=20
+BM25           0.800    0.900    0.900
+Dense          0.400    0.467    0.467
+Hybrid         0.667    0.733    0.867
+```
+
+### Failure Analysis (BM25 v2)
+
+Only **3/30 failures** (10%) vs 9/30 on old subset:
+
+| Instance | Repo |
+|---|---|
+| scikit-learn__scikit-learn-13584 | scikit-learn |
+| sympy__sympy-11400 | sympy |
+| sympy__sympy-16281 | sympy |
+
+Still bimodal: 27/30 perfect (Recall=1.0), 3/30 zero.
+
+---
+
+## Key Findings
+
+1. **BM25 is the clear winner** — 0.90 Recall@10, fastest, simplest
+2. **Diverse subset matters** — v1 was biased toward Django (24/30 tasks from one repo), inflating failure rate
+3. **Dense severely underperforms** — MiniLM-L6-v2 is too small/general for code
+4. **Hybrid only helps at K=20** (0.87) but is 3× slower — not worth it
+5. **All SWE-bench Lite tasks have exactly 1 gold file** — Recall@K is binary (0 or 1), confirmed by Sara's analysis of all 300 tasks
+
+## v1 vs v2 Comparison
+
+| Metric | v1 (naive first-30) | v2 (Sara's diverse) | Δ |
+|---|---|---|---|
+| BM25 Recall@10 | 0.700 | **0.900** | +0.200 |
+| BM25 Failures | 9/30 (30%) | **3/30 (10%)** | -20pp |
+| BM25 MRR | 0.608 | 0.592 | -0.016 |
+
+The old subset had 24 Django tasks — large repos (~2100 files) that dilute BM25. Sara's subset has only 11 Django and spreads across 12 repos.
+
+---
+
+## What Changed in the Codebase
+
+- **New metrics**: [success_at_k](file:///home/lyk/snlp/SNLP-Eval/src/harness/metrics/retrieval.py#98-116) and [f1_at_k](file:///home/lyk/snlp/SNLP-Eval/src/harness/metrics/retrieval.py#118-136) in [retrieval.py](file:///home/lyk/snlp/SNLP-Eval/src/harness/metrics/retrieval.py) (39/39 tests pass)
+- **Configs**: Updated to use `task_ids_file: data/subset_30.json`
+- **Data**: Sara's `subset_30.json`, `subset_30_full.json`, `sanity_stats.json`
+- **Results**: `results/v2_baseline_bm25/`, `results/v2_ablation_dense/`, `results/v2_ablation_hybrid/`
+
+## Teammate Branches Reviewed
+
+### Sara (`dataset-plumbing`)
+- Diversity-aware subset selection (seed=42, 12 repos)
+- `scripts/extract-subset.py`, `scripts/verify-subset.py`
+- Sanity stats confirming all 300 tasks = 1 gold file
+
+### Jonas (`jonas-retrieval`, updated)
+- Added BM25 + Dense index caching
+- Rewrote `runner.py` (quieter logging, progress bars)
+- Produced own BM25/Dense results on 50 tasks
+
+### ⚠️ Open Issue
+Jonas's `runner.py` rewrite drops `task_ids` support. Need to merge carefully.
+
+## Output Files
+
+| Path | Content |
+|---|---|
+| [results/v2_baseline_bm25/](file:///home/lyk/snlp/SNLP-Eval/results/v2_baseline_bm25) | Official BM25 N=30 |
+| [results/v2_ablation_dense/](file:///home/lyk/snlp/SNLP-Eval/results/v2_ablation_dense) | Official Dense N=30 |
+| [results/v2_ablation_hybrid/](file:///home/lyk/snlp/SNLP-Eval/results/v2_ablation_hybrid) | Official Hybrid N=30 |
+| [data/subset_30.json](file:///home/lyk/snlp/SNLP-Eval/data/subset_30.json) | Sara's pinned 30 IDs |
