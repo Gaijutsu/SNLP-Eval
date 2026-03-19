@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12983",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8375027170040994,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/template_tests/filter_tests/test_slugify.py",
+    "tests/model_fields/test_slugfield.py",
+    "tests/forms_tests/field_tests/test_slugfield.py",
+    "tests/template_tests/filter_tests/test_addslashes.py",
+    "django/utils/html.py",
+    "tests/template_tests/filter_tests/test_stringformat.py",
+    "django/template/defaultfilters.py",
+    "django/test/html.py",
+    "tests/check_framework/urls/name_with_colon.py",
+    "tests/template_tests/filter_tests/test_linebreaksbr.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2194,
+      "results": [
+        {
+          "file": "tests/template_tests/filter_tests/test_slugify.py",
+          "score": 0.6752
+        },
+        {
+          "file": "tests/model_fields/test_slugfield.py",
+          "score": 0.587
+        },
+        {
+          "file": "tests/forms_tests/field_tests/test_slugfield.py",
+          "score": 0.5817
+        },
+        {
+          "file": "tests/template_tests/filter_tests/test_addslashes.py",
+          "score": 0.5513
+        },
+        {
+          "file": "django/utils/html.py",
+          "score": 0.551
+        },
+        {
+          "file": "tests/template_tests/filter_tests/test_stringformat.py",
+          "score": 0.5489
+        },
+        {
+          "file": "django/template/defaultfilters.py",
+          "score": 0.5322
+        },
+        {
+          "file": "django/test/html.py",
+          "score": 0.5273
+        },
+        {
+          "file": "tests/check_framework/urls/name_with_colon.py",
+          "score": 0.5214
+        },
+        {
+          "file": "tests/template_tests/filter_tests/test_linebreaksbr.py",
+          "score": 0.5176
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8375027170040994,
+  "ttft_s": null,
+  "gold_context": [
+    "django/utils/text.py",
+    "tests/utils_tests/test_text.py"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12284",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.6131471927654584,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8948868419975042,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/model_fields/tests.py",
+    "tests/null_queries/models.py",
+    "tests/model_fields/test_textfield.py",
+    "tests/model_inheritance/models.py",
+    "tests/string_lookup/models.py",
+    "tests/forms_tests/field_tests/test_base.py",
+    "tests/forms_tests/field_tests/test_typedmultiplechoicefield.py",
+    "tests/forms_tests/field_tests/test_typedchoicefield.py",
+    "tests/inline_formsets/models.py",
+    "tests/model_inheritance/test_abstract_inheritance.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2172,
+      "results": [
+        {
+          "file": "tests/model_fields/tests.py",
+          "score": 0.5814
+        },
+        {
+          "file": "tests/null_queries/models.py",
+          "score": 0.5727
+        },
+        {
+          "file": "tests/model_fields/test_textfield.py",
+          "score": 0.5613
+        },
+        {
+          "file": "tests/model_inheritance/models.py",
+          "score": 0.5585
+        },
+        {
+          "file": "tests/string_lookup/models.py",
+          "score": 0.5444
+        },
+        {
+          "file": "tests/forms_tests/field_tests/test_base.py",
+          "score": 0.542
+        },
+        {
+          "file": "tests/forms_tests/field_tests/test_typedmultiplechoicefield.py",
+          "score": 0.5363
+        },
+        {
+          "file": "tests/forms_tests/field_tests/test_typedchoicefield.py",
+          "score": 0.5308
+        },
+        {
+          "file": "tests/inline_formsets/models.py",
+          "score": 0.5231
+        },
+        {
+          "file": "tests/model_inheritance/test_abstract_inheritance.py",
+          "score": 0.5187
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8948868419975042,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/__init__.py",
+    "tests/model_fields/tests.py"
+  ]
+}

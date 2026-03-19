@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from harness.gatherers.base import GatherResult
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from harness.gatherers.base import GatherResult
 
 
 def compute_efficiency_metrics(result: GatherResult) -> dict[str, float | None]:
@@ -16,3 +19,4 @@ def compute_efficiency_metrics(result: GatherResult) -> dict[str, float | None]:
         "latency_s": result.latency_s,
         "ttft_s": result.ttft_s,
     }
+

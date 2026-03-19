@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-12125",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 1.0,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 1.0,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 1.0,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7556060520000756,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/migrations/serializer.py",
+    "tests/migrations/test_writer.py",
+    "django/db/models/base.py",
+    "django/db/models/fields/__init__.py",
+    "django/db/migrations/autodetector.py",
+    "django/core/serializers/__init__.py",
+    "django/db/models/sql/query.py",
+    "tests/migrations/test_commands.py",
+    "tests/migrations/test_base.py",
+    "tests/postgres_tests/test_array.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2168,
+      "results": [
+        {
+          "file": "django/db/migrations/serializer.py",
+          "score": 693.2245
+        },
+        {
+          "file": "tests/migrations/test_writer.py",
+          "score": 632.0994
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 515.3268
+        },
+        {
+          "file": "django/db/models/fields/__init__.py",
+          "score": 506.3569
+        },
+        {
+          "file": "django/db/migrations/autodetector.py",
+          "score": 502.1118
+        },
+        {
+          "file": "django/core/serializers/__init__.py",
+          "score": 501.1555
+        },
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 500.4855
+        },
+        {
+          "file": "tests/migrations/test_commands.py",
+          "score": 495.2419
+        },
+        {
+          "file": "tests/migrations/test_base.py",
+          "score": 480.8324
+        },
+        {
+          "file": "tests/postgres_tests/test_array.py",
+          "score": 474.6892
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7556060520000756,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/migrations/serializer.py",
+    "tests/migrations/test_writer.py"
+  ]
+}

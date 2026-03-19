@@ -1,0 +1,98 @@
+{
+  "instance_id": "astropy__astropy-14182",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.9390133220003918,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/cosmology/io/html.py",
+    "astropy/io/ascii/latex.py",
+    "astropy/io/misc/tests/test_pandas.py",
+    "astropy/table/tests/test_pprint.py",
+    "astropy/io/ascii/basic.py",
+    "astropy/utils/tests/test_data_info.py",
+    "astropy/cosmology/io/ecsv.py",
+    "astropy/io/ascii/qdp.py",
+    "astropy/table/tests/test_info.py",
+    "astropy/cosmology/io/tests/test_html.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 894,
+      "results": [
+        {
+          "file": "astropy/cosmology/io/html.py",
+          "score": 0.6767
+        },
+        {
+          "file": "astropy/io/ascii/latex.py",
+          "score": 0.6336
+        },
+        {
+          "file": "astropy/io/misc/tests/test_pandas.py",
+          "score": 0.6274
+        },
+        {
+          "file": "astropy/table/tests/test_pprint.py",
+          "score": 0.6244
+        },
+        {
+          "file": "astropy/io/ascii/basic.py",
+          "score": 0.6243
+        },
+        {
+          "file": "astropy/utils/tests/test_data_info.py",
+          "score": 0.62
+        },
+        {
+          "file": "astropy/cosmology/io/ecsv.py",
+          "score": 0.6139
+        },
+        {
+          "file": "astropy/io/ascii/qdp.py",
+          "score": 0.6135
+        },
+        {
+          "file": "astropy/table/tests/test_info.py",
+          "score": 0.6077
+        },
+        {
+          "file": "astropy/cosmology/io/tests/test_html.py",
+          "score": 0.607
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.9390133220003918,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/io/ascii/rst.py",
+    "astropy/io/ascii/tests/test_rst.py"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11630",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.8315546295836225,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.930152116001409,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/check_framework/test_model_checks.py",
+    "tests/unmanaged_models/tests.py",
+    "tests/proxy_model_inheritance/tests.py",
+    "django/contrib/contenttypes/management/__init__.py",
+    "django/core/management/sql.py",
+    "django/core/checks/model_checks.py",
+    "tests/unmanaged_models/models.py",
+    "tests/migrations/test_state.py",
+    "django/core/management/commands/sqlsequencereset.py",
+    "tests/migrations/migrations_test_apps/unspecified_app_with_conflict/migrations/0002_conflicting_second.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2156,
+      "results": [
+        {
+          "file": "tests/check_framework/test_model_checks.py",
+          "score": 0.6385
+        },
+        {
+          "file": "tests/unmanaged_models/tests.py",
+          "score": 0.585
+        },
+        {
+          "file": "tests/proxy_model_inheritance/tests.py",
+          "score": 0.5746
+        },
+        {
+          "file": "django/contrib/contenttypes/management/__init__.py",
+          "score": 0.571
+        },
+        {
+          "file": "django/core/management/sql.py",
+          "score": 0.5703
+        },
+        {
+          "file": "django/core/checks/model_checks.py",
+          "score": 0.5316
+        },
+        {
+          "file": "tests/unmanaged_models/models.py",
+          "score": 0.517
+        },
+        {
+          "file": "tests/migrations/test_state.py",
+          "score": 0.516
+        },
+        {
+          "file": "django/core/management/commands/sqlsequencereset.py",
+          "score": 0.5116
+        },
+        {
+          "file": "tests/migrations/migrations_test_apps/unspecified_app_with_conflict/migrations/0002_conflicting_second.py",
+          "score": 0.5084
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.930152116001409,
+  "ttft_s": null,
+  "gold_context": [
+    "django/core/checks/model_checks.py",
+    "tests/check_framework/test_model_checks.py"
+  ]
+}

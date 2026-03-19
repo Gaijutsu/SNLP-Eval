@@ -1,0 +1,177 @@
+{
+  "instance_id": "django__django-12908",
+  "gatherer": "react_agent",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.6131471927654584,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 19114.0,
+    "latency_s": 13.378039060997253,
+    "ttft_s": 0.9044393849981134
+  },
+  "retrieved_documents": [
+    "tests/queries/test_qs_combinators.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are a code investigation agent. Your job is to find the files most relevant\nto a given issue/query in a code repository.\n\nYou have the following tools available:\n\n1. list_dir(path: str) -> str\n   List files and subdirectories in the given directory (relative to repo root).\n\n2. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str\n   Read lines of a file (relative to repo root). Returns lines in [start_line, end_line].\n   Each line is prefixed with its line number for reference.\n   Default: lines 1\u2013200. Use start_line/end_line to read deeper into large files.\n\n3. grep(pattern: str, path: str = \".\") -> str\n   Search for a regex pattern in files under the given path. Returns matching lines.\n\n4. search_codebase(query: str) -> str\n   Semantic search over all files in the repo. Returns the top-5 most relevant file paths.\n\n\nOn each turn, respond in EXACTLY this format:\nThought: <your reasoning about what to do next>\nAction: <tool_name>(arg1, arg2, ...)\n\nWhen you have found all relevant files, respond:\nThought: <summary of findings>\nAction: finish(file1.py, file2.py, ...)\n\nRules:\n- Always start with a Thought.\n- Call exactly ONE action per turn.\n- The finish action's arguments are the relevant file paths you found.\n- You have at most 15 steps. Use them wisely \u2014 don't repeat actions.\n- Do NOT output markdown, code blocks, or analysis \u2014 ONLY Thought + Action.\n\n/nothink\n"
+    },
+    {
+      "role": "user",
+      "content": "Find the files most relevant to this issue:\n\nUnion queryset should raise on distinct().\nDescription\n\t \n\t\t(last modified by Sielc Technologies)\n\t \nAfter using\n.annotate() on 2 different querysets\nand then .union()\n.distinct() will not affect the queryset\n\tdef setUp(self) -> None:\n\t\tuser = self.get_or_create_admin_user()\n\t\tSample.h.create(user, name=\"Sam1\")\n\t\tSample.h.create(user, name=\"Sam2 acid\")\n\t\tSample.h.create(user, name=\"Sam3\")\n\t\tSample.h.create(user, name=\"Sam4 acid\")\n\t\tSample.h.create(user, name=\"Dub\")\n\t\tSample.h.create(user, name=\"Dub\")\n\t\tSample.h.create(user, name=\"Dub\")\n\t\tself.user = user\n\tdef test_union_annotated_diff_distinct(self):\n\t\tqs = Sample.objects.filter(user=self.user)\n\t\tqs1 = qs.filter(name='Dub').annotate(rank=Value(0, IntegerField()))\n\t\tqs2 = qs.filter(name='Sam1').annotate(rank=Value(1, IntegerField()))\n\t\tqs = qs1.union(qs2)\n\t\tqs = qs.order_by('name').distinct('name') # THIS DISTINCT DOESN'T WORK\n\t\tself.assertEqual(qs.count(), 2)\nexpected to get wrapped union\n\tSELECT DISTINCT ON (siebox_sample.name) * FROM (SELECT ... UNION SELECT ...) AS siebox_sample\n\n\nHints:\ndistinct() is not supported but doesn't raise an error yet. As \u200b\u200bper the documentation, \"only LIMIT, OFFSET, COUNT(*), ORDER BY, and specifying columns (i.e. slicing, count(), order_by(), and values()/values_list()) are allowed on the resulting QuerySet.\". Follow up to #27995."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: I need to find files related to the issue with the `distinct()` method on a union queryset. I'll start by searching the codebase for relevant files.\nAction: search_codebase(\"distinct union queryset\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 1/15 \u2014 14 remaining]\n  tests/foreign_object/tests.py (score: 12.8960)\n  tests/distinct_on_fields/tests.py (score: 11.6610)\n  tests/queries/test_qs_combinators.py (score: 10.8942)\n  tests/aggregation/tests.py (score: 10.4793)\n  django/contrib/admin/views/main.py (score: 10.4180)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The file `tests/queries/test_qs_combinators.py` seems most relevant as it deals with queryset combinators like `union()`. I will inspect this file to find any related test cases or implementations.\nAction: read_file(\"tests/queries/test_qs_combinators.py\", 1, 200)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 2/15 \u2014 13 remaining]\n   1: from django.db import DatabaseError, NotSupportedError, connection\n   2: from django.db.models import Exists, F, IntegerField, OuterRef, Value\n   3: from django.test import TestCase, skipIfDBFeature, skipUnlessDBFeature\n   4: \n   5: from .models import Number, ReservedName\n   6: \n   7: \n   8: @skipUnlessDBFeature('supports_select_union')\n   9: class QuerySetSetOperationTests(TestCase):\n  10:     @classmethod\n  11:     def setUpTestData(cls):\n  12:         Number.objects.bulk_create(Number(num=i, other_num=10 - i) for i in range(10))\n  13: \n  14:     def number_transform(self, value):\n  15:         return value.num\n  16: \n  17:     def assertNumbersEqual(self, queryset, expected_numbers, ordered=True):\n  18:         self.assertQuerysetEqual(queryset, expected_numbers, self.number_transform, ordered)\n  19: \n  20:     def test_simple_union(self):\n  21:         qs1 = Number.objects.filter(num__lte=1)\n  22:         qs2 = Number.objects.filter(num__gte=8)\n  23:         qs3 = Number.objects.filter(num=5)\n  24:         self.assertNumbersEqual(qs1.union(qs2, qs3), [0, 1, 5, 8, 9], ordered=False)\n  25: \n  26:     @skipUnlessDBFeature('supports_select_intersection')\n  27:     def test_simple_intersection(self):\n  28:         qs1 = Number.objects.filter(num__lte=5)\n  29:         qs2 = Number.objects.filter(num__gte=5)\n  30:         qs3 = Number.objects.filter(num__gte=4, num__lte=6)\n  31:         self.assertNumbersEqual(qs1.intersection(qs2, qs3), [5], ordered=False)\n  32: \n  33:     @skipUnlessDBFeature('supports_select_intersection')\n  34:     def test_intersection_with_values(self):\n  35:         ReservedName.objects.create(name='a', order=2)\n  36:         qs1 = ReservedName.objects.all()\n  37:         reserved_name = qs1.intersection(qs1).values('name', 'order', 'id').get()\n  38:         self.assertEqual(reserved_name['name'], 'a')\n  39:         self.assertEqual(reserved_name['order'], 2)\n  40:         reserved_name = qs1.intersection(qs1).values_list('name', 'order', 'id').get()\n  41:         self.assertEqual(reserved_name[:2], ('a', 2))\n  42: \n  43:     @skipUnlessDBFeature('supports_select_difference')\n  44:     def test_simple_difference(self):\n  45:         qs1 = Number.objects.filter(num__lte=5)\n  46:         qs2 = Number.objects.filter(num__lte=4)\n  47:         self.assertNumbersEqual(qs1.difference(qs2), [5], ordered=False)\n  48: \n  49:     def test_union_distinct(self):\n  50:         qs1 = Number.objects.all()\n  51:         qs2 = Number.objects.all()\n  52:         self.assertEqual(len(list(qs1.union(qs2, all=True))), 20)\n  53:         self.assertEqual(len(list(qs1.union(qs2))), 10)\n  54: \n  55:     @skipUnlessDBFeature('supports_select_intersection')\n  56:     def test_intersection_with_empty_qs(self):\n  57:         qs1 = Number.objects.all()\n  58:         qs2 = Number.objects.none()\n  59:         qs3 = Number.objects.filter(pk__in=[])\n  60:         self.assertEqual(len(qs1.intersection(qs2)), 0)\n  61:         self.assertEqual(len(qs1.inte"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The file `tests/queries/test_qs_combinators.py` contains a test case for `union` and `distinct`, specifically in the `test_union_distinct` method. This seems directly related to the issue described. I will check for more details in the rest of the file.\nAction: read_file(\"tests/queries/test_qs_combinators.py\", 201, 400)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 3/15 \u2014 12 remaining]\n 201:     def test_ordering_subqueries(self):\n 202:         qs1 = Number.objects.order_by('num')[:2]\n 203:         qs2 = Number.objects.order_by('-num')[:2]\n 204:         self.assertNumbersEqual(qs1.union(qs2).order_by('-num')[:4], [9, 8, 1, 0])\n 205: \n 206:     @skipIfDBFeature('supports_slicing_ordering_in_compound')\n 207:     def test_unsupported_ordering_slicing_raises_db_error(self):\n 208:         qs1 = Number.objects.all()\n 209:         qs2 = Number.objects.all()\n 210:         msg = 'LIMIT/OFFSET not allowed in subqueries of compound statements'\n 211:         with self.assertRaisesMessage(DatabaseError, msg):\n 212:             list(qs1.union(qs2[:10]))\n 213:         msg = 'ORDER BY not allowed in subqueries of compound statements'\n 214:         with self.assertRaisesMessage(DatabaseError, msg):\n 215:             list(qs1.order_by('id').union(qs2))\n 216: \n 217:     @skipIfDBFeature('supports_select_intersection')\n 218:     def test_unsupported_intersection_raises_db_error(self):\n 219:         qs1 = Number.objects.all()\n 220:         qs2 = Number.objects.all()\n 221:         msg = 'intersection is not supported on this database backend'\n 222:         with self.assertRaisesMessage(NotSupportedError, msg):\n 223:             list(qs1.intersection(qs2))\n 224: \n 225:     def test_combining_multiple_models(self):\n 226:         ReservedName.objects.create(name='99 little bugs', order=99)\n 227:         qs1 = Number.objects.filter(num=1).values_list('num', flat=True)\n 228:         qs2 = ReservedName.objects.values_list('order')\n 229:         self.assertEqual(list(qs1.union(qs2).order_by('num')), [1, 99])\n 230: \n 231:     def test_order_raises_on_non_selected_column(self):\n 232:         qs1 = Number.objects.filter().annotate(\n 233:             annotation=Value(1, IntegerField()),\n 234:         ).values('annotation', num2=F('num'))\n 235:         qs2 = Number.objects.filter().values('id', 'num')\n 236:         # Should not raise\n 237:         list(qs1.union(qs2).order_by('annotation'))\n 238:         list(qs1.union(qs2).order_by('num2'))\n 239:         msg = 'ORDER BY term does not match any column in the result set'\n 240:         # 'id' is not part of the select\n 241:         with self.assertRaisesMessage(DatabaseError, msg):\n 242:             list(qs1.union(qs2).order_by('id'))\n 243:         # 'num' got realiased to num2\n 244:         with self.assertRaisesMessage(DatabaseError, msg):\n 245:             list(qs1.union(qs2).order_by('num'))\n 246:         # switched order, now 'exists' again:\n 247:         list(qs2.union(qs1).order_by('num'))\n 248: \n 249:     @skipUnlessDBFeature('supports_select_difference', 'supports_select_intersection')\n 250:     def test_qs_with_subcompound_qs(self):\n 251:         qs1 = Number.objects.all()\n 252:         qs2 = Number.objects.intersection(Number.objects.filter(num__gt=1))\n 253:         self.assertEqual(qs1.difference(qs2).count(), 2)\n 254: \n 255:     def test_order_by_same_type(self):\n 256:         qs = Number.objects.all"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `test_union_distinct` method in `tests/queries/test_qs_combinators.py` is directly related to the issue with `distinct()` on a union queryset. This file is highly relevant. I will now check the `tests/distinct_on_fields/tests.py` file as it might also contain relevant information about `distinct()`.\nAction: read_file(\"tests/distinct_on_fields/tests.py\", 1, 200)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 4/15 \u2014 11 remaining]\n   1: from django.db.models import CharField, Max\n   2: from django.db.models.functions import Lower\n   3: from django.test import TestCase, skipUnlessDBFeature\n   4: from django.test.utils import register_lookup\n   5: \n   6: from .models import Celebrity, Fan, Staff, StaffTag, Tag\n   7: \n   8: \n   9: @skipUnlessDBFeature('can_distinct_on_fields')\n  10: @skipUnlessDBFeature('supports_nullable_unique_constraints')\n  11: class DistinctOnTests(TestCase):\n  12:     @classmethod\n  13:     def setUpTestData(cls):\n  14:         cls.t1 = Tag.objects.create(name='t1')\n  15:         cls.t2 = Tag.objects.create(name='t2', parent=cls.t1)\n  16:         cls.t3 = Tag.objects.create(name='t3', parent=cls.t1)\n  17:         cls.t4 = Tag.objects.create(name='t4', parent=cls.t3)\n  18:         cls.t5 = Tag.objects.create(name='t5', parent=cls.t3)\n  19: \n  20:         cls.p1_o1 = Staff.objects.create(id=1, name=\"p1\", organisation=\"o1\")\n  21:         cls.p2_o1 = Staff.objects.create(id=2, name=\"p2\", organisation=\"o1\")\n  22:         cls.p3_o1 = Staff.objects.create(id=3, name=\"p3\", organisation=\"o1\")\n  23:         cls.p1_o2 = Staff.objects.create(id=4, name=\"p1\", organisation=\"o2\")\n  24:         cls.p1_o1.coworkers.add(cls.p2_o1, cls.p3_o1)\n  25:         StaffTag.objects.create(staff=cls.p1_o1, tag=cls.t1)\n  26:         StaffTag.objects.create(staff=cls.p1_o1, tag=cls.t1)\n  27: \n  28:         celeb1 = Celebrity.objects.create(name=\"c1\")\n  29:         celeb2 = Celebrity.objects.create(name=\"c2\")\n  30: \n  31:         cls.fan1 = Fan.objects.create(fan_of=celeb1)\n  32:         cls.fan2 = Fan.objects.create(fan_of=celeb1)\n  33:         cls.fan3 = Fan.objects.create(fan_of=celeb2)\n  34: \n  35:     def test_basic_distinct_on(self):\n  36:         \"\"\"QuerySet.distinct('field', ...) works\"\"\"\n  37:         # (qset, expected) tuples\n  38:         qsets = (\n  39:             (\n  40:                 Staff.objects.distinct().order_by('name'),\n  41:                 ['<Staff: p1>', '<Staff: p1>', '<Staff: p2>', '<Staff: p3>'],\n  42:             ),\n  43:             (\n  44:                 Staff.objects.distinct('name').order_by('name'),\n  45:                 ['<Staff: p1>', '<Staff: p2>', '<Staff: p3>'],\n  46:             ),\n  47:             (\n  48:                 Staff.objects.distinct('organisation').order_by('organisation', 'name'),\n  49:                 ['<Staff: p1>', '<Staff: p1>'],\n  50:             ),\n  51:             (\n  52:                 Staff.objects.distinct('name', 'organisation').order_by('name', 'organisation'),\n  53:                 ['<Staff: p1>', '<Staff: p1>', '<Staff: p2>', '<Staff: p3>'],\n  54:             ),\n  55:             (\n  56:                 Celebrity.objects.filter(fan__in=[self.fan1, self.fan2, self.fan3]).distinct('name').order_by('name'),\n  57:                 ['<Celebrity: c1>', '<Celebrity: c2>'],\n  58:             ),\n  59:             # Does combining querysets work?\n  60:             (\n  61:                 (Celebrity.objects.filter(fan__in=[se"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `tests/distinct_on_fields/tests.py` file contains tests related to `distinct()` on specific fields, which is relevant to the issue described. However, it does not directly address the use of `distinct()` on a union queryset. The most relevant file is still `tests/queries/test_queryset.py`, specifically the `test_union_distinct` method. I will now check the `tests/queries/test_queryset.py` file to confirm if it contains more information about the issue.\nAction: read_file(\"tests/queries/test_queryset.py\", 1, 200)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 5/15 \u2014 10 remaining]\nError: 'tests/queries/test_queryset.py' does not exist."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The file `tests/queries/test_queryset.py` does not exist in the repository. I will now check the `tests/queries/test_qs_combinators.py` file again to ensure I did not miss any relevant information about the `distinct()` method on a union queryset.\nAction: read_file(\"tests/queries/test_qs_combinators.py\", 401, 600)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 6/15 \u2014 9 remaining]\nError: start_line 401 exceeds file length (288 lines)."
+    }
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "thought": "Thought: I need to find files related to the issue with the `distinct()` method on a union queryset. I'll start by searching the codebase for relevant files.",
+      "action": "search_codebase",
+      "args": [
+        "distinct union queryset"
+      ],
+      "tokens": 778,
+      "observation": "  tests/foreign_object/tests.py (score: 12.8960)\n  tests/distinct_on_fields/tests.py (score: 11.6610)\n  tests/queries/test_qs_combinators.py (score: 10.8942)\n  tests/aggregation/tests.py (score: 10.4793)\n  django/contrib/admin/views/main.py (score: 10.4180)"
+    },
+    {
+      "step": 2,
+      "thought": "Thought: The file `tests/queries/test_qs_combinators.py` seems most relevant as it deals with queryset combinators like `union()`. I will inspect this file to find any related test cases or implementations.",
+      "action": "read_file",
+      "args": [
+        "tests/queries/test_qs_combinators.py",
+        "1",
+        "200"
+      ],
+      "tokens": 970,
+      "observation": "   1: from django.db import DatabaseError, NotSupportedError, connection\n   2: from django.db.models import Exists, F, IntegerField, OuterRef, Value\n   3: from django.test import TestCase, skipIfDBFeature, skipUnlessDBFeature\n   4: \n   5: from .models import Number, ReservedName\n   6: \n   7: \n   8: @skipUnlessDBFeature('supports_select_union')\n   9: class QuerySetSetOperationTests(TestCase):\n  10:     @classmethod\n  11:     def setUpTestData(cls):\n  12:         Number.objects.bulk_create(Number("
+    },
+    {
+      "step": 3,
+      "thought": "Thought: The file `tests/queries/test_qs_combinators.py` contains a test case for `union` and `distinct`, specifically in the `test_union_distinct` method. This seems directly related to the issue described. I will check for more details in the rest of the file.",
+      "action": "read_file",
+      "args": [
+        "tests/queries/test_qs_combinators.py",
+        "201",
+        "400"
+      ],
+      "tokens": 2029,
+      "observation": " 201:     def test_ordering_subqueries(self):\n 202:         qs1 = Number.objects.order_by('num')[:2]\n 203:         qs2 = Number.objects.order_by('-num')[:2]\n 204:         self.assertNumbersEqual(qs1.union(qs2).order_by('-num')[:4], [9, 8, 1, 0])\n 205: \n 206:     @skipIfDBFeature('supports_slicing_ordering_in_compound')\n 207:     def test_unsupported_ordering_slicing_raises_db_error(self):\n 208:         qs1 = Number.objects.all()\n 209:         qs2 = Number.objects.all()\n 210:         msg = 'LIMIT"
+    },
+    {
+      "step": 4,
+      "thought": "Thought: The `test_union_distinct` method in `tests/queries/test_qs_combinators.py` is directly related to the issue with `distinct()` on a union queryset. This file is highly relevant. I will now check the `tests/distinct_on_fields/tests.py` file as it might also contain relevant information about `distinct()`.",
+      "action": "read_file",
+      "args": [
+        "tests/distinct_on_fields/tests.py",
+        "1",
+        "200"
+      ],
+      "tokens": 3076,
+      "observation": "   1: from django.db.models import CharField, Max\n   2: from django.db.models.functions import Lower\n   3: from django.test import TestCase, skipUnlessDBFeature\n   4: from django.test.utils import register_lookup\n   5: \n   6: from .models import Celebrity, Fan, Staff, StaffTag, Tag\n   7: \n   8: \n   9: @skipUnlessDBFeature('can_distinct_on_fields')\n  10: @skipUnlessDBFeature('supports_nullable_unique_constraints')\n  11: class DistinctOnTests(TestCase):\n  12:     @classmethod\n  13:     def setUpTe"
+    },
+    {
+      "step": 5,
+      "thought": "Thought: The `tests/distinct_on_fields/tests.py` file contains tests related to `distinct()` on specific fields, which is relevant to the issue described. However, it does not directly address the use of `distinct()` on a union queryset. The most relevant file is still `tests/queries/test_queryset.py`, specifically the `test_union_distinct` method. I will now check the `tests/queries/test_queryset.py` file to confirm if it contains more information about the issue.",
+      "action": "read_file",
+      "args": [
+        "tests/queries/test_queryset.py",
+        "1",
+        "200"
+      ],
+      "tokens": 4218,
+      "observation": "Error: 'tests/queries/test_queryset.py' does not exist."
+    },
+    {
+      "step": 6,
+      "thought": "Thought: The file `tests/queries/test_queryset.py` does not exist in the repository. I will now check the `tests/queries/test_qs_combinators.py` file again to ensure I did not miss any relevant information about the `distinct()` method on a union queryset.",
+      "action": "read_file",
+      "args": [
+        "tests/queries/test_qs_combinators.py",
+        "401",
+        "600"
+      ],
+      "tokens": 3968,
+      "observation": "Error: start_line 401 exceeds file length (288 lines)."
+    },
+    {
+      "step": 7,
+      "thought": "Thought: The `test_union_distinct` method in `tests/queries/test_qs_combinators.py` is the most relevant file for the issue described. I have examined the file and found no other relevant files. I will now conclude my investigation.",
+      "action": "finish",
+      "args": [
+        "tests/queries/test_qs_combinators.py"
+      ],
+      "tokens": 4075
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 19114,
+  "latency_s": 13.378039060997253,
+  "ttft_s": 0.9044393849981134,
+  "gold_context": [
+    "django/db/models/query.py",
+    "tests/queries/test_qs_combinators.py"
+  ]
+}

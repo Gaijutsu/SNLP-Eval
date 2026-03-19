@@ -1,0 +1,98 @@
+{
+  "instance_id": "astropy__astropy-12907",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 1.0,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 1.0,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 1.0,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.0103879730013432,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/modeling/separable.py",
+    "astropy/modeling/tests/test_separable.py",
+    "astropy/modeling/tests/test_core.py",
+    "astropy/modeling/tests/test_models_quantities.py",
+    "astropy/modeling/tests/test_models.py",
+    "astropy/modeling/tests/test_math_func.py",
+    "astropy/convolution/tests/test_discretize.py",
+    "astropy/modeling/tests/test_quantities_model.py",
+    "astropy/convolution/utils.py",
+    "astropy/nddata/tests/test_nduncertainty.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 875,
+      "results": [
+        {
+          "file": "astropy/modeling/separable.py",
+          "score": 0.7263
+        },
+        {
+          "file": "astropy/modeling/tests/test_separable.py",
+          "score": 0.6599
+        },
+        {
+          "file": "astropy/modeling/tests/test_core.py",
+          "score": 0.5084
+        },
+        {
+          "file": "astropy/modeling/tests/test_models_quantities.py",
+          "score": 0.5043
+        },
+        {
+          "file": "astropy/modeling/tests/test_models.py",
+          "score": 0.5001
+        },
+        {
+          "file": "astropy/modeling/tests/test_math_func.py",
+          "score": 0.4954
+        },
+        {
+          "file": "astropy/convolution/tests/test_discretize.py",
+          "score": 0.4949
+        },
+        {
+          "file": "astropy/modeling/tests/test_quantities_model.py",
+          "score": 0.4904
+        },
+        {
+          "file": "astropy/convolution/utils.py",
+          "score": 0.486
+        },
+        {
+          "file": "astropy/nddata/tests/test_nduncertainty.py",
+          "score": 0.4758
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.0103879730013432,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/modeling/separable.py",
+    "astropy/modeling/tests/test_separable.py"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "instance_id": "django__django-12708",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.9033924029936315,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/backends/sqlite3/schema.py",
+    "tests/migrations/test_migrations_no_changes/0003_third.py",
+    "tests/schema/models.py",
+    "django/db/models/base.py",
+    "tests/indexes/models.py",
+    "tests/postgres_tests/array_default_migrations/0001_initial.py",
+    "tests/postgres_tests/array_index_migrations/0001_initial.py",
+    "tests/sites_framework/migrations/0001_initial.py",
+    "django/db/models/indexes.py",
+    "django/db/migrations/operations/models.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2191,
+      "results": [
+        {
+          "file": "django/db/backends/sqlite3/schema.py",
+          "score": 0.5959
+        },
+        {
+          "file": "tests/migrations/test_migrations_no_changes/0003_third.py",
+          "score": 0.5848
+        },
+        {
+          "file": "tests/schema/models.py",
+          "score": 0.5723
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 0.5672
+        },
+        {
+          "file": "tests/indexes/models.py",
+          "score": 0.5598
+        },
+        {
+          "file": "tests/postgres_tests/array_default_migrations/0001_initial.py",
+          "score": 0.552
+        },
+        {
+          "file": "tests/postgres_tests/array_index_migrations/0001_initial.py",
+          "score": 0.5456
+        },
+        {
+          "file": "tests/sites_framework/migrations/0001_initial.py",
+          "score": 0.5434
+        },
+        {
+          "file": "django/db/models/indexes.py",
+          "score": 0.5406
+        },
+        {
+          "file": "django/db/migrations/operations/models.py",
+          "score": 0.5403
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.9033924029936315,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/backends/base/schema.py",
+    "tests/migrations/test_base.py",
+    "tests/migrations/test_operations.py"
+  ]
+}

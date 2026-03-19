@@ -1,0 +1,109 @@
+{
+  "instance_id": "django__django-11620",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.784389166998153,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/contrib/flatpages/middleware.py",
+    "django/urls/exceptions.py",
+    "django/core/handlers/exception.py",
+    "tests/middleware_exceptions/middleware.py",
+    "tests/view_tests/views.py",
+    "django/urls/resolvers.py",
+    "tests/check_framework/urls/bad_error_handlers_invalid_path.py",
+    "django/conf/urls/__init__.py",
+    "tests/logging_tests/views.py",
+    "django/contrib/staticfiles/handlers.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2156,
+      "results": [
+        {
+          "file": "django/contrib/flatpages/middleware.py",
+          "score": 0.7545
+        },
+        {
+          "file": "django/urls/exceptions.py",
+          "score": 0.696
+        },
+        {
+          "file": "django/core/handlers/exception.py",
+          "score": 0.6903
+        },
+        {
+          "file": "tests/middleware_exceptions/middleware.py",
+          "score": 0.6792
+        },
+        {
+          "file": "tests/view_tests/views.py",
+          "score": 0.6774
+        },
+        {
+          "file": "django/urls/resolvers.py",
+          "score": 0.6731
+        },
+        {
+          "file": "tests/check_framework/urls/bad_error_handlers_invalid_path.py",
+          "score": 0.649
+        },
+        {
+          "file": "django/conf/urls/__init__.py",
+          "score": 0.6434
+        },
+        {
+          "file": "tests/logging_tests/views.py",
+          "score": 0.6359
+        },
+        {
+          "file": "django/contrib/staticfiles/handlers.py",
+          "score": 0.6309
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.784389166998153,
+  "ttft_s": null,
+  "gold_context": [
+    "django/views/debug.py",
+    "tests/view_tests/tests/test_debug.py",
+    "django/conf/__init__.py",
+    "django/http/__init__.py",
+    "django/template/__init__.py",
+    "django/template/defaultfilters.py",
+    "django/urls/__init__.py",
+    "django/utils/__init__.py",
+    "django/utils/datastructures.py",
+    "django/utils/encoding.py",
+    "django/utils/module_loading.py",
+    "django/utils/version.py",
+    "django/__init__.py"
+  ]
+}

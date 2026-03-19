@@ -1,0 +1,97 @@
+{
+  "instance_id": "astropy__astropy-7746",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 0.9197207891481876,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 0.9197207891481876,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.9197207891481876,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.34707032999722287,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/wcs/wcs.py",
+    "astropy/wcs/docstrings.py",
+    "astropy/wcs/tests/test_wcs.py",
+    "astropy/visualization/wcsaxes/core.py",
+    "astropy/wcs/utils.py",
+    "astropy/coordinates/sky_coordinate.py",
+    "astropy/nddata/utils.py",
+    "astropy/nddata/ccddata.py",
+    "astropy/visualization/wcsaxes/transforms.py",
+    "astropy/nddata/decorators.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 687,
+      "results": [
+        {
+          "file": "astropy/wcs/wcs.py",
+          "score": 519.7672
+        },
+        {
+          "file": "astropy/wcs/docstrings.py",
+          "score": 364.2564
+        },
+        {
+          "file": "astropy/wcs/tests/test_wcs.py",
+          "score": 330.8276
+        },
+        {
+          "file": "astropy/visualization/wcsaxes/core.py",
+          "score": 325.0661
+        },
+        {
+          "file": "astropy/wcs/utils.py",
+          "score": 312.7378
+        },
+        {
+          "file": "astropy/coordinates/sky_coordinate.py",
+          "score": 281.8798
+        },
+        {
+          "file": "astropy/nddata/utils.py",
+          "score": 278.2702
+        },
+        {
+          "file": "astropy/nddata/ccddata.py",
+          "score": 269.6126
+        },
+        {
+          "file": "astropy/visualization/wcsaxes/transforms.py",
+          "score": 253.8382
+        },
+        {
+          "file": "astropy/nddata/decorators.py",
+          "score": 249.0253
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.34707032999722287,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/wcs/wcs.py",
+    "astropy/wcs/tests/test_wcs.py"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "instance_id": "django__django-11283",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.25,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 0.5,
+    "ndcg@3": 0.7653606369886217,
+    "precision@5": 0.4,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6366824387328317,
+    "precision@10": 0.2,
+    "recall@10": 0.5,
+    "ndcg@10": 0.6366824387328317,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.7485884950001491,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/contrib/auth/migrations/0011_update_proxy_permissions.py",
+    "tests/auth_tests/test_migrations.py",
+    "django/contrib/auth/migrations/0002_alter_permission_name_max_length.py",
+    "django/contrib/auth/migrations/0001_initial.py",
+    "tests/migrations/test_migrations_custom_user/0001_initial.py",
+    "django/contrib/auth/migrations/0007_alter_validators_add_error_messages.py",
+    "tests/proxy_model_inheritance/tests.py",
+    "tests/swappable_models/tests.py",
+    "tests/migrations/test_migrations_no_changes/0003_third.py",
+    "tests/migrations/migrations_test_apps/unspecified_app_with_conflict/migrations/0002_conflicting_second.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2128,
+      "results": [
+        {
+          "file": "django/contrib/auth/migrations/0011_update_proxy_permissions.py",
+          "score": 0.6778
+        },
+        {
+          "file": "tests/auth_tests/test_migrations.py",
+          "score": 0.6401
+        },
+        {
+          "file": "django/contrib/auth/migrations/0002_alter_permission_name_max_length.py",
+          "score": 0.6007
+        },
+        {
+          "file": "django/contrib/auth/migrations/0001_initial.py",
+          "score": 0.5876
+        },
+        {
+          "file": "tests/migrations/test_migrations_custom_user/0001_initial.py",
+          "score": 0.5815
+        },
+        {
+          "file": "django/contrib/auth/migrations/0007_alter_validators_add_error_messages.py",
+          "score": 0.5535
+        },
+        {
+          "file": "tests/proxy_model_inheritance/tests.py",
+          "score": 0.5531
+        },
+        {
+          "file": "tests/swappable_models/tests.py",
+          "score": 0.5509
+        },
+        {
+          "file": "tests/migrations/test_migrations_no_changes/0003_third.py",
+          "score": 0.5447
+        },
+        {
+          "file": "tests/migrations/migrations_test_apps/unspecified_app_with_conflict/migrations/0002_conflicting_second.py",
+          "score": 0.538
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.7485884950001491,
+  "ttft_s": null,
+  "gold_context": [
+    "django/contrib/auth/migrations/0011_update_proxy_permissions.py",
+    "tests/auth_tests/test_migrations.py",
+    "django/db/__init__.py",
+    "django/db/models/__init__.py"
+  ]
+}

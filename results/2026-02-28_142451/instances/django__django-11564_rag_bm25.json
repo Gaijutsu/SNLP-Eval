@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11564",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7520822020014748,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/conf/global_settings.py",
+    "docs/conf.py",
+    "django/test/testcases.py",
+    "django/middleware/csrf.py",
+    "django/template/defaulttags.py",
+    "django/views/csrf.py",
+    "django/contrib/staticfiles/storage.py",
+    "django/utils/cache.py",
+    "django/contrib/admin/sites.py",
+    "django/core/files/storage.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2160,
+      "results": [
+        {
+          "file": "django/conf/global_settings.py",
+          "score": 1146.2231
+        },
+        {
+          "file": "docs/conf.py",
+          "score": 968.8202
+        },
+        {
+          "file": "django/test/testcases.py",
+          "score": 948.5038
+        },
+        {
+          "file": "django/middleware/csrf.py",
+          "score": 924.4935
+        },
+        {
+          "file": "django/template/defaulttags.py",
+          "score": 914.6783
+        },
+        {
+          "file": "django/views/csrf.py",
+          "score": 914.0997
+        },
+        {
+          "file": "django/contrib/staticfiles/storage.py",
+          "score": 899.6444
+        },
+        {
+          "file": "django/utils/cache.py",
+          "score": 873.7242
+        },
+        {
+          "file": "django/contrib/admin/sites.py",
+          "score": 857.0094
+        },
+        {
+          "file": "django/core/files/storage.py",
+          "score": 846.5779
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7520822020014748,
+  "ttft_s": null,
+  "gold_context": [
+    "django/conf/__init__.py",
+    "tests/file_storage/tests.py",
+    "tests/settings_tests/tests.py"
+  ]
+}

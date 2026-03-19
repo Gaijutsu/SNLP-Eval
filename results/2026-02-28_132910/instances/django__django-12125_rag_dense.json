@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12125",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8493424040061655,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/admin_scripts/another_app_waiting_migration/migrations/0001_initial.py",
+    "tests/migrations/test_auto_now_add/0001_initial.py",
+    "tests/migrations/migrations_test_apps/lookuperror_b/migrations/0001_initial.py",
+    "tests/admin_scripts/app_waiting_migration/migrations/0001_initial.py",
+    "tests/migrations/test_state.py",
+    "tests/migrations/migrations_test_apps/mutate_state_b/migrations/0001_initial.py",
+    "tests/migrations/migrations_test_apps/lookuperror_a/migrations/0001_initial.py",
+    "tests/migrations/migrations_test_apps/lookuperror_c/migrations/0001_initial.py",
+    "tests/migrations/test_migrations_no_default/0001_initial.py",
+    "tests/migrations/test_fake_initial_case_insensitive/fake_initial/0001_initial.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2168,
+      "results": [
+        {
+          "file": "tests/admin_scripts/another_app_waiting_migration/migrations/0001_initial.py",
+          "score": 0.6903
+        },
+        {
+          "file": "tests/migrations/test_auto_now_add/0001_initial.py",
+          "score": 0.6702
+        },
+        {
+          "file": "tests/migrations/migrations_test_apps/lookuperror_b/migrations/0001_initial.py",
+          "score": 0.6548
+        },
+        {
+          "file": "tests/admin_scripts/app_waiting_migration/migrations/0001_initial.py",
+          "score": 0.6536
+        },
+        {
+          "file": "tests/migrations/test_state.py",
+          "score": 0.6513
+        },
+        {
+          "file": "tests/migrations/migrations_test_apps/mutate_state_b/migrations/0001_initial.py",
+          "score": 0.6473
+        },
+        {
+          "file": "tests/migrations/migrations_test_apps/lookuperror_a/migrations/0001_initial.py",
+          "score": 0.6463
+        },
+        {
+          "file": "tests/migrations/migrations_test_apps/lookuperror_c/migrations/0001_initial.py",
+          "score": 0.6461
+        },
+        {
+          "file": "tests/migrations/test_migrations_no_default/0001_initial.py",
+          "score": 0.6446
+        },
+        {
+          "file": "tests/migrations/test_fake_initial_case_insensitive/fake_initial/0001_initial.py",
+          "score": 0.6411
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8493424040061655,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/migrations/serializer.py",
+    "tests/migrations/test_writer.py"
+  ]
+}

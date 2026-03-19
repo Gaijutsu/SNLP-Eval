@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-11742",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.6131471927654584,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6312385659985011,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/fields/__init__.py",
+    "django/forms/fields.py",
+    "django/forms/models.py",
+    "django/http/multipartparser.py",
+    "django/db/models/base.py",
+    "django/contrib/gis/utils/layermapping.py",
+    "tests/invalid_models_tests/test_models.py",
+    "django/db/models/indexes.py",
+    "django/db/models/fields/files.py",
+    "django/db/models/sql/query.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2161,
+      "results": [
+        {
+          "file": "django/db/models/fields/__init__.py",
+          "score": 88.7062
+        },
+        {
+          "file": "django/forms/fields.py",
+          "score": 86.3127
+        },
+        {
+          "file": "django/forms/models.py",
+          "score": 80.8291
+        },
+        {
+          "file": "django/http/multipartparser.py",
+          "score": 80.5758
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 78.8899
+        },
+        {
+          "file": "django/contrib/gis/utils/layermapping.py",
+          "score": 72.6171
+        },
+        {
+          "file": "tests/invalid_models_tests/test_models.py",
+          "score": 71.567
+        },
+        {
+          "file": "django/db/models/indexes.py",
+          "score": 71.1931
+        },
+        {
+          "file": "django/db/models/fields/files.py",
+          "score": 70.3556
+        },
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 69.1566
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6312385659985011,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/__init__.py",
+    "tests/invalid_models_tests/test_ordinary_fields.py"
+  ]
+}

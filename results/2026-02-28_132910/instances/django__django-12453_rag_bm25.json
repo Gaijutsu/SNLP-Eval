@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12453",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.3333333333333333,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.46927872602275644,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.46927872602275644,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.46927872602275644,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.678344580999692,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/backends/base/creation.py",
+    "django/core/management/commands/loaddata.py",
+    "tests/fixtures_regress/tests.py",
+    "tests/backends/tests.py",
+    "django/db/backends/base/base.py",
+    "django/db/models/base.py",
+    "django/db/backends/sqlite3/schema.py",
+    "django/test/testcases.py",
+    "django/db/backends/mysql/base.py",
+    "tests/serializers/tests.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2179,
+      "results": [
+        {
+          "file": "django/db/backends/base/creation.py",
+          "score": 832.4592
+        },
+        {
+          "file": "django/core/management/commands/loaddata.py",
+          "score": 821.0802
+        },
+        {
+          "file": "tests/fixtures_regress/tests.py",
+          "score": 724.3552
+        },
+        {
+          "file": "tests/backends/tests.py",
+          "score": 717.4056
+        },
+        {
+          "file": "django/db/backends/base/base.py",
+          "score": 713.0462
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 695.2702
+        },
+        {
+          "file": "django/db/backends/sqlite3/schema.py",
+          "score": 676.9495
+        },
+        {
+          "file": "django/test/testcases.py",
+          "score": 655.9147
+        },
+        {
+          "file": "django/db/backends/mysql/base.py",
+          "score": 655.3345
+        },
+        {
+          "file": "tests/serializers/tests.py",
+          "score": 655.1422
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.678344580999692,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/backends/base/creation.py",
+    "tests/backends/base/test_creation.py",
+    "tests/backends/models.py"
+  ]
+}

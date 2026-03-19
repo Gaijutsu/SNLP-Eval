@@ -1,0 +1,99 @@
+{
+  "instance_id": "django__django-12589",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.9034179630034487,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/foreign_object/models/person.py",
+    "tests/queries/models.py",
+    "tests/distinct_on_fields/models.py",
+    "tests/schema/fields.py",
+    "tests/model_meta/models.py",
+    "tests/known_related_objects/models.py",
+    "django/db/models/__init__.py",
+    "tests/mutually_referential/models.py",
+    "tests/m2m_and_m2o/models.py",
+    "tests/model_fields/test_manytomanyfield.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2182,
+      "results": [
+        {
+          "file": "tests/foreign_object/models/person.py",
+          "score": 0.6607
+        },
+        {
+          "file": "tests/queries/models.py",
+          "score": 0.6221
+        },
+        {
+          "file": "tests/distinct_on_fields/models.py",
+          "score": 0.6121
+        },
+        {
+          "file": "tests/schema/fields.py",
+          "score": 0.6061
+        },
+        {
+          "file": "tests/model_meta/models.py",
+          "score": 0.5993
+        },
+        {
+          "file": "tests/known_related_objects/models.py",
+          "score": 0.5974
+        },
+        {
+          "file": "django/db/models/__init__.py",
+          "score": 0.5964
+        },
+        {
+          "file": "tests/mutually_referential/models.py",
+          "score": 0.5952
+        },
+        {
+          "file": "tests/m2m_and_m2o/models.py",
+          "score": 0.5946
+        },
+        {
+          "file": "tests/model_fields/test_manytomanyfield.py",
+          "score": 0.5857
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.9034179630034487,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/query.py",
+    "tests/aggregation/models.py",
+    "tests/aggregation/tests.py"
+  ]
+}

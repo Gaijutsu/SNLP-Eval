@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-12747",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.8065735963827293,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6597630780015606,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/deletion.py",
+    "django/db/models/sql/subqueries.py",
+    "django/forms/models.py",
+    "django/db/models/options.py",
+    "django/contrib/admin/utils.py",
+    "django/contrib/admin/options.py",
+    "tests/delete_regress/tests.py",
+    "tests/delete/tests.py",
+    "django/db/migrations/autodetector.py",
+    "django/db/models/query.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2191,
+      "results": [
+        {
+          "file": "django/db/models/deletion.py",
+          "score": 242.6913
+        },
+        {
+          "file": "django/db/models/sql/subqueries.py",
+          "score": 215.8707
+        },
+        {
+          "file": "django/forms/models.py",
+          "score": 212.4095
+        },
+        {
+          "file": "django/db/models/options.py",
+          "score": 207.59
+        },
+        {
+          "file": "django/contrib/admin/utils.py",
+          "score": 207.466
+        },
+        {
+          "file": "django/contrib/admin/options.py",
+          "score": 206.8908
+        },
+        {
+          "file": "tests/delete_regress/tests.py",
+          "score": 206.7573
+        },
+        {
+          "file": "tests/delete/tests.py",
+          "score": 204.2628
+        },
+        {
+          "file": "django/db/migrations/autodetector.py",
+          "score": 203.5171
+        },
+        {
+          "file": "django/db/models/query.py",
+          "score": 201.9743
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6597630780015606,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/deletion.py",
+    "tests/delete/tests.py"
+  ]
+}

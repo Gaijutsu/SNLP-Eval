@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context Gathering Harness — Results Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f1117;
+            --bg-secondary: #1a1d28;
+            --bg-card: #21243180;
+            --bg-hover: #282b3a;
+            --border: #2d3148;
+            --border-active: #6366f1;
+            --text-primary: #e4e6f0;
+            --text-secondary: #8b8fa8;
+            --text-muted: #5c6078;
+            --accent-blue: #6366f1;
+            --accent-green: #22c55e;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --glow-blue: 0 0 20px rgba(99, 102, 241, 0.15);
+            --transition: all 0.2s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container { max-width: 1500px; margin: 0 auto; padding: 24px; }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Breadcrumb navigation */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        .breadcrumb a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .breadcrumb a:hover { color: var(--accent-purple); }
+        .breadcrumb .sep { color: var(--text-muted); }
+        .breadcrumb .current { color: var(--text-primary); font-weight: 600; }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 18px;
+            transition: var(--transition);
+        }
+        .card:hover { border-color: #3d4168; }
+        .card h3 {
+            font-size: 0.9rem;
+            margin-bottom: 14px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Runs list */
+        .run-card {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .run-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: var(--glow-blue);
+        }
+        .run-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .run-info { flex: 1; }
+        .run-info h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .run-info .run-meta {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+        .run-arrow {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .run-card:hover .run-arrow { color: var(--accent-blue); transform: translateX(4px); }
+
+        /* Summary grid */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .stat-card .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .blue { color: var(--accent-blue); }
+        .green { color: var(--accent-green); }
+        .orange { color: var(--accent-orange); }
+        .purple { color: var(--accent-purple); }
+        .cyan { color: var(--accent-cyan); }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        thead th {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+        thead th:hover { color: var(--accent-blue); }
+        thead th.sorted { color: var(--accent-blue); }
+        thead th .sort-arrow {
+            display: inline-block;
+            margin-left: 4px;
+            opacity: 0.4;
+            font-size: 0.65rem;
+        }
+        thead th.sorted .sort-arrow { opacity: 1; }
+        tbody tr {
+            border-bottom: 1px solid #ffffff08;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        tbody tr:hover { background: var(--bg-hover); }
+        tbody tr:nth-child(even) { background: #ffffff03; }
+        tbody tr:nth-child(even):hover { background: var(--bg-hover); }
+        tbody td {
+            padding: 10px 14px;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+        td.good { color: var(--accent-green); }
+        td.medium { color: var(--accent-orange); }
+        td.bad { color: var(--accent-red); }
+
+        /* Gatherer comparison cards */
+        .gatherer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .gatherer-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+        }
+        .gatherer-name {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .gatherer-name .dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+        .gatherer-type {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding: 2px 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 6px;
+            font-size: 0.82rem;
+            border-bottom: 1px solid #ffffff08;
+        }
+        .metric-row:nth-child(odd) { background: #ffffff03; }
+        .metric-row .key { color: var(--text-secondary); }
+        .metric-row .val { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+        /* Instance detail */
+        .detail-section {
+            margin-bottom: 24px;
+        }
+        .detail-section h3 {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .metric-box {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            text-align: center;
+        }
+        .metric-box .m-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .metric-box .m-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Documents comparison */
+        .docs-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 768px) { .docs-compare { grid-template-columns: 1fr; } }
+        .doc-list {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+        }
+        .doc-list h4 {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .doc-item {
+            font-size: 0.82rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            font-family: 'Fira Mono', 'Consolas', monospace;
+            word-break: break-all;
+        }
+        .doc-item.hit { background: rgba(34, 197, 94, 0.12); color: var(--accent-green); }
+        .doc-item.miss { background: rgba(239, 68, 68, 0.08); color: var(--text-secondary); }
+        .doc-item.gold-hit { background: rgba(34, 197, 94, 0.12); color: var(--accent-green); }
+        .doc-item.gold-miss { background: rgba(239, 68, 68, 0.12); color: var(--accent-red); }
+
+        /* Chat conversation */
+        .chat-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .chat-msg {
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .chat-msg.system {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 3px solid var(--accent-blue);
+        }
+        .chat-msg.user {
+            background: rgba(168, 85, 247, 0.08);
+            border-left: 3px solid var(--accent-purple);
+        }
+        .chat-msg.assistant {
+            background: rgba(34, 197, 94, 0.08);
+            border-left: 3px solid var(--accent-green);
+        }
+        .chat-role {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .chat-msg.system .chat-role { color: var(--accent-blue); }
+        .chat-msg.user .chat-role { color: var(--accent-purple); }
+        .chat-msg.assistant .chat-role { color: var(--accent-green); }
+        .chat-content {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Trace timeline */
+        .trace-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+        }
+        .trace-step {
+            position: relative;
+            padding-left: 36px;
+            padding-bottom: 16px;
+            border-left: 2px solid var(--border);
+            margin-left: 10px;
+        }
+        .trace-step:last-child { border-left-color: transparent; padding-bottom: 0; }
+        .trace-dot {
+            position: absolute;
+            left: -7px;
+            top: 2px;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            border: 2px solid var(--bg-primary);
+        }
+        .trace-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+        .trace-step-num {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+        .trace-action {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            font-family: 'Fira Mono', 'Consolas', monospace;
+        }
+        .trace-tokens {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .trace-thought {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .trace-observation {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: #0f111788;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 6px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-family: 'Fira Mono', 'Consolas', monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Patch display */
+        .patch-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-family: 'Fira Mono', 'Consolas', monospace;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .patch-line-add { color: var(--accent-green); }
+        .patch-line-del { color: var(--accent-red); }
+        .patch-line-header { color: var(--accent-cyan); font-weight: 600; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 8px; }
+
+        /* View toggle */
+        .view-toggle { display: none; }
+        .view-toggle.active { display: block; }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .filter-bar select, .filter-bar input {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+        .filter-bar select:focus, .filter-bar input:focus {
+            border-color: var(--accent-blue);
+        }
+        .filter-bar label {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        /* Loading spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        .spinner {
+            display: inline-block;
+            width: 24px; height: 24px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Results Viewer</h1>
+        </header>
+
+        <div class="breadcrumb" id="breadcrumb"></div>
+
+        <!-- Runs list view -->
+        <div class="view-toggle active" id="viewRuns">
+            <div id="runsList"></div>
+        </div>
+
+        <!-- Run dashboard view -->
+        <div class="view-toggle" id="viewRun">
+            <div id="runSummary"></div>
+            <div class="filter-bar" id="instanceFilters"></div>
+            <div class="card">
+                <h3>📋 Instance Results</h3>
+                <div class="table-wrap">
+                    <table id="instanceTable">
+                        <thead id="instanceThead"></thead>
+                        <tbody id="instanceTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instance detail view -->
+        <div class="view-toggle" id="viewDetail">
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#a855f7','#06b6d4','#ec4899','#14b8a6'];
+        const TYPE_MAP = {
+            rag_bm25:'RAG · Sparse', rag_dense:'RAG · Dense', rag_hybrid:'RAG · Hybrid',
+            react_agent:'Agentic · ReAct', agentless:'Agentic · Agentless'
+        };
+        const METRIC_KEYS = [
+            'precision@1','precision@3','precision@5','precision@10',
+            'recall@1','recall@3','recall@5','recall@10',
+            'ndcg@1','ndcg@3','ndcg@5','ndcg@10',
+            'mrr','latency_s','token_usage'
+        ];
+
+        let currentRun = null;
+        let currentInstances = [];
+        let sortCol = null;
+        let sortAsc = true;
+        let filterGatherer = '';
+
+        // Navigation
+        function showView(name) {
+            document.querySelectorAll('.view-toggle').forEach(v => v.classList.remove('active'));
+            document.getElementById('view' + name).classList.add('active');
+        }
+
+        function updateBreadcrumb(parts) {
+            const bc = document.getElementById('breadcrumb');
+            bc.innerHTML = parts.map((p, i) => {
+                if (i < parts.length - 1) {
+                    return `<a onclick="${p.action}">${p.label}</a><span class="sep">›</span>`;
+                }
+                return `<span class="current">${p.label}</span>`;
+            }).join('');
+        }
+
+        // ── Runs list ──
+        async function loadRuns() {
+            showView('Runs');
+            updateBreadcrumb([{label: 'All Runs'}]);
+            const container = document.getElementById('runsList');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading runs…</div></div>';
+
+            try {
+                const runs = await fetch('/api/runs').then(r => r.json());
+                if (!runs.length) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📭</div>
+                            <h3>No results found</h3>
+                            <p>Run an experiment first, then point the viewer to the results directory.</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = runs.map(run => {
+                    const cfg = run.config || {};
+                    const benchmark = cfg.benchmark?.name || 'Unknown';
+                    const gatherers = (cfg.gatherers || []).map(g => g.name).join(', ') || '—';
+                    const model = cfg.llm?.model || '—';
+                    const limit = cfg.benchmark?.limit || 'all';
+
+                    return `
+                    <div class="card run-card" onclick="window.__loadRun('${run.run_id}')">
+                        <div class="run-icon">🧪</div>
+                        <div class="run-info">
+                            <h3>${run.run_id === '_legacy' ? 'Legacy Results' : run.run_id}</h3>
+                            <div class="run-meta">
+                                ${run.timestamp !== run.run_id ? `<strong>Time:</strong> ${run.timestamp} · ` : ''}
+                                <strong>Benchmark:</strong> ${benchmark} (${limit}) ·
+                                <strong>Gatherers:</strong> ${gatherers} ·
+                                <strong>Model:</strong> ${model}
+                            </div>
+                        </div>
+                        <div class="run-arrow">→</div>
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                container.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><h3>Error loading runs</h3><p>${e.message}</p></div>`;
+            }
+        }
+
+        // ── Run dashboard ──
+        async function loadRun(runId) {
+            currentRun = runId;
+            showView('Run');
+            updateBreadcrumb([
+                {label: 'All Runs', action: 'window.__loadRuns()'},
+                {label: runId === '_legacy' ? 'Legacy Results' : runId}
+            ]);
+
+            const summaryEl = document.getElementById('runSummary');
+            summaryEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            try {
+                const [summaryData, instances] = await Promise.all([
+                    fetch(`/api/runs/${runId}/summary`).then(r => r.json()),
+                    fetch(`/api/runs/${runId}/instances`).then(r => r.json()),
+                ]);
+
+                currentInstances = instances;
+                renderRunSummary(summaryData, instances);
+                renderFilters(instances);
+                renderInstanceTable(instances);
+            } catch (e) {
+                summaryEl.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${e.message}</p></div>`;
+            }
+        }
+
+        function renderRunSummary(data, instances) {
+            const summaryEl = document.getElementById('runSummary');
+            const summary = data.summary || {};
+            const meta = data.meta || {};
+            const cfg = meta.config || {};
+
+            const gatherers = Object.keys(summary);
+            const totalInstances = instances.length;
+            const uniqueInstances = new Set(instances.map(i => i.instance_id)).size;
+
+            // Overview stats
+            let html = `<div class="summary-grid">
+                <div class="stat-card"><div class="label">Instances</div><div class="value blue">${uniqueInstances}</div></div>
+                <div class="stat-card"><div class="label">Gatherers</div><div class="value purple">${gatherers.length}</div></div>
+                <div class="stat-card"><div class="label">Total Results</div><div class="value green">${totalInstances}</div></div>
+                <div class="stat-card"><div class="label">Model</div><div class="value cyan" style="font-size:0.9rem">${cfg.llm?.model || '—'}</div></div>
+            </div>`;
+
+            // Per-gatherer comparison cards
+            if (gatherers.length > 0) {
+                html += '<div class="gatherer-grid">';
+                gatherers.forEach((name, i) => {
+                    const stats = summary[name];
+                    const color = COLORS[i % COLORS.length];
+                    const type = TYPE_MAP[name] || 'Unknown';
+
+                    let metricsHtml = '';
+                    const keyMetrics = ['mrr','precision@1','precision@5','recall@5','ndcg@5','latency_s','token_usage'];
+                    keyMetrics.forEach(k => {
+                        if (stats[k]) {
+                            const v = stats[k];
+                            metricsHtml += `<div class="metric-row"><span class="key">${k}</span><span class="val">${v.mean.toFixed(4)} ± ${v.std.toFixed(4)}</span></div>`;
+                        }
+                    });
+
+                    html += `
+                    <div class="gatherer-card">
+                        <div class="gatherer-name"><span class="dot" style="background:${color}"></span>${name}</div>
+                        <span class="gatherer-type">${type}</span>
+                        ${metricsHtml}
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            summaryEl.innerHTML = html;
+        }
+
+        function renderFilters(instances) {
+            const filtersEl = document.getElementById('instanceFilters');
+            const gatherers = [...new Set(instances.map(i => i.gatherer))].sort();
+
+            filtersEl.innerHTML = `
+                <label>Filter by Gatherer:</label>
+                <select id="filterGatherer" onchange="window.__filterChanged()">
+                    <option value="">All Gatherers</option>
+                    ${gatherers.map(g => `<option value="${g}">${g}</option>`).join('')}
+                </select>
+                <label>Search:</label>
+                <input type="text" id="filterSearch" placeholder="Instance ID…" oninput="window.__filterChanged()">
+            `;
+        }
+
+        function renderInstanceTable(instances) {
+            // Apply filters
+            let filtered = instances;
+            if (filterGatherer) {
+                filtered = filtered.filter(i => i.gatherer === filterGatherer);
+            }
+            const searchEl = document.getElementById('filterSearch');
+            if (searchEl && searchEl.value) {
+                const q = searchEl.value.toLowerCase();
+                filtered = filtered.filter(i => (i.instance_id || '').toLowerCase().includes(q));
+            }
+
+            // Sort
+            if (sortCol) {
+                filtered = [...filtered].sort((a, b) => {
+                    let va = a[sortCol], vb = b[sortCol];
+                    if (va == null) va = -Infinity;
+                    if (vb == null) vb = -Infinity;
+                    if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+                    return sortAsc ? va - vb : vb - va;
+                });
+            }
+
+            // Determine visible columns
+            const fixedCols = ['instance_id', 'gatherer'];
+            const metricCols = [];
+            const allKeys = new Set();
+            filtered.forEach(i => Object.keys(i).forEach(k => allKeys.add(k)));
+            METRIC_KEYS.forEach(k => { if (allKeys.has(k)) metricCols.push(k); });
+            // Add any extra metric columns we haven't listed
+            allKeys.forEach(k => {
+                if (!fixedCols.includes(k) && !metricCols.includes(k) && k !== 'model') {
+                    const sample = filtered.find(i => i[k] != null);
+                    if (sample && typeof sample[k] === 'number') metricCols.push(k);
+                }
+            });
+            const cols = [...fixedCols, ...metricCols];
+
+            // Header
+            const thead = document.getElementById('instanceThead');
+            thead.innerHTML = '<tr>' + cols.map(c => {
+                const sorted = sortCol === c;
+                const arrow = sorted ? (sortAsc ? '▲' : '▼') : '▲';
+                return `<th class="${sorted ? 'sorted' : ''}" onclick="window.__sortBy('${c}')">${c}<span class="sort-arrow">${arrow}</span></th>`;
+            }).join('') + '</tr>';
+
+            // Body
+            const tbody = document.getElementById('instanceTbody');
+            if (!filtered.length) {
+                tbody.innerHTML = `<tr><td colspan="${cols.length}" style="text-align:center;padding:24px;color:var(--text-muted)">No results matching filters</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(inst => {
+                const cells = cols.map(c => {
+                    const v = inst[c];
+                    if (v == null) return '<td>—</td>';
+                    if (typeof v === 'number') {
+                        const formatted = Number.isInteger(v) ? v.toLocaleString() : v.toFixed(4);
+                        let cls = '';
+                        if (c.startsWith('precision') || c.startsWith('recall') || c.startsWith('ndcg') || c === 'mrr') {
+                            cls = v >= 0.7 ? 'good' : v >= 0.3 ? 'medium' : v > 0 ? 'bad' : '';
+                        }
+                        return `<td class="${cls}">${formatted}</td>`;
+                    }
+                    if (typeof v === 'boolean') return `<td>${v ? '✅' : '❌'}</td>`;
+                    return `<td>${v}</td>`;
+                }).join('');
+
+                return `<tr onclick="window.__loadDetail('${inst.instance_id}', '${inst.gatherer}')">${cells}</tr>`;
+            }).join('');
+        }
+
+        // ── Instance detail ──
+        async function loadDetail(instanceId, gatherer) {
+            showView('Detail');
+            updateBreadcrumb([
+                {label: 'All Runs', action: 'window.__loadRuns()'},
+                {label: currentRun, action: `window.__loadRun('${currentRun}')`},
+                {label: `${instanceId} · ${gatherer}`}
+            ]);
+
+            const container = document.getElementById('detailContent');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading instance details…</div></div>';
+
+            try {
+                const data = await fetch(`/api/runs/${currentRun}/instances/${encodeURIComponent(instanceId)}/${gatherer}`).then(r => r.json());
+                renderDetail(data);
+            } catch (e) {
+                container.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${e.message}</p></div>`;
+            }
+        }
+
+        function renderDetail(data) {
+            const container = document.getElementById('detailContent');
+            let html = '';
+
+            // Header
+            html += `<div class="card">
+                <h3 style="color:var(--text-primary);font-size:1.1rem;margin-bottom:6px">
+                    ${data.instance_id}
+                    <span style="font-size:0.8rem;color:var(--text-muted);font-weight:400;margin-left:8px">${data.gatherer}</span>
+                </h3>
+                ${data.model ? `<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:8px">Model: <strong>${data.model}</strong></div>` : ''}
+            </div>`;
+
+            // Metrics
+            const metrics = data.metrics || data;
+            const metricEntries = Object.entries(metrics).filter(([k, v]) =>
+                typeof v === 'number' && !['instance_id','gatherer','model'].includes(k)
+            );
+            if (metricEntries.length) {
+                html += `<div class="detail-section"><h3>📈 Metrics</h3><div class="metrics-grid">`;
+                metricEntries.forEach(([k, v]) => {
+                    let colorClass = '';
+                    if (k.startsWith('precision') || k.startsWith('recall') || k.startsWith('ndcg') || k === 'mrr') {
+                        colorClass = v >= 0.7 ? 'green' : v >= 0.3 ? 'orange' : 'red';
+                    } else if (k === 'latency_s') { colorClass = 'cyan'; }
+                    else if (k === 'token_usage') { colorClass = 'blue'; }
+
+                    const formatted = Number.isInteger(v) ? v.toLocaleString() : v.toFixed(4);
+                    html += `<div class="metric-box"><div class="m-label">${k}</div><div class="m-value ${colorClass}">${formatted}</div></div>`;
+                });
+                // Boolean metrics
+                Object.entries(metrics).forEach(([k, v]) => {
+                    if (typeof v === 'boolean') {
+                        html += `<div class="metric-box"><div class="m-label">${k}</div><div class="m-value">${v ? '✅' : '❌'}</div></div>`;
+                    }
+                });
+                html += '</div></div>';
+            }
+
+            // Retrieved documents vs gold context
+            const retrieved = data.retrieved_documents || [];
+            const gold = data.gold_context || [];
+            if (retrieved.length || gold.length) {
+                const goldSet = new Set(gold);
+                const retrievedSet = new Set(retrieved);
+
+                html += `<div class="detail-section"><h3>📄 Documents</h3><div class="docs-compare">`;
+
+                // Retrieved docs
+                html += `<div class="doc-list"><h4>Retrieved (${retrieved.length})</h4>`;
+                retrieved.forEach(doc => {
+                    const cls = goldSet.has(doc) ? 'hit' : 'miss';
+                    const icon = goldSet.has(doc) ? '✓' : '·';
+                    html += `<div class="doc-item ${cls}">${icon} ${doc}</div>`;
+                });
+                if (!retrieved.length) html += '<div style="color:var(--text-muted);font-size:0.82rem">No documents retrieved</div>';
+                html += '</div>';
+
+                // Gold context
+                html += `<div class="doc-list"><h4>Gold Context (${gold.length})</h4>`;
+                gold.forEach(doc => {
+                    const cls = retrievedSet.has(doc) ? 'gold-hit' : 'gold-miss';
+                    const icon = retrievedSet.has(doc) ? '✓ Found' : '✗ Missed';
+                    html += `<div class="doc-item ${cls}">${icon} — ${doc}</div>`;
+                });
+                if (!gold.length) html += '<div style="color:var(--text-muted);font-size:0.82rem">No gold context available</div>';
+                html += '</div></div></div>';
+            }
+
+            // LLM Conversation
+            const conversation = data.conversation || [];
+            if (conversation.length) {
+                html += `<div class="detail-section"><h3>💬 LLM Conversation (${conversation.length} messages)</h3>`;
+                html += '<div class="chat-container">';
+                conversation.forEach(msg => {
+                    const role = msg.role || 'unknown';
+                    const content = escapeHtml(msg.content || '');
+                    html += `
+                    <div class="chat-msg ${role}">
+                        <div class="chat-role">${role}</div>
+                        <div class="chat-content">${content}</div>
+                    </div>`;
+                });
+                html += '</div></div>';
+            }
+
+            // Trace
+            const trace = data.trace || [];
+            if (trace.length) {
+                html += `<div class="detail-section"><h3>🔍 Agent Trace (${trace.length} steps)</h3>`;
+                html += '<div class="trace-container">';
+                trace.forEach(step => {
+                    const stepNum = step.step || step.phase || '?';
+                    const action = step.action || step.phase || '';
+                    const args = step.args ? `(${step.args.join(', ')})` : '';
+                    const tokens = step.tokens ? `${step.tokens} tokens` : '';
+                    const thought = step.thought || '';
+                    const observation = step.observation || '';
+                    const candidates = step.candidate_files ? `Files: ${step.candidate_files.join(', ')}` : '';
+                    const regions = step.regions ? `Regions: ${JSON.stringify(step.regions).slice(0, 200)}` : '';
+
+                    html += `
+                    <div class="trace-step">
+                        <div class="trace-dot"></div>
+                        <div class="trace-header">
+                            <span class="trace-step-num">Step ${stepNum}</span>
+                            <span class="trace-action">${action}${args}</span>
+                            <span class="trace-tokens">${tokens}</span>
+                        </div>
+                        ${thought ? `<div class="trace-thought">${escapeHtml(thought)}</div>` : ''}
+                        ${observation ? `<div class="trace-observation">${escapeHtml(observation)}</div>` : ''}
+                        ${candidates ? `<div class="trace-observation">${candidates}</div>` : ''}
+                        ${regions ? `<div class="trace-observation">${regions}</div>` : ''}
+                    </div>`;
+                });
+                html += '</div></div>';
+            }
+
+            // Generated patch
+            const patch = data.generated_patch;
+            if (patch) {
+                html += `<div class="detail-section"><h3>🔧 Generated Patch</h3>`;
+                html += '<div class="patch-container">';
+                patch.split('\n').forEach(line => {
+                    let cls = '';
+                    if (line.startsWith('+')) cls = 'patch-line-add';
+                    else if (line.startsWith('-')) cls = 'patch-line-del';
+                    else if (line.startsWith('@@') || line.startsWith('diff')) cls = 'patch-line-header';
+                    html += `<span class="${cls}">${escapeHtml(line)}\n</span>`;
+                });
+                html += '</div></div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ── Global handlers ──
+        window.__loadRuns = loadRuns;
+        window.__loadRun = loadRun;
+        window.__loadDetail = loadDetail;
+        window.__sortBy = function(col) {
+            if (sortCol === col) { sortAsc = !sortAsc; }
+            else { sortCol = col; sortAsc = true; }
+            renderInstanceTable(currentInstances);
+        };
+        window.__filterChanged = function() {
+            filterGatherer = document.getElementById('filterGatherer')?.value || '';
+            renderInstanceTable(currentInstances);
+        };
+
+        // Init
+        loadRuns();
+    })();
+    </script>
+</body>
+</html>

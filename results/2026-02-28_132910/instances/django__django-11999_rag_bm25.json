@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-11999",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.5,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.6131471927654584,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6729416660018614,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/model_fields/tests.py",
+    "tests/invalid_models_tests/test_models.py",
+    "tests/utils_tests/test_lazyobject.py",
+    "tests/generic_views/test_base.py",
+    "tests/model_fields/test_foreignkey.py",
+    "tests/model_inheritance/test_abstract_inheritance.py",
+    "django/db/models/base.py",
+    "tests/delete_regress/tests.py",
+    "django/db/migrations/autodetector.py",
+    "tests/migrations/test_optimizer.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2163,
+      "results": [
+        {
+          "file": "tests/model_fields/tests.py",
+          "score": 757.2477
+        },
+        {
+          "file": "tests/invalid_models_tests/test_models.py",
+          "score": 709.1408
+        },
+        {
+          "file": "tests/utils_tests/test_lazyobject.py",
+          "score": 706.5827
+        },
+        {
+          "file": "tests/generic_views/test_base.py",
+          "score": 665.6406
+        },
+        {
+          "file": "tests/model_fields/test_foreignkey.py",
+          "score": 628.0606
+        },
+        {
+          "file": "tests/model_inheritance/test_abstract_inheritance.py",
+          "score": 626.9541
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 624.421
+        },
+        {
+          "file": "tests/delete_regress/tests.py",
+          "score": 619.358
+        },
+        {
+          "file": "django/db/migrations/autodetector.py",
+          "score": 617.2948
+        },
+        {
+          "file": "tests/migrations/test_optimizer.py",
+          "score": 605.3277
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6729416660018614,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/__init__.py",
+    "tests/model_fields/tests.py"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "instance_id": "django__django-10924",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7775975969998399,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/conf/global_settings.py",
+    "django/core/files/storage.py",
+    "docs/conf.py",
+    "django/db/models/fields/files.py",
+    "django/utils/autoreload.py",
+    "django/utils/translation/trans_real.py",
+    "django/db/migrations/questioner.py",
+    "django/db/models/sql/query.py",
+    "django/contrib/staticfiles/management/commands/collectstatic.py",
+    "setup.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2128,
+      "results": [
+        {
+          "file": "django/conf/global_settings.py",
+          "score": 1317.6724
+        },
+        {
+          "file": "django/core/files/storage.py",
+          "score": 1286.102
+        },
+        {
+          "file": "docs/conf.py",
+          "score": 1282.2747
+        },
+        {
+          "file": "django/db/models/fields/files.py",
+          "score": 1277.8689
+        },
+        {
+          "file": "django/utils/autoreload.py",
+          "score": 1261.2135
+        },
+        {
+          "file": "django/utils/translation/trans_real.py",
+          "score": 1249.0149
+        },
+        {
+          "file": "django/db/migrations/questioner.py",
+          "score": 1240.9023
+        },
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 1235.7909
+        },
+        {
+          "file": "django/contrib/staticfiles/management/commands/collectstatic.py",
+          "score": 1221.6125
+        },
+        {
+          "file": "setup.py",
+          "score": 1212.8894
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7775975969998399,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/__init__.py",
+    "tests/model_fields/test_filepathfield.py",
+    "django/__init__.py",
+    "django/apps/__init__.py",
+    "django/conf/__init__.py",
+    "django/core/__init__.py",
+    "django/core/exceptions.py",
+    "django/db/__init__.py",
+    "django/db/models/constants.py",
+    "django/db/models/query_utils.py",
+    "django/utils/__init__.py",
+    "django/utils/datastructures.py",
+    "django/utils/dateparse.py",
+    "django/utils/duration.py",
+    "django/utils/functional.py",
+    "django/utils/ipv6.py",
+    "django/utils/itercompat.py",
+    "django/utils/text.py",
+    "django/utils/translation/__init__.py",
+    "django/db/models/expressions.py"
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "instance_id": "django__django-11905",
+  "gatherer": "react_agent",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.3333333333333333,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.46927872602275644,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.46927872602275644,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.46927872602275644,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 8921.0,
+    "latency_s": 27.630416813997726,
+    "ttft_s": 6.775499121999019
+  },
+  "retrieved_documents": [
+    "django/db/models/lookups.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are a code investigation agent. Your job is to find the files most relevant\nto a given issue/query in a code repository.\n\nYou have the following tools available:\n\n1. list_dir(path: str) -> str\n   List files and subdirectories in the given directory (relative to repo root).\n\n2. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str\n   Read lines of a file (relative to repo root). Returns lines in [start_line, end_line].\n   Each line is prefixed with its line number for reference.\n   Default: lines 1\u2013200. Use start_line/end_line to read deeper into large files.\n\n3. grep(pattern: str, path: str = \".\") -> str\n   Search for a regex pattern in files under the given path. Returns matching lines.\n\n4. search_codebase(query: str) -> str\n   Semantic search over all files in the repo. Returns the top-5 most relevant file paths.\n\n\nOn each turn, respond in EXACTLY this format:\nThought: <your reasoning about what to do next>\nAction: <tool_name>(arg1, arg2, ...)\n\nWhen you have found all relevant files, respond:\nThought: <summary of findings>\nAction: finish(file1.py, file2.py, ...)\n\nRules:\n- Always start with a Thought.\n- Call exactly ONE action per turn.\n- The finish action's arguments are the relevant file paths you found.\n- You have at most 15 steps. Use them wisely \u2014 don't repeat actions.\n- Do NOT output markdown, code blocks, or analysis \u2014 ONLY Thought + Action.\n"
+    },
+    {
+      "role": "user",
+      "content": "Find the files most relevant to this issue:\n\nPrevent using __isnull lookup with non-boolean value.\nDescription\n\t \n\t\t(last modified by Mariusz Felisiak)\n\t \n__isnull should not allow for non-boolean values. Using truthy/falsey doesn't promote INNER JOIN to an OUTER JOIN but works fine for a simple queries. Using non-boolean values is \u200bundocumented and untested. IMO we should raise an error for non-boolean values to avoid confusion and for consistency.\n\n\nHints:\nPR here: \u200bhttps://github.com/django/django/pull/11873\nAfter the reconsideration I don't think that we should change this \u200bdocumented behavior (that is in Django from the very beginning). __isnull lookup expects boolean values in many places and IMO it would be confusing if we'll allow for truthy/falsy values, e.g. take a look at these examples field__isnull='false' or field__isnull='true' (both would return the same result). You can always call bool() on a right hand side. Sorry for my previous acceptation (I shouldn't triage tickets in the weekend).\nReplying to felixxm: After the reconsideration I don't think that we should change this \u200bdocumented behavior (that is in Django from the very beginning). __isnull lookup expects boolean values in many places and IMO it would be confusing if we'll allow for truthy/falsy values, e.g. take a look at these examples field__isnull='false' or field__isnull='true' (both would return the same result). You can always call bool() on a right hand side. Sorry for my previous acceptation (I shouldn't triage tickets in the weekend). I understand your point. But is there anything we can do to avoid people falling for the same pitfall I did? The problem, in my opinion, is that it works fine for simple queries but as soon as you add a join that needs promotion it will break, silently. Maybe we should make it raise an exception when a non-boolean is passed? One valid example is to have a class that implements __bool__. You can see here \u200bhttps://github.com/django/django/blob/d9881a025c15d87b2a7883ee50771117450ea90d/django/db/models/lookups.py#L465-L470 that non-bool value is converted to IS NULL and IS NOT NULL already using the truthy/falsy values. IMO it would be confusing if we'll allow for truthy/falsy values, e.g. take a look at these examples fieldisnull='false' or fieldisnull='true' (both would return the same result). This is already the case. It just is inconsistent, in lookups.py field__isnull='false' will be a positive condition but on the query.py it will be the negative condition.\nMaybe adding a note on the documentation? something like: \"Although it might seem like it will work with non-bool fields, this is not supported and can lead to inconsistent behaviours\"\nAgreed, we should raise an error for non-boolean values, e.g. diff --git a/django/db/models/lookups.py b/django/db/models/lookups.py index 9344979c56..fc4a38c4fe 100644 --- a/django/db/models/lookups.py +++ b/django/db/models/lookups.py @@ -463,6 +463,11 @@ class IsNull(BuiltinLookup): prepare_rhs = False def as_sql(self, compiler, connection): + if not isinstance(self.rhs, bool): + raise ValueError( + 'The QuerySet value for an isnull lookup must be True or ' + 'False.' + ) sql, params = compiler.compile(self.lhs) if self.rhs: return \"%s IS NULL\" % sql, params I changed the ticket description.\nThanks, I'll work on it! Wouldn't that possibly break backward compatibility? I'm not familiar with how Django moves in that regard.\nWe can add a release note in \"Backwards incompatible changes\" or deprecate this and remove in Django 4.0. I have to thing about it, please give me a day, maybe I will change my mind :)\nNo problem. Thanks for taking the time to look into this!\nAnother interesting example related to this: As an anecdote, I've also got bitten by this possibility. An attempt to write WHERE (field IS NULL) = boolean_field as .filter(field__isnull=F('boolean_field')) didn't go as I expected. Alexandr Aktsipetrov -- \u200bhttps://groups.google.com/forum/#!msg/django-developers/AhY2b3rxkfA/0sz3hNanCgAJ This example will generate"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\nOkay, let's tackle this issue. The user wants to find files relevant to preventing the use of __isnull lookup with non-boolean values in Django. The discussion mentions a PR and specific code changes in lookups.py and query.py.\n\nFirst, I should check the Django codebase for files related to lookups and query handling. The PR link points to lookups.py, so that's a key file. Also, the user mentioned query.py having issues with conditions. \n\nUsing the search_codebase tool with the query \"isnull lookup\" might find relevant files. Then, looking into the results, I'd check lookups.py and query.py. The user's example code adds a check for bool type in lookups.py, so that file is definitely relevant. Query.py is mentioned in the discussion as having inconsistent behavior. \n\nI should also check if there are other files related to database queries or lookups. Maybe the documentation files, but the user's focus is on code changes. The PR's diff shows changes in lookups.py, so that's a primary file. The query.py might have the part where the condition is applied. \n\nAnother angle: the error message in the code suggests adding a check for isinstance(self.rhs, bool), which is in lookups.py. So that file is crucial. The query.py might have the part where the SQL is generated, leading to inconsistencies. \n\nI'll start by searching the codebase for \"isnull\" to find relevant files. Then, inspect those files, especially lookups.py and query.py. Also, check if there's a test file related to this lookup, but the user's focus is on preventing non-boolean values, so the main files are lookups.py and query.py.\n</think>\n\nThought: The issue revolves around Django's `__isnull` lookup expecting boolean values. The PR mentions changes in `lookups.py` and inconsistencies in `query.py`. I'll start by searching the codebase for files related to `isnull` lookups.\n\nAction: search_codebase(\"isnull lookup\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 1/15 \u2014 14 remaining]\n  tests/queries/test_query.py (score: 17.8201)\n  django/contrib/admin/filters.py (score: 15.5757)\n  tests/postgres_tests/test_json.py (score: 10.1622)\n  tests/lookup/tests.py (score: 6.0358)\n  django/contrib/gis/db/models/lookups.py (score: 5.6974)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\nOkay, let's see. The user wants to find files relevant to preventing the use of __isnull lookup with non-boolean values. The initial search_codebase(\"isnull lookup\") gave some results, but I need to check which ones are most relevant.\n\nThe top result is tests/queries/test_query.py with a high score. That might have test cases related to isnull lookups. Then django/contrib/admin/filters.py could be where admin filters use isnull. The third is tests/postgres_tests/test_json.py, which might test JSON fields with isnull. The tests/lookup/tests.py is likely a test file for lookups in general. The last one is django/contrib/gis/db/models/lookups.py, which might handle GIS-related lookups.\n\nBut the PR mentioned in the issue is about lookups.py in django/db/models. The user's comment also refers to lookups.py and query.py. The search results don't include the main lookups.py file. Maybe the search term wasn't specific enough. Let me check if there's a file named lookups.py in django/db/models.\n\nWait, the user's message mentions a specific line in lookups.py: https://github.com/django/django/blob/d9881a025c15d87b2a7883ee50771117450ea90d/django/db/models/lookups.py#L465-L470. So the file django/db/models/lookups.py is definitely relevant. But the search_codebase didn't return that. Maybe the query \"isnull lookup\" isn't catching it. Let me try a different approach.\n\nI should use grep to search for \"isnull\" in the django/db/models directory. That might find the lookups.py file. Alternatively, check the list_dir for django/db/models to see if lookups.py exists there. Let me try list_dir on django/db/models to confirm the presence of lookups.py.\n</think>\n\nThought: The search results include test files and admin filters, but the core implementation is likely in `django/db/models/lookups.py` as mentioned in the PR. I'll verify its existence and check for relevant code.\n\nAction: list_dir(django/db/models)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 2/15 \u2014 13 remaining]\n  django/db/models/__init__.py\n  django/db/models/aggregates.py\n  django/db/models/base.py\n  django/db/models/constants.py\n  django/db/models/constraints.py\n  django/db/models/deletion.py\n  django/db/models/enums.py\n  django/db/models/expressions.py\n  django/db/models/fields/\n  django/db/models/functions/\n  django/db/models/indexes.py\n  django/db/models/lookups.py\n  django/db/models/manager.py\n  django/db/models/options.py\n  django/db/models/query.py\n  django/db/models/query_utils.py\n  django/db/models/signals.py\n  django/db/models/sql/\n  django/db/models/utils.py"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\nOkay, let's see. The user is trying to find files related to preventing the use of __isnull lookup with non-boolean values in Django. The previous steps showed that the search_codebase(\"isnull lookup\") returned some test files and other modules, but the PR mentioned django/db/models/lookups.py. The list_dir(django/db/models) confirms that lookups.py exists in that directory.\n\nSo, the next logical step is to look into django/db/models/lookups.py because that's where the IsNull lookup is likely defined. The user's issue is about ensuring that __isnull only accepts boolean values, and the PR diff shows changes in lookups.py. Therefore, reading this file would help understand how the lookup is implemented and where the validation for boolean values might be added.\n\nI should use the read_file tool on django/db/models/lookups.py. Since the PR mentions lines around 465-470, maybe starting around there. But the user might need to see the existing code to identify where the check for boolean values is or where it's missing. The read_file can capture the relevant section, maybe from line 460 to 500 to cover the area mentioned in the PR. That way, we can see the current implementation and determine if the proposed change (adding a boolean check) is present or not.\n</think>\n\nThought: The file `django/db/models/lookups.py` is present and likely contains the `IsNull` lookup implementation. I'll inspect it to confirm the current behavior and identify where the boolean check would be added.\n\nAction: read_file(django/db/models/lookups.py, 460, 500)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 3/15 \u2014 12 remaining]\n 460: @Field.register_lookup\n 461: class IsNull(BuiltinLookup):\n 462:     lookup_name = 'isnull'\n 463:     prepare_rhs = False\n 464: \n 465:     def as_sql(self, compiler, connection):\n 466:         sql, params = compiler.compile(self.lhs)\n 467:         if self.rhs:\n 468:             return \"%s IS NULL\" % sql, params\n 469:         else:\n 470:             return \"%s IS NOT NULL\" % sql, params\n 471: \n 472: \n 473: @Field.register_lookup\n 474: class Regex(BuiltinLookup):\n 475:     lookup_name = 'regex'\n 476:     prepare_rhs = False\n 477: \n 478:     def as_sql(self, compiler, connection):\n 479:         if self.lookup_name in connection.operators:\n 480:             return super().as_sql(compiler, connection)\n 481:         else:\n 482:             lhs, lhs_params = self.process_lhs(compiler, connection)\n 483:             rhs, rhs_params = self.process_rhs(compiler, connection)\n 484:             sql_template = connection.ops.regex_lookup(self.lookup_name)\n 485:             return sql_template % (lhs, rhs), lhs_params + rhs_params\n 486: \n 487: \n 488: @Field.register_lookup\n 489: class IRegex(Regex):\n 490:     lookup_name = 'iregex'\n 491: \n 492: \n 493: class YearLookup(Lookup):\n 494:     def year_lookup_bounds(self, connection, year):\n 495:         output_field = self.lhs.lhs.output_field\n 496:         if isinstance(output_field, DateTimeField):\n 497:             bounds = connection.ops.year_lookup_bounds_for_datetime_field(year)\n 498:         else:\n 499:             bounds = connection.ops.year_lookup_bounds_for_date_field(year)\n 500:         return bounds\n... (100 more lines, total 600)"
+    }
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "thought": "Thought: The issue revolves around Django's `__isnull` lookup expecting boolean values. The PR mentions changes in `lookups.py` and inconsistencies in `query.py`. I'll start by searching the codebase for files related to `isnull` lookups.",
+      "action": "search_codebase",
+      "args": [
+        "isnull lookup"
+      ],
+      "tokens": 1819,
+      "observation": "  tests/queries/test_query.py (score: 17.8201)\n  django/contrib/admin/filters.py (score: 15.5757)\n  tests/postgres_tests/test_json.py (score: 10.1622)\n  tests/lookup/tests.py (score: 6.0358)\n  django/contrib/gis/db/models/lookups.py (score: 5.6974)"
+    },
+    {
+      "step": 2,
+      "thought": "Thought: The search results include test files and admin filters, but the core implementation is likely in `django/db/models/lookups.py` as mentioned in the PR. I'll verify its existence and check for relevant code.",
+      "action": "list_dir",
+      "args": [
+        "django/db/models"
+      ],
+      "tokens": 2058,
+      "observation": "  django/db/models/__init__.py\n  django/db/models/aggregates.py\n  django/db/models/base.py\n  django/db/models/constants.py\n  django/db/models/constraints.py\n  django/db/models/deletion.py\n  django/db/models/enums.py\n  django/db/models/expressions.py\n  django/db/models/fields/\n  django/db/models/functions/\n  django/db/models/indexes.py\n  django/db/models/lookups.py\n  django/db/models/manager.py\n  django/db/models/options.py\n  django/db/models/query.py\n  django/db/models/query_utils.py\n  django/db"
+    },
+    {
+      "step": 3,
+      "thought": "Thought: The file `django/db/models/lookups.py` is present and likely contains the `IsNull` lookup implementation. I'll inspect it to confirm the current behavior and identify where the boolean check would be added.",
+      "action": "read_file",
+      "args": [
+        "django/db/models/lookups.py",
+        "460",
+        "500"
+      ],
+      "tokens": 2160,
+      "observation": " 460: @Field.register_lookup\n 461: class IsNull(BuiltinLookup):\n 462:     lookup_name = 'isnull'\n 463:     prepare_rhs = False\n 464: \n 465:     def as_sql(self, compiler, connection):\n 466:         sql, params = compiler.compile(self.lhs)\n 467:         if self.rhs:\n 468:             return \"%s IS NULL\" % sql, params\n 469:         else:\n 470:             return \"%s IS NOT NULL\" % sql, params\n 471: \n 472: \n 473: @Field.register_lookup\n 474: class Regex(BuiltinLookup):\n 475:     lookup_name = 'rege"
+    },
+    {
+      "step": 4,
+      "thought": "Thought: The `IsNull` class in `django/db/models/lookups.py` handles the `__isnull` lookup. The current code does not validate the type of `self.rhs`, which aligns with the issue's discussion. The proposed fix would involve adding a boolean check here. This file is central to the issue.",
+      "action": "finish",
+      "args": [
+        "django/db/models/lookups.py"
+      ],
+      "tokens": 2884
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 8921,
+  "latency_s": 27.630416813997726,
+  "ttft_s": 6.775499121999019,
+  "gold_context": [
+    "django/db/models/lookups.py",
+    "tests/lookup/models.py",
+    "tests/lookup/tests.py"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12708",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.20210734650054757,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.20210734650054757,
+    "mrr": 0.25,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7249727590024122,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/migrations/autodetector.py",
+    "django/db/backends/sqlite3/schema.py",
+    "django/db/models/options.py",
+    "django/db/backends/base/schema.py",
+    "django/db/backends/mysql/schema.py",
+    "django/db/models/base.py",
+    "tests/schema/tests.py",
+    "django/db/backends/base/features.py",
+    "tests/migrations/test_autodetector.py",
+    "django/db/migrations/operations/models.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2191,
+      "results": [
+        {
+          "file": "django/db/migrations/autodetector.py",
+          "score": 321.9403
+        },
+        {
+          "file": "django/db/backends/sqlite3/schema.py",
+          "score": 313.8
+        },
+        {
+          "file": "django/db/models/options.py",
+          "score": 294.4479
+        },
+        {
+          "file": "django/db/backends/base/schema.py",
+          "score": 285.2551
+        },
+        {
+          "file": "django/db/backends/mysql/schema.py",
+          "score": 280.087
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 277.779
+        },
+        {
+          "file": "tests/schema/tests.py",
+          "score": 270.563
+        },
+        {
+          "file": "django/db/backends/base/features.py",
+          "score": 266.3764
+        },
+        {
+          "file": "tests/migrations/test_autodetector.py",
+          "score": 255.5676
+        },
+        {
+          "file": "django/db/migrations/operations/models.py",
+          "score": 254.7683
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7249727590024122,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/backends/base/schema.py",
+    "tests/migrations/test_base.py",
+    "tests/migrations/test_operations.py"
+  ]
+}

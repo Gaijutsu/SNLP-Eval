@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11905",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.2960819109658652,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.2960819109658652,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.2960819109658652,
+    "mrr": 0.5,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6794251639948925,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/query.py",
+    "django/db/models/lookups.py",
+    "django/db/models/query.py",
+    "django/db/models/sql/compiler.py",
+    "django/db/models/query_utils.py",
+    "django/db/models/fields/__init__.py",
+    "django/db/models/base.py",
+    "django/db/models/expressions.py",
+    "django/db/backends/base/features.py",
+    "django/db/backends/oracle/base.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2163,
+      "results": [
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 956.2184
+        },
+        {
+          "file": "django/db/models/lookups.py",
+          "score": 814.9484
+        },
+        {
+          "file": "django/db/models/query.py",
+          "score": 793.7019
+        },
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 773.0255
+        },
+        {
+          "file": "django/db/models/query_utils.py",
+          "score": 762.4381
+        },
+        {
+          "file": "django/db/models/fields/__init__.py",
+          "score": 752.9403
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 741.5486
+        },
+        {
+          "file": "django/db/models/expressions.py",
+          "score": 733.8544
+        },
+        {
+          "file": "django/db/backends/base/features.py",
+          "score": 731.7614
+        },
+        {
+          "file": "django/db/backends/oracle/base.py",
+          "score": 723.7715
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6794251639948925,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/lookups.py",
+    "tests/lookup/models.py",
+    "tests/lookup/tests.py"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "instance_id": "django__django-11099",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.2,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.2,
+    "ndcg@3": 0.46927872602275644,
+    "precision@5": 0.2,
+    "recall@5": 0.2,
+    "ndcg@5": 0.3391602052736161,
+    "precision@10": 0.2,
+    "recall@10": 0.4,
+    "ndcg@10": 0.4371994911049732,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6191140869996161,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/auth_tests/test_validators.py",
+    "django/contrib/auth/password_validation.py",
+    "django/contrib/auth/models.py",
+    "django/core/validators.py",
+    "django/contrib/admin/static/admin/js/vendor/xregexp/xregexp.js",
+    "django/forms/fields.py",
+    "django/contrib/auth/forms.py",
+    "django/utils/jslex.py",
+    "django/contrib/auth/backends.py",
+    "django/contrib/auth/validators.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2130,
+      "results": [
+        {
+          "file": "tests/auth_tests/test_validators.py",
+          "score": 166.6163
+        },
+        {
+          "file": "django/contrib/auth/password_validation.py",
+          "score": 151.1034
+        },
+        {
+          "file": "django/contrib/auth/models.py",
+          "score": 149.5733
+        },
+        {
+          "file": "django/core/validators.py",
+          "score": 144.7205
+        },
+        {
+          "file": "django/contrib/admin/static/admin/js/vendor/xregexp/xregexp.js",
+          "score": 143.5806
+        },
+        {
+          "file": "django/forms/fields.py",
+          "score": 142.4303
+        },
+        {
+          "file": "django/contrib/auth/forms.py",
+          "score": 130.352
+        },
+        {
+          "file": "django/utils/jslex.py",
+          "score": 126.7961
+        },
+        {
+          "file": "django/contrib/auth/backends.py",
+          "score": 125.4954
+        },
+        {
+          "file": "django/contrib/auth/validators.py",
+          "score": 124.1874
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6191140869996161,
+  "ttft_s": null,
+  "gold_context": [
+    "django/contrib/auth/validators.py",
+    "tests/auth_tests/test_validators.py",
+    "django/core/__init__.py",
+    "django/utils/deconstruct.py",
+    "django/utils/translation/__init__.py"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-11583",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 0.6934264036172708,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 0.6934264036172708,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.6934264036172708,
+    "mrr": 0.5,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6849041210007272,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "setup.py",
+    "django/utils/autoreload.py",
+    "tests/utils_tests/test_autoreload.py",
+    "django/core/management/__init__.py",
+    "django/core/management/base.py",
+    "django/db/migrations/questioner.py",
+    "django/core/management/commands/makemessages.py",
+    "django/test/runner.py",
+    "tests/i18n/test_extraction.py",
+    "django/contrib/staticfiles/management/commands/collectstatic.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2154,
+      "results": [
+        {
+          "file": "setup.py",
+          "score": 1195.7781
+        },
+        {
+          "file": "django/utils/autoreload.py",
+          "score": 1179.7618
+        },
+        {
+          "file": "tests/utils_tests/test_autoreload.py",
+          "score": 1132.3832
+        },
+        {
+          "file": "django/core/management/__init__.py",
+          "score": 1046.9741
+        },
+        {
+          "file": "django/core/management/base.py",
+          "score": 1010.4757
+        },
+        {
+          "file": "django/db/migrations/questioner.py",
+          "score": 986.7764
+        },
+        {
+          "file": "django/core/management/commands/makemessages.py",
+          "score": 974.516
+        },
+        {
+          "file": "django/test/runner.py",
+          "score": 962.1677
+        },
+        {
+          "file": "tests/i18n/test_extraction.py",
+          "score": 950.3614
+        },
+        {
+          "file": "django/contrib/staticfiles/management/commands/collectstatic.py",
+          "score": 885.1111
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6849041210007272,
+  "ttft_s": null,
+  "gold_context": [
+    "django/utils/autoreload.py",
+    "tests/utils_tests/test_autoreload.py"
+  ]
+}

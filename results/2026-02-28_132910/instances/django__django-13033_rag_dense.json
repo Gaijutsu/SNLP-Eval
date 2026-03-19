@@ -1,0 +1,99 @@
+{
+  "instance_id": "django__django-13033",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.20210734650054757,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.20210734650054757,
+    "mrr": 0.25,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.9267393960035406,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/null_fk_ordering/models.py",
+    "tests/serializers/models/natural.py",
+    "tests/order_with_respect_to/models.py",
+    "tests/ordering/models.py",
+    "tests/null_queries/models.py",
+    "tests/known_related_objects/models.py",
+    "tests/foreign_object/models/person.py",
+    "tests/distinct_on_fields/models.py",
+    "tests/queries/models.py",
+    "tests/many_to_one/models.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2196,
+      "results": [
+        {
+          "file": "tests/null_fk_ordering/models.py",
+          "score": 0.7379
+        },
+        {
+          "file": "tests/serializers/models/natural.py",
+          "score": 0.6441
+        },
+        {
+          "file": "tests/order_with_respect_to/models.py",
+          "score": 0.6343
+        },
+        {
+          "file": "tests/ordering/models.py",
+          "score": 0.6332
+        },
+        {
+          "file": "tests/null_queries/models.py",
+          "score": 0.6229
+        },
+        {
+          "file": "tests/known_related_objects/models.py",
+          "score": 0.6134
+        },
+        {
+          "file": "tests/foreign_object/models/person.py",
+          "score": 0.6063
+        },
+        {
+          "file": "tests/distinct_on_fields/models.py",
+          "score": 0.605
+        },
+        {
+          "file": "tests/queries/models.py",
+          "score": 0.6035
+        },
+        {
+          "file": "tests/many_to_one/models.py",
+          "score": 0.5934
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.9267393960035406,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/compiler.py",
+    "tests/ordering/models.py",
+    "tests/ordering/tests.py"
+  ]
+}

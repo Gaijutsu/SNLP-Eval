@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12700",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.934080842002004,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/core/management/commands/diffsettings.py",
+    "django/utils/hashable.py",
+    "django/conf/__init__.py",
+    "django/template/context_processors.py",
+    "django/contrib/admin/options.py",
+    "django/core/checks/model_checks.py",
+    "tests/user_commands/management/commands/set_option.py",
+    "tests/template_tests/templatetags/custom.py",
+    "django/forms/utils.py",
+    "django/contrib/admin/filters.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2188,
+      "results": [
+        {
+          "file": "django/core/management/commands/diffsettings.py",
+          "score": 0.6324
+        },
+        {
+          "file": "django/utils/hashable.py",
+          "score": 0.5574
+        },
+        {
+          "file": "django/conf/__init__.py",
+          "score": 0.5408
+        },
+        {
+          "file": "django/template/context_processors.py",
+          "score": 0.5363
+        },
+        {
+          "file": "django/contrib/admin/options.py",
+          "score": 0.5259
+        },
+        {
+          "file": "django/core/checks/model_checks.py",
+          "score": 0.5253
+        },
+        {
+          "file": "tests/user_commands/management/commands/set_option.py",
+          "score": 0.5167
+        },
+        {
+          "file": "tests/template_tests/templatetags/custom.py",
+          "score": 0.5125
+        },
+        {
+          "file": "django/forms/utils.py",
+          "score": 0.511
+        },
+        {
+          "file": "django/contrib/admin/filters.py",
+          "score": 0.5106
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.934080842002004,
+  "ttft_s": null,
+  "gold_context": [
+    "django/views/debug.py",
+    "tests/view_tests/tests/test_debug.py"
+  ]
+}

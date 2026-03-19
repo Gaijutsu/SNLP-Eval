@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-13033",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.2960819109658652,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.2960819109658652,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.2960819109658652,
+    "mrr": 0.5,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.701071524003055,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/query.py",
+    "django/db/models/sql/compiler.py",
+    "tests/queries/tests.py",
+    "django/contrib/admin/views/main.py",
+    "django/db/models/query.py",
+    "tests/gis_tests/relatedapp/tests.py",
+    "django/db/models/base.py",
+    "django/db/models/options.py",
+    "tests/aggregation_regress/tests.py",
+    "tests/generic_relations_regress/tests.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2196,
+      "results": [
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 1248.2256
+        },
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 1202.056
+        },
+        {
+          "file": "tests/queries/tests.py",
+          "score": 1179.5516
+        },
+        {
+          "file": "django/contrib/admin/views/main.py",
+          "score": 1128.6197
+        },
+        {
+          "file": "django/db/models/query.py",
+          "score": 1099.437
+        },
+        {
+          "file": "tests/gis_tests/relatedapp/tests.py",
+          "score": 1070.1389
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 1043.2037
+        },
+        {
+          "file": "django/db/models/options.py",
+          "score": 1023.683
+        },
+        {
+          "file": "tests/aggregation_regress/tests.py",
+          "score": 1004.0509
+        },
+        {
+          "file": "tests/generic_relations_regress/tests.py",
+          "score": 985.5273
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.701071524003055,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/compiler.py",
+    "tests/ordering/models.py",
+    "tests/ordering/tests.py"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "instance_id": "django__django-13028",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.2960819109658652,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.2960819109658652,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.2960819109658652,
+    "mrr": 0.5,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.841202074996545,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/constraints/models.py",
+    "tests/queries/models.py",
+    "tests/postgres_tests/models.py",
+    "django/contrib/admin/exceptions.py",
+    "django/contrib/admin/filters.py",
+    "django/db/models/__init__.py",
+    "tests/field_subclassing/fields.py",
+    "tests/managers_regress/models.py",
+    "tests/generic_inline_admin/models.py",
+    "django/db/models/expressions.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2195,
+      "results": [
+        {
+          "file": "tests/constraints/models.py",
+          "score": 0.6267
+        },
+        {
+          "file": "tests/queries/models.py",
+          "score": 0.5608
+        },
+        {
+          "file": "tests/postgres_tests/models.py",
+          "score": 0.5265
+        },
+        {
+          "file": "django/contrib/admin/exceptions.py",
+          "score": 0.5247
+        },
+        {
+          "file": "django/contrib/admin/filters.py",
+          "score": 0.5168
+        },
+        {
+          "file": "django/db/models/__init__.py",
+          "score": 0.5155
+        },
+        {
+          "file": "tests/field_subclassing/fields.py",
+          "score": 0.5148
+        },
+        {
+          "file": "tests/managers_regress/models.py",
+          "score": 0.5131
+        },
+        {
+          "file": "tests/generic_inline_admin/models.py",
+          "score": 0.511
+        },
+        {
+          "file": "django/db/models/expressions.py",
+          "score": 0.5093
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.841202074996545,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/query.py",
+    "tests/queries/models.py",
+    "tests/queries/tests.py"
+  ]
+}

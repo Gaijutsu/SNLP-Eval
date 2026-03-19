@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12908",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8470218020011089,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/db_functions/text/test_chr.py",
+    "tests/db_functions/text/test_ord.py",
+    "tests/db_functions/text/test_lower.py",
+    "tests/db_functions/text/test_substr.py",
+    "tests/db_functions/text/test_length.py",
+    "tests/db_functions/text/test_right.py",
+    "tests/db_functions/text/test_left.py",
+    "tests/db_functions/comparison/test_nullif.py",
+    "tests/db_functions/text/test_sha512.py",
+    "tests/db_functions/text/test_sha1.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2196,
+      "results": [
+        {
+          "file": "tests/db_functions/text/test_chr.py",
+          "score": 0.5875
+        },
+        {
+          "file": "tests/db_functions/text/test_ord.py",
+          "score": 0.5808
+        },
+        {
+          "file": "tests/db_functions/text/test_lower.py",
+          "score": 0.5552
+        },
+        {
+          "file": "tests/db_functions/text/test_substr.py",
+          "score": 0.552
+        },
+        {
+          "file": "tests/db_functions/text/test_length.py",
+          "score": 0.5484
+        },
+        {
+          "file": "tests/db_functions/text/test_right.py",
+          "score": 0.539
+        },
+        {
+          "file": "tests/db_functions/text/test_left.py",
+          "score": 0.5352
+        },
+        {
+          "file": "tests/db_functions/comparison/test_nullif.py",
+          "score": 0.5304
+        },
+        {
+          "file": "tests/db_functions/text/test_sha512.py",
+          "score": 0.5271
+        },
+        {
+          "file": "tests/db_functions/text/test_sha1.py",
+          "score": 0.5233
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8470218020011089,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/query.py",
+    "tests/queries/test_qs_combinators.py"
+  ]
+}

@@ -1,0 +1,250 @@
+{
+  "instance_id": "django__django-13028",
+  "gatherer": "react_agent",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.3333333333333333,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.46927872602275644,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.46927872602275644,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.46927872602275644,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 26425.0,
+    "latency_s": 16.348758571999497,
+    "ttft_s": 1.264282041003753
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/query.py",
+    "django/db/models/expressions.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are a code investigation agent. Your job is to find the files most relevant\nto a given issue/query in a code repository.\n\nYou have the following tools available:\n\n1. list_dir(path: str) -> str\n   List files and subdirectories in the given directory (relative to repo root).\n\n2. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str\n   Read lines of a file (relative to repo root). Returns lines in [start_line, end_line].\n   Each line is prefixed with its line number for reference.\n   Default: lines 1\u2013200. Use start_line/end_line to read deeper into large files.\n\n3. grep(pattern: str, path: str = \".\") -> str\n   Search for a regex pattern in files under the given path. Returns matching lines.\n\n4. search_codebase(query: str) -> str\n   Semantic search over all files in the repo. Returns the top-5 most relevant file paths.\n\n\nOn each turn, respond in EXACTLY this format:\nThought: <your reasoning about what to do next>\nAction: <tool_name>(arg1, arg2, ...)\n\nWhen you have found all relevant files, respond:\nThought: <summary of findings>\nAction: finish(file1.py, file2.py, ...)\n\nRules:\n- Always start with a Thought.\n- Call exactly ONE action per turn.\n- The finish action's arguments are the relevant file paths you found.\n- You have at most 15 steps. Use them wisely \u2014 don't repeat actions.\n- Do NOT output markdown, code blocks, or analysis \u2014 ONLY Thought + Action.\n\n/nothink\n"
+    },
+    {
+      "role": "user",
+      "content": "Find the files most relevant to this issue:\n\nQueryset raises NotSupportedError when RHS has filterable=False attribute.\nDescription\n\t \n\t\t(last modified by Nicolas Baccelli)\n\t \nI'm migrating my app to django 3.0.7 and I hit a strange behavior using a model class with a field labeled filterable\nclass ProductMetaDataType(models.Model):\n\tlabel = models.CharField(max_length=255, unique=True, blank=False, null=False)\n\tfilterable = models.BooleanField(default=False, verbose_name=_(\"filterable\"))\n\tclass Meta:\n\t\tapp_label = \"adminpricing\"\n\t\tverbose_name = _(\"product meta data type\")\n\t\tverbose_name_plural = _(\"product meta data types\")\n\tdef __str__(self):\n\t\treturn self.label\nclass ProductMetaData(models.Model):\n\tid = models.BigAutoField(primary_key=True)\n\tproduct = models.ForeignKey(\n\t\tProduit, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tvalue = models.TextField(null=False, blank=False)\n\tmarketplace = models.ForeignKey(\n\t\tPlateforme, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tdate_created = models.DateTimeField(null=True, default=timezone.now)\n\tmetadata_type = models.ForeignKey(\n\t\tProductMetaDataType, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tclass Meta:\n\t\tapp_label = \"adminpricing\"\n\t\tverbose_name = _(\"product meta data\")\n\t\tverbose_name_plural = _(\"product meta datas\")\nError happened when filtering ProductMetaData with a metadata_type :\nProductMetaData.objects.filter(value=\"Dark Vador\", metadata_type=self.brand_metadata)\nError traceback :\nTraceback (most recent call last):\n File \"/backoffice/backoffice/adminpricing/tests/test_pw.py\", line 481, in test_checkpolicywarning_by_fields\n\tfor p in ProductMetaData.objects.filter(\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/manager.py\", line 82, in manager_method\n\treturn getattr(self.get_queryset(), name)(*args, **kwargs)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/query.py\", line 904, in filter\n\treturn self._filter_or_exclude(False, *args, **kwargs)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/query.py\", line 923, in _filter_or_exclude\n\tclone.query.add_q(Q(*args, **kwargs))\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1351, in add_q\n\tclause, _ = self._add_q(q_object, self.used_aliases)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1378, in _add_q\n\tchild_clause, needed_inner = self.build_filter(\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1264, in build_filter\n\tself.check_filterable(value)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1131, in check_filterable\n\traise NotSupportedError(\ndjango.db.utils.NotSupportedError: ProductMetaDataType is disallowed in the filter clause.\nI changed label to filterable_test and it fixed this issue\nThis should be documented or fix.\n\n\nHints:\nThanks for the report, that's a nice edge case. We should be able to fix this by checking if rhs is an expression: diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py index ce18098fd2..ad981377a0 100644 --- a/django/db/models/sql/query.py +++ b/django/db/models/sql/query.py @@ -1124,7 +1124,7 @@ class Query(BaseExpression): def check_filterable(self, expression): \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\" - if not getattr(expression, 'filterable', True): + if hasattr(expression, 'resolve_expression') and not getattr(expression, 'filterable', True): raise NotSupportedError( expression.__class__.__name__ + ' is disallowed in the filter ' 'clause.' Would you like to provide a patch? Regression in 4edad1ddf6203326e0be4bdb105beecb0fe454c4.\nSure I will. I just need to read \u200bhttps://docs.djangoproject.com/en/dev/internals/contributing/"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: I need to find the files related to the `ProductMetaDataType` model and the `check_filterable` method in Django's query system. I'll start by searching the codebase for relevant files.\nAction: search_codebase(\"ProductMetaDataType\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 1/15 \u2014 14 remaining]\n  tests/constraints/tests.py (score: 14.3402)\n  tests/lookup/test_decimalfield.py (score: 11.5522)\n  django/contrib/contenttypes/fields.py (score: 10.9750)\n  django/db/backends/postgresql/schema.py (score: 10.8857)\n  django/db/backends/base/introspection.py (score: 10.8803)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `ProductMetaDataType` model is likely defined in a models file. I'll search for files containing the `ProductMetaDataType` class definition.\nAction: grep(\"class ProductMetaDataType\", \"app_label = \\\"adminpricing\\\"\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 2/15 \u2014 13 remaining]\nNo matches found."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: I'll check the directory structure to locate the file where `ProductMetaDataType` might be defined, as it has `app_label = \"adminpricing\"`.\nAction: list_dir(\"adminpricing\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 3/15 \u2014 12 remaining]\nError: 'adminpricing' does not exist."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `app_label = \"adminpricing\"` suggests that the model is part of an app named `adminpricing`. I'll search for the `models.py` file in the app directory to locate the `ProductMetaDataType` class.\nAction: list_dir(\"adminpricing/models.py\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 4/15 \u2014 11 remaining]\nError: 'adminpricing/models.py' does not exist."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `app_label` might not correspond to a directory, or the models might be defined in a different file. I'll search the entire codebase for the `ProductMetaDataType` class definition.\nAction: grep(\"class ProductMetaDataType\", \".\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 5/15 \u2014 10 remaining]\nNo matches found."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: Since the `ProductMetaDataType` class wasn't found via grep, I'll search for files that contain the `filterable` attribute, as it's central to the issue.\nAction: grep(\"filterable\", \".\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 6/15 \u2014 9 remaining]\n/tmp/swebench_repos/django__django-13028/django/db/models/query_utils.py:105:            check_filterable=False,\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1125:    def check_filterable(self, expression):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1127:        if not getattr(expression, 'filterable', True):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1134:                self.check_filterable(expr)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1203:                     reuse_with_filtered_relation=False, check_filterable=True):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1242:                check_filterable=check_filterable,\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1258:        if check_filterable:\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1259:            self.check_filterable(reffed_expression)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1268:        if check_filterable:\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1269:            self.check_filterable(value)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1366:               check_filterable=True):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1378:                split_subq=split_subq, check_filterable=check_filterable,\n/tmp/swebench_repos/django__django-13028/django/db/models/expressions.py:159:    filterable = True\n/tmp/swebench_repos/django__django-13028/django/db/models/expressions.py:1205:    filterable = False"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `filterable` attribute is used in Django's query system, particularly in `query.py` and `expressions.py`. The `check_filterable` method in `query.py` is responsible for checking if an expression can be used in a filter. I'll examine the relevant files to understand the issue.\nAction: read_file(\"django/db/models/sql/query.py\", 1120, 1150)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 7/15 \u2014 8 remaining]\n1120:                 self.check_query_object_type(value, opts, field)\n1121:             elif hasattr(value, '__iter__'):\n1122:                 for v in value:\n1123:                     self.check_query_object_type(v, opts, field)\n1124: \n1125:     def check_filterable(self, expression):\n1126:         \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\"\n1127:         if not getattr(expression, 'filterable', True):\n1128:             raise NotSupportedError(\n1129:                 expression.__class__.__name__ + ' is disallowed in the filter '\n1130:                 'clause.'\n1131:             )\n1132:         if hasattr(expression, 'get_source_expressions'):\n1133:             for expr in expression.get_source_expressions():\n1134:                 self.check_filterable(expr)\n1135: \n1136:     def build_lookup(self, lookups, lhs, rhs):\n1137:         \"\"\"\n1138:         Try to extract transforms and lookup from given lhs.\n1139: \n1140:         The lhs value is something that works like SQLExpression.\n1141:         The rhs value is what the lookup is going to compare against.\n1142:         The lookups is a list of names to extract using get_lookup()\n1143:         and get_transform().\n1144:         \"\"\"\n1145:         # __exact is the default lookup if one isn't given.\n1146:         *transforms, lookup_name = lookups or ['exact']\n1147:         for name in transforms:\n1148:             lhs = self.try_transform(lhs, name)\n1149:         # First try get_lookup() so that the lookup takes precedence if the lhs\n1150:         # supports both transform and lookup for the name.\n... (1264 more lines, total 2414)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `check_filterable` method in `query.py` checks if an expression has the `filterable` attribute. The issue arises because `ProductMetaDataType` does not have this attribute, leading to a `NotSupportedError`. I'll now look into the `expressions.py` file to see how `filterable` is defined for different expressions.\nAction: read_file(\"django/db/models/expressions.py\", 150, 170)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 8/15 \u2014 7 remaining]\n 150: \n 151: @deconstructible\n 152: class BaseExpression:\n 153:     \"\"\"Base class for all query expressions.\"\"\"\n 154: \n 155:     # aggregate specific fields\n 156:     is_summary = False\n 157:     _output_field_resolved_to_none = False\n 158:     # Can the expression be used in a WHERE clause?\n 159:     filterable = True\n 160:     # Can the expression can be used as a source expression in Window?\n 161:     window_compatible = False\n 162: \n 163:     def __init__(self, output_field=None):\n 164:         if output_field is not None:\n 165:             self.output_field = output_field\n 166: \n 167:     def __getstate__(self):\n 168:         state = self.__dict__.copy()\n 169:         state.pop('convert_value', None)\n 170:         return state\n... (1192 more lines, total 1362)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `BaseExpression` class in `expressions.py` defines `filterable = True` by default. This suggests that models or other objects used in filters should have this attribute set to `True` if they are to be filterable. The `ProductMetaDataType` model likely lacks this attribute, causing the error. I'll now search for the `ProductMetaDataType` model definition in the codebase.\nAction: search_codebase(\"ProductMetaDataType\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 9/15 \u2014 6 remaining]\n  tests/constraints/tests.py (score: 14.3402)\n  tests/lookup/test_decimalfield.py (score: 11.5522)\n  django/contrib/contenttypes/fields.py (score: 10.9750)\n  django/db/backends/postgresql/schema.py (score: 10.8857)\n  django/db/backends/base/introspection.py (score: 10.8803)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The search for `ProductMetaDataType` did not yield the model definition. I'll search for files that contain the `filterable` attribute in models, as this is central to the issue.\nAction: grep(\"filterable\", \"models.py\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 10/15 \u2014 5 remaining]\nNo matches found."
+    }
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "thought": "Thought: I need to find the files related to the `ProductMetaDataType` model and the `check_filterable` method in Django's query system. I'll start by searching the codebase for relevant files.",
+      "action": "search_codebase",
+      "args": [
+        "ProductMetaDataType"
+      ],
+      "tokens": 1366,
+      "observation": "  tests/constraints/tests.py (score: 14.3402)\n  tests/lookup/test_decimalfield.py (score: 11.5522)\n  django/contrib/contenttypes/fields.py (score: 10.9750)\n  django/db/backends/postgresql/schema.py (score: 10.8857)\n  django/db/backends/base/introspection.py (score: 10.8803)"
+    },
+    {
+      "step": 2,
+      "thought": "Thought: The `ProductMetaDataType` model is likely defined in a models file. I'll search for files containing the `ProductMetaDataType` class definition.",
+      "action": "grep",
+      "args": [
+        "class ProductMetaDataType",
+        "\\\"adminpricing\\"
+      ],
+      "tokens": 1544,
+      "observation": "No matches found."
+    },
+    {
+      "step": 3,
+      "thought": "Thought: I'll check the directory structure to locate the file where `ProductMetaDataType` might be defined, as it has `app_label = \"adminpricing\"`.",
+      "action": "list_dir",
+      "args": [
+        "adminpricing"
+      ],
+      "tokens": 1616,
+      "observation": "Error: 'adminpricing' does not exist."
+    },
+    {
+      "step": 4,
+      "thought": "Thought: The `app_label = \"adminpricing\"` suggests that the model is part of an app named `adminpricing`. I'll search for the `models.py` file in the app directory to locate the `ProductMetaDataType` class.",
+      "action": "list_dir",
+      "args": [
+        "adminpricing/models.py"
+      ],
+      "tokens": 1711,
+      "observation": "Error: 'adminpricing/models.py' does not exist."
+    },
+    {
+      "step": 5,
+      "thought": "Thought: The `app_label` might not correspond to a directory, or the models might be defined in a different file. I'll search the entire codebase for the `ProductMetaDataType` class definition.",
+      "action": "grep",
+      "args": [
+        "class ProductMetaDataType",
+        "."
+      ],
+      "tokens": 1802,
+      "observation": "No matches found."
+    },
+    {
+      "step": 6,
+      "thought": "Thought: Since the `ProductMetaDataType` class wasn't found via grep, I'll search for files that contain the `filterable` attribute, as it's central to the issue.",
+      "action": "grep",
+      "args": [
+        "filterable",
+        "."
+      ],
+      "tokens": 1879,
+      "observation": "/tmp/swebench_repos/django__django-13028/django/db/models/query_utils.py:105:            check_filterable=False,\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1125:    def check_filterable(self, expression):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1127:        if not getattr(expression, 'filterable', True):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1134:                self.check_filterable(expr)\n/tmp/swebench_r"
+    },
+    {
+      "step": 7,
+      "thought": "Thought: The `filterable` attribute is used in Django's query system, particularly in `query.py` and `expressions.py`. The `check_filterable` method in `query.py` is responsible for checking if an expression can be used in a filter. I'll examine the relevant files to understand the issue.",
+      "action": "read_file",
+      "args": [
+        "django/db/models/sql/query.py",
+        "1120",
+        "1150"
+      ],
+      "tokens": 2517,
+      "observation": "1120:                 self.check_query_object_type(value, opts, field)\n1121:             elif hasattr(value, '__iter__'):\n1122:                 for v in value:\n1123:                     self.check_query_object_type(v, opts, field)\n1124: \n1125:     def check_filterable(self, expression):\n1126:         \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\"\n1127:         if not getattr(expression, 'filterable', True):\n1128:             raise NotSupportedError(\n1129:                 ex"
+    },
+    {
+      "step": 8,
+      "thought": "Thought: The `check_filterable` method in `query.py` checks if an expression has the `filterable` attribute. The issue arises because `ProductMetaDataType` does not have this attribute, leading to a `NotSupportedError`. I'll now look into the `expressions.py` file to see how `filterable` is defined for different expressions.",
+      "action": "read_file",
+      "args": [
+        "django/db/models/expressions.py",
+        "150",
+        "170"
+      ],
+      "tokens": 3089,
+      "observation": " 150: \n 151: @deconstructible\n 152: class BaseExpression:\n 153:     \"\"\"Base class for all query expressions.\"\"\"\n 154: \n 155:     # aggregate specific fields\n 156:     is_summary = False\n 157:     _output_field_resolved_to_none = False\n 158:     # Can the expression be used in a WHERE clause?\n 159:     filterable = True\n 160:     # Can the expression can be used as a source expression in Window?\n 161:     window_compatible = False\n 162: \n 163:     def __init__(self, output_field=None):\n 164:     "
+    },
+    {
+      "step": 9,
+      "thought": "Thought: The `BaseExpression` class in `expressions.py` defines `filterable = True` by default. This suggests that models or other objects used in filters should have this attribute set to `True` if they are to be filterable. The `ProductMetaDataType` model likely lacks this attribute, causing the error. I'll now search for the `ProductMetaDataType` model definition in the codebase.",
+      "action": "search_codebase",
+      "args": [
+        "ProductMetaDataType"
+      ],
+      "tokens": 3472,
+      "observation": "  tests/constraints/tests.py (score: 14.3402)\n  tests/lookup/test_decimalfield.py (score: 11.5522)\n  django/contrib/contenttypes/fields.py (score: 10.9750)\n  django/db/backends/postgresql/schema.py (score: 10.8857)\n  django/db/backends/base/introspection.py (score: 10.8803)"
+    },
+    {
+      "step": 10,
+      "thought": "Thought: The search for `ProductMetaDataType` did not yield the model definition. I'll search for files that contain the `filterable` attribute in models, as this is central to the issue.",
+      "action": "grep",
+      "args": [
+        "filterable",
+        "models.py"
+      ],
+      "tokens": 3651,
+      "observation": "No matches found."
+    },
+    {
+      "step": 11,
+      "thought": "Thought: Since the `ProductMetaDataType` model wasn't found in the codebase, it might be part of a third-party app or a custom app not included in the repository. However, the issue is related to the `filterable` attribute and the `check_filterable` method in Django's query system. The relevant files are `query.py` and `expressions.py`.",
+      "action": "finish",
+      "args": [
+        "django/db/models/sql/query.py",
+        "django/db/models/expressions.py"
+      ],
+      "tokens": 3778
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 26425,
+  "latency_s": 16.348758571999497,
+  "ttft_s": 1.264282041003753,
+  "gold_context": [
+    "django/db/models/sql/query.py",
+    "tests/queries/models.py",
+    "tests/queries/tests.py"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12497",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.1,
+    "recall@10": 0.5,
+    "ndcg@10": 0.17723928678404774,
+    "mrr": 0.1,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.8898579830056406,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/serializers/models/natural.py",
+    "tests/model_fields/test_manytomanyfield.py",
+    "tests/schema/fields.py",
+    "tests/model_meta/models.py",
+    "tests/model_meta/tests.py",
+    "tests/null_fk_ordering/models.py",
+    "tests/m2m_recursive/models.py",
+    "tests/m2m_regress/models.py",
+    "tests/mutually_referential/models.py",
+    "tests/invalid_models_tests/test_relative_fields.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2181,
+      "results": [
+        {
+          "file": "tests/serializers/models/natural.py",
+          "score": 0.6463
+        },
+        {
+          "file": "tests/model_fields/test_manytomanyfield.py",
+          "score": 0.6438
+        },
+        {
+          "file": "tests/schema/fields.py",
+          "score": 0.6419
+        },
+        {
+          "file": "tests/model_meta/models.py",
+          "score": 0.6353
+        },
+        {
+          "file": "tests/model_meta/tests.py",
+          "score": 0.6338
+        },
+        {
+          "file": "tests/null_fk_ordering/models.py",
+          "score": 0.6238
+        },
+        {
+          "file": "tests/m2m_recursive/models.py",
+          "score": 0.6222
+        },
+        {
+          "file": "tests/m2m_regress/models.py",
+          "score": 0.6188
+        },
+        {
+          "file": "tests/mutually_referential/models.py",
+          "score": 0.6182
+        },
+        {
+          "file": "tests/invalid_models_tests/test_relative_fields.py",
+          "score": 0.5992
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.8898579830056406,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/fields/related.py",
+    "tests/invalid_models_tests/test_relative_fields.py"
+  ]
+}

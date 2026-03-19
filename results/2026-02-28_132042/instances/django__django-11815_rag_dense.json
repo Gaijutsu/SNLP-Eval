@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-11815",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.861747192000621,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/migrations/models.py",
+    "django/core/management/commands/makemigrations.py",
+    "django/utils/translation/trans_real.py",
+    "django/utils/translation/__init__.py",
+    "tests/i18n/contenttypes/tests.py",
+    "tests/indexes/models.py",
+    "django/contrib/contenttypes/apps.py",
+    "django/contrib/contenttypes/migrations/0002_remove_content_type_name.py",
+    "tests/migrations/migrations_test_apps/mutate_state_b/migrations/0002_add_field.py",
+    "tests/admin_scripts/another_app_waiting_migration/models.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 2160,
+      "results": [
+        {
+          "file": "tests/migrations/models.py",
+          "score": 0.6305
+        },
+        {
+          "file": "django/core/management/commands/makemigrations.py",
+          "score": 0.6098
+        },
+        {
+          "file": "django/utils/translation/trans_real.py",
+          "score": 0.5951
+        },
+        {
+          "file": "django/utils/translation/__init__.py",
+          "score": 0.5923
+        },
+        {
+          "file": "tests/i18n/contenttypes/tests.py",
+          "score": 0.5783
+        },
+        {
+          "file": "tests/indexes/models.py",
+          "score": 0.5766
+        },
+        {
+          "file": "django/contrib/contenttypes/apps.py",
+          "score": 0.5732
+        },
+        {
+          "file": "django/contrib/contenttypes/migrations/0002_remove_content_type_name.py",
+          "score": 0.5673
+        },
+        {
+          "file": "tests/migrations/migrations_test_apps/mutate_state_b/migrations/0002_add_field.py",
+          "score": 0.5637
+        },
+        {
+          "file": "tests/admin_scripts/another_app_waiting_migration/models.py",
+          "score": 0.5585
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.861747192000621,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/migrations/serializer.py",
+    "tests/migrations/test_writer.py"
+  ]
+}

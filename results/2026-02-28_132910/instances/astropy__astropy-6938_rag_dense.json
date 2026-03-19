@@ -1,0 +1,99 @@
+{
+  "instance_id": "astropy__astropy-6938",
+  "gatherer": "rag_dense",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 0.3333333333333333,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.46927872602275644,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.46927872602275644,
+    "precision@10": 0.1,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.46927872602275644,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.705911571996694,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/io/fits/fitsrec.py",
+    "astropy/io/fits/hdu/table.py",
+    "astropy/table/tests/test_table.py",
+    "astropy/io/fits/tests/test_diff.py",
+    "astropy/io/misc/asdf/tags/fits/tests/test_fits.py",
+    "astropy/io/fits/tests/test_header.py",
+    "astropy/io/fits/tests/test_hdulist.py",
+    "astropy/io/fits/connect.py",
+    "astropy/io/misc/asdf/tags/fits/fits.py",
+    "astropy/units/format/unicode_format.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "dense_search",
+      "model": "all-MiniLM-L6-v2",
+      "top_k": 10,
+      "num_indexed_files": 668,
+      "results": [
+        {
+          "file": "astropy/io/fits/fitsrec.py",
+          "score": 0.6114
+        },
+        {
+          "file": "astropy/io/fits/hdu/table.py",
+          "score": 0.6022
+        },
+        {
+          "file": "astropy/table/tests/test_table.py",
+          "score": 0.5708
+        },
+        {
+          "file": "astropy/io/fits/tests/test_diff.py",
+          "score": 0.5613
+        },
+        {
+          "file": "astropy/io/misc/asdf/tags/fits/tests/test_fits.py",
+          "score": 0.559
+        },
+        {
+          "file": "astropy/io/fits/tests/test_header.py",
+          "score": 0.5531
+        },
+        {
+          "file": "astropy/io/fits/tests/test_hdulist.py",
+          "score": 0.545
+        },
+        {
+          "file": "astropy/io/fits/connect.py",
+          "score": 0.545
+        },
+        {
+          "file": "astropy/io/misc/asdf/tags/fits/fits.py",
+          "score": 0.5441
+        },
+        {
+          "file": "astropy/units/format/unicode_format.py",
+          "score": 0.5395
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.705911571996694,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/io/fits/fitsrec.py",
+    "astropy/io/fits/tests/test_checksum.py",
+    "astropy/io/fits/tests/test_table.py"
+  ]
+}

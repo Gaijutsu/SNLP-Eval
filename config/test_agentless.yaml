@@ -1,7 +1,7 @@
 benchmark:
   name: swebench_lite
   split: test
-  limit: 50            # for quick dev runs
+  limit: 5            # for quick dev runs
 
 llm:
   provider: local                               # or openai
