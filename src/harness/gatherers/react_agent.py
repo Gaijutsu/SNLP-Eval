@@ -162,20 +162,44 @@ def _tool_grep(repo: Path, pattern: str, path: str = ".") -> str:
         return "\n".join(matches) if matches else "No matches found."
 
 
+def _is_file_path(s: str) -> bool:
+    """Return True if s looks like a source file path (not a sentence/description)."""
+    s = s.strip()
+    if not s:
+        return False
+    # Must contain a known source extension
+    if not re.search(r'\.(py|java|ts|js|cs|rb|go|cpp|c|h)$', s):
+        return False
+    # Must not look like a natural-language sentence (contains common sentence words)
+    if len(s.split()) > 3:
+        return False
+    return True
+
+
 def _parse_action(text: str) -> tuple[str, list[str]]:
     """Parse 'Action: tool_name(arg1, arg2)' from agent output.
-    Supports both function-style (tool(arg1, ...)) and shell-style (tool "arg1" arg2 ...) formats.
+
+    Supports function-style (tool(arg1, ...)) and shell-style (tool "arg1" arg2).
+    Also handles list-syntax calls like finish(['a.py', 'b.py']) and filters
+    non-path arguments from finish() to prevent sentence-in-finish failures.
     """
     # Try function-style first: Action: tool(arg1, arg2)
-    match = re.search(r"Action:\s*(\w+)\(([^)]*)\)", text)
+    # Use a greedy match to capture content including nested brackets
+    match = re.search(r"Action:\s*(\w+)\(([^)]*(?:\)[^)]*)?)\)", text)
     if match:
         tool_name = match.group(1).strip()
         raw_args = match.group(2).strip()
+        # Strip list-syntax brackets: finish(['a.py', 'b.py']) → finish(a.py, b.py)
+        raw_args = re.sub(r"[\[\]]+", "", raw_args)
         if not raw_args:
             return tool_name, []
         args = [a.strip().strip("'\"") for a in raw_args.split(",")]
         # Strip keyword-argument prefixes (e.g. "start_line=66" → "66")
         args = [a.split("=", 1)[-1].strip().strip("'\"") if "=" in a else a for a in args]
+        args = [a for a in args if a]
+        # For finish(), filter out args that are clearly not file paths
+        if tool_name == "finish":
+            args = [a for a in args if _is_file_path(a)]
         return tool_name, args
 
     # Try shell-style: Action: tool "arg1" arg2 ...
@@ -188,6 +212,8 @@ def _parse_action(text: str) -> tuple[str, list[str]]:
             args = shlex.split(raw_args)
         except Exception:
             args = raw_args.split()
+        if tool_name == "finish":
+            args = [a for a in args if _is_file_path(a)]
         return tool_name, args
 
     return "error", []
