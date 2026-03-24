@@ -197,20 +197,26 @@ An initial keyword_search() with the full issue text has already been run for yo
 and its results are shown above. Use those results as your starting point.
 
 Follow this general approach:
-1. Review the initial BM25 results. Use grep() to search for the most distinctive
-   identifier from the issue (class name, function name, error message) to confirm
-   or supplement the BM25 results.
-2. If the initial results look wrong or incomplete, run keyword_search() again with
-   a more focused query containing specific class/function names or error messages.
-   You can call keyword_search() multiple times with different queries.
-3. Use list_dir() only when you need to understand a promising directory.
-4. Use read_file() to inspect the most relevant candidate files, optionally with line ranges.
-5. As soon as you identify the main source file, actively look for matching tests.
-6. Stop early once you have enough evidence, then call finish().
+1. First, extract the most specific identifier from the issue: a class name,
+   function name, error class, or distinctive symbol (e.g. "FilePathField",
+   "RST", "MediaOrderConflictWarning"). This is your primary search term.
+2. Review the initial BM25 results. If the top results contain files that clearly
+   relate to the issue's key identifier, trust them — use read_file() to confirm and
+   then call finish(). Do NOT search for unrelated concepts.
+3. If the BM25 results do NOT contain the expected identifier, immediately use
+   grep(ClassName, ".") to search the ENTIRE repository broadly. Do NOT limit grep
+   to just the BM25 result files — the correct file may be elsewhere.
+4. If grep on the whole repo is too broad, narrow the path step by step
+   (e.g. grep("RST", "astropy/io/") then grep("RST", "astropy/io/ascii/")).
+5. Use keyword_search() again with more focused queries if needed.
+6. Use list_dir() only when you need to understand a promising directory.
+7. Use read_file() to inspect the most relevant candidate files.
+8. As soon as you identify the main source file, actively look for matching tests.
+9. Stop early once you have enough evidence, then call finish().
 
-IMPORTANT: If keyword_search results don't seem relevant, try grep() with a specific
-identifier — grep finds exact matches which keyword_search may miss. Combine both
-tools for best results.
+IMPORTANT: If keyword_search results don't seem relevant, try grep() with
+the specific identifier searching broadly (path=".") — grep finds exact matches
+which keyword_search may miss. Do NOT only search within BM25-suggested files.
 
 ## Response Format
 On EVERY turn, respond in EXACTLY this format:
@@ -228,6 +234,7 @@ Action: finish(file1.py, file2.py, ...)
 - Never repeat the exact same tool call with the exact same arguments.
 - Prefer 2-6 total tool calls; do not keep exploring once the likely source file and its test are known.
 - The finish() arguments must be actual file paths only (e.g. "src/foo.py"). Do NOT pass descriptions, sentences, or list literals.
+- In finish(), list the file you have the STRONGEST evidence for FIRST. The file you read, grepped, or confirmed as most relevant should be the first argument.
 - The finish() arguments should include the file where the error likely is, and the test for that file if it exists.
 - You have at most {max_steps} steps. If approaching the limit, call finish() with your best findings so far.
 - You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.

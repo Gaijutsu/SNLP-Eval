@@ -113,6 +113,10 @@ class ReActBM25Gatherer(ContextGatherer):
         retrieved: list[str] = []
         candidate_paths: list[str] = []
         candidate_seen: set[str] = set()
+        # Track files the agent explicitly explored (read_file/grep targets)
+        # so they can be prioritized over BM25-auto-registered candidates
+        agent_explored: list[str] = []
+        agent_explored_seen: set[str] = set()
         last_action: tuple[str, tuple[str, ...]] | None = None
         repeat_count = 0
         stagnation_count = 0
@@ -180,12 +184,19 @@ class ReActBM25Gatherer(ContextGatherer):
                 repeat_count = 1
                 last_action = action_key
 
+            # Build prioritized candidates: agent-explored files first,
+            # then BM25/auto-registered candidates
+            def _prioritized_candidates() -> list[str]:
+                return agent_explored + [
+                    p for p in candidate_paths if p not in agent_explored_seen
+                ]
+
             # Execute tool
             if tool_name == "finish":
                 retrieved = _finalize_retrieved_paths(
                     args,
                     repo,
-                    candidate_paths=candidate_paths,
+                    candidate_paths=_prioritized_candidates(),
                     messages=messages,
                 )
                 break
@@ -196,10 +207,20 @@ class ReActBM25Gatherer(ContextGatherer):
                 start = int(args[1]) if len(args) > 1 else 1
                 end = int(args[2]) if len(args) > 2 else start + 199
                 observation = _tool_read_file(repo, fpath, start, end)
+                # Track as agent-explored for prioritization
+                norm = _normalize_candidate_path(fpath, repo)
+                if norm and norm not in agent_explored_seen:
+                    agent_explored_seen.add(norm)
+                    agent_explored.append(norm)
             elif tool_name == "grep":
                 pattern = args[0] if args else ""
                 path = args[1] if len(args) > 1 else "."
                 observation = _tool_grep(repo, pattern, path)
+                # Track grep-discovered files as agent-explored
+                for gpath in _extract_paths_from_text(observation, repo):
+                    if gpath not in agent_explored_seen:
+                        agent_explored_seen.add(gpath)
+                        agent_explored.append(gpath)
             elif tool_name == "keyword_search":
                 query = args[0] if args else instance.query
                 top_k = int(args[1]) if len(args) > 1 else self.bm25_top_k
@@ -292,14 +313,14 @@ class ReActBM25Gatherer(ContextGatherer):
                     retrieved = _finalize_retrieved_paths(
                         wrap_args,
                         repo,
-                        candidate_paths=candidate_paths,
+                        candidate_paths=_prioritized_candidates(),
                         messages=messages,
                     )
                 else:
                     retrieved = _finalize_retrieved_paths(
                         [],
                         repo,
-                        candidate_paths=candidate_paths,
+                        candidate_paths=_prioritized_candidates(),
                         messages=messages,
                     )
                 break
@@ -331,11 +352,16 @@ class ReActBM25Gatherer(ContextGatherer):
             )
             messages.append({"role": "assistant", "content": content})
 
+            # Build prioritized candidates for wrap-up finalization
+            prioritized = agent_explored + [
+                p for p in candidate_paths if p not in agent_explored_seen
+            ]
+
             if tool_name == "finish" and args:
                 retrieved = _finalize_retrieved_paths(
                     args,
                     repo,
-                    candidate_paths=candidate_paths,
+                    candidate_paths=prioritized,
                     messages=messages,
                 )
             else:
@@ -346,7 +372,7 @@ class ReActBM25Gatherer(ContextGatherer):
                 retrieved = _finalize_retrieved_paths(
                     [],
                     repo,
-                    candidate_paths=candidate_paths,
+                    candidate_paths=prioritized,
                     messages=messages,
                 )
 

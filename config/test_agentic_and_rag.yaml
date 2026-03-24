@@ -1,7 +1,7 @@
 benchmark:
   name: swebench_lite
   split: test
-  limit: 10
+  limit: 5
   gold_context_strategy: patch_and_tests
 
 llm:
