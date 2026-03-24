@@ -129,10 +129,11 @@ relevant to a given issue in a code repository.
 ## Exploration Strategy
 Follow this general approach:
 1. Start with one focused grep() using the most distinctive identifier from the issue.
-2. Use list_dir() only when you need to understand a promising directory.
-3. Use read_file() to inspect the most relevant candidate files, optionally with line ranges.
-4. As soon as you identify the main source file, call find_tests() for it.
-5. Stop early once you have enough evidence, then call finish().
+2. If the issue text includes traceback paths, class names, or function names, prioritize those as primary suspects.
+3. Use read_file() to confirm the likely fault location(s) first; only explore parent/base/helper files if needed to confirm behavior.
+4. Use list_dir() only when you need to understand a promising directory.
+5. After identifying likely source file(s), call find_tests() for each likely source file.
+6. Stop early once you have enough evidence, then call finish().
 
 ## Response Format
 On EVERY turn, respond in EXACTLY this format:
@@ -148,9 +149,12 @@ Action: finish(file1.py, file2.py, ...)
 - Call exactly ONE action per turn.
 - If a tool returns an error or no results, try a different query or tool rather than repeating the same call.
 - Never repeat the exact same tool call with the exact same arguments.
-- Prefer 2-6 total tool calls; do not keep exploring once the likely source file and its test are known.
+- Prefer 2-6 total tool calls; do not keep exploring once the likely fault location(s) and matching test file(s) are known.
+- Focus on likely fault location(s), not all tangentially related files.
+- It is valid to return multiple source files and multiple tests when evidence supports them.
+- Do not switch away from a traceback-named or directly-matched suspect file unless you found concrete evidence it is not the likely fault location.
 - The finish() arguments must be actual file paths only (e.g. "src/foo.py"). Do NOT pass descriptions, sentences, or list literals.
-- The finish() arguments should include the file where the error likely is, and the test for that file if it exists.
+- The finish() arguments should include likely fault source file(s) and matching test file(s), if they exist.
 - You have at most {max_steps} steps. If approaching the limit, call finish() with your best findings so far.
 - You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.
 

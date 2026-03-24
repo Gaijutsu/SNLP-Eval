@@ -1,0 +1,164 @@
+{
+  "instance_id": "django__django-13028",
+  "gatherer": "react_agent",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 1.0,
+    "ndcg@1": 1.0,
+    "precision@3": 1.0,
+    "recall@3": 0.3333333333333333,
+    "ndcg@3": 0.46927872602275644,
+    "precision@5": 1.0,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.46927872602275644,
+    "precision@10": 1.0,
+    "recall@10": 0.3333333333333333,
+    "ndcg@10": 0.46927872602275644,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 17297.0,
+    "latency_s": 12.72028055699775,
+    "ttft_s": 2.69408035500237
+  },
+  "retrieved_documents": [
+    "django/db/models/sql/query.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are a code investigation agent. Your goal is to identify the files most\nrelevant to a given issue in a code repository.\n\nYou have the following tools available:\n\n1. list_dir(path: str) -> str\n   List files and subdirectories in the given directory (relative to repo root).\n   Use this to understand project layout around a candidate directory.\n   Example: list_dir(\"src/auth\")\n\n2. grep(pattern: str, path: str = \".\") -> str\n   Search for a regex pattern in source files (.py/.java/.ts/.js/.cs) under the\n   given path. Returns matching lines with file:line format. Use this to find\n   where a specific function, class, or error message is defined or called.\n   Example: grep(\"def authenticate\", \"src/\")\n\n3. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str\n   Read the contents of a file (relative to repo root). Use this to confirm a\n   file's relevance by inspecting its implementation. You may optionally pass a\n   start and end line range when grep already showed the interesting region.\n   Example: read_file(\"src/auth/login.py\")\n   Example: read_file(\"src/auth/login.py\", 120, 220)\n\n4. find_tests(source_path: str) -> str\n   Find likely test files for a given source file path.\n   Use this after you have identified a likely source file.\n   Example: find_tests(\"src/auth/login.py\")\n\n/nothink\n\n\n## Exploration Strategy\nFollow this general approach:\n1. Start with one focused grep() using the most distinctive identifier from the issue.\n2. If the issue text includes traceback paths, class names, or function names, prioritize those as primary suspects.\n3. Use read_file() to confirm the likely fault location(s) first; only explore parent/base/helper files if needed to confirm behavior.\n4. Use list_dir() only when you need to understand a promising directory.\n5. After identifying likely source file(s), call find_tests() for each likely source file.\n6. Stop early once you have enough evidence, then call finish().\n\n## Response Format\nOn EVERY turn, respond in EXACTLY this format:\nThought: <your reasoning about what you know so far and what to do next>\nAction: <tool_name>(arg1, arg2, ...)\n\nWhen you have gathered sufficient evidence, respond:\nThought: <summary of the relevant files found and why>\nAction: finish(file1.py, file2.py, ...)\n\n## Rules\n- Always start with a Thought.\n- Call exactly ONE action per turn.\n- If a tool returns an error or no results, try a different query or tool rather than repeating the same call.\n- Never repeat the exact same tool call with the exact same arguments.\n- Prefer 2-6 total tool calls; do not keep exploring once the likely fault location(s) and matching test file(s) are known.\n- Focus on likely fault location(s), not all tangentially related files.\n- It is valid to return multiple source files and multiple tests when evidence supports them.\n- Do not switch away from a traceback-named or directly-matched suspect file unless you found concrete evidence it is not the likely fault location.\n- The finish() arguments are the relevant file paths, which should include likely fault source file(s) and matching test file(s), if they exist.\n- You have at most 30 steps. If approaching the limit, call finish() with your best findings so far.\n- You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.\n\n/nothink\n"
+    },
+    {
+      "role": "user",
+      "content": "Find the files most relevant to this issue:\n\nQueryset raises NotSupportedError when RHS has filterable=False attribute.\nDescription\n\t \n\t\t(last modified by Nicolas Baccelli)\n\t \nI'm migrating my app to django 3.0.7 and I hit a strange behavior using a model class with a field labeled filterable\nclass ProductMetaDataType(models.Model):\n\tlabel = models.CharField(max_length=255, unique=True, blank=False, null=False)\n\tfilterable = models.BooleanField(default=False, verbose_name=_(\"filterable\"))\n\tclass Meta:\n\t\tapp_label = \"adminpricing\"\n\t\tverbose_name = _(\"product meta data type\")\n\t\tverbose_name_plural = _(\"product meta data types\")\n\tdef __str__(self):\n\t\treturn self.label\nclass ProductMetaData(models.Model):\n\tid = models.BigAutoField(primary_key=True)\n\tproduct = models.ForeignKey(\n\t\tProduit, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tvalue = models.TextField(null=False, blank=False)\n\tmarketplace = models.ForeignKey(\n\t\tPlateforme, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tdate_created = models.DateTimeField(null=True, default=timezone.now)\n\tmetadata_type = models.ForeignKey(\n\t\tProductMetaDataType, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tclass Meta:\n\t\tapp_label = \"adminpricing\"\n\t\tverbose_name = _(\"product meta data\")\n\t\tverbose_name_plural = _(\"product meta datas\")\nError happened when filtering ProductMetaData with a metadata_type :\nProductMetaData.objects.filter(value=\"Dark Vador\", metadata_type=self.brand_metadata)\nError traceback :\nTraceback (most recent call last):\n File \"/backoffice/backoffice/adminpricing/tests/test_pw.py\", line 481, in test_checkpolicywarning_by_fields\n\tfor p in ProductMetaData.objects.filter(\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/manager.py\", line 82, in manager_method\n\treturn getattr(self.get_queryset(), name)(*args, **kwargs)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/query.py\", line 904, in filter\n\treturn self._filter_or_exclude(False, *args, **kwargs)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/query.py\", line 923, in _filter_or_exclude\n\tclone.query.add_q(Q(*args, **kwargs))\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1351, in add_q\n\tclause, _ = self._add_q(q_object, self.used_aliases)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1378, in _add_q\n\tchild_clause, needed_inner = self.build_filter(\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1264, in build_filter\n\tself.check_filterable(value)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1131, in check_filterable\n\traise NotSupportedError(\ndjango.db.utils.NotSupportedError: ProductMetaDataType is disallowed in the filter clause.\nI changed label to filterable_test and it fixed this issue\nThis should be documented or fix.\n\n\nHints:\nThanks for the report, that's a nice edge case. We should be able to fix this by checking if rhs is an expression: diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py index ce18098fd2..ad981377a0 100644 --- a/django/db/models/sql/query.py +++ b/django/db/models/sql/query.py @@ -1124,7 +1124,7 @@ class Query(BaseExpression): def check_filterable(self, expression): \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\" - if not getattr(expression, 'filterable', True): + if hasattr(expression, 'resolve_expression') and not getattr(expression, 'filterable', True): raise NotSupportedError( expression.__class__.__name__ + ' is disallowed in the filter ' 'clause.' Would you like to provide a patch? Regression in 4edad1ddf6203326e0be4bdb105beecb0fe454c4.\nSure I will. I just need to read \u200bhttps://docs.djangoproject.com/en/dev/internals/contributing/"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The error message indicates that the `ProductMetaDataType` model is disallowed in the filter clause, and the issue is related to the `filterable` attribute. The traceback points to `django/db/models/sql/query.py`, specifically the `check_filterable` method. The `ProductMetaDataType` model has a `filterable` field, which is likely being used to determine if the model can be used in a filter. The fix involves checking if the RHS is an expression. I will start by searching for the `check_filterable` method in the Django source code to understand how it is implemented and why it might be raising the `NotSupportedError`.\nAction: grep(\"check_filterable\", \"django/db/models/sql/\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 1/30 \u2014 29 remaining]\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1125:    def check_filterable(self, expression):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1134:                self.check_filterable(expr)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1203:                     reuse_with_filtered_relation=False, check_filterable=True):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1242:                check_filterable=check_filterable,\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1258:        if check_filterable:\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1259:            self.check_filterable(reffed_expression)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1268:        if check_filterable:\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1269:            self.check_filterable(value)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1366:               check_filterable=True):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1378:                split_subq=split_subq, check_filterable=check_filterable,"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `check_filterable` method is defined in `query.py` and is used in several places within the Django ORM to ensure that expressions used in filters are valid. The error is raised because `ProductMetaDataType` has a `filterable` field set to `False`, and the `check_filterable` method is checking this field to determine if the model can be used in a filter. I will now inspect the `check_filterable` method in `query.py` to understand how it is implemented and why it might be raising the `NotSupportedError`.\nAction: read_file(\"django/db/models/sql/query.py\", 1120, 1150)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 2/30 \u2014 28 remaining]\n1120:                 self.check_query_object_type(value, opts, field)\n1121:             elif hasattr(value, '__iter__'):\n1122:                 for v in value:\n1123:                     self.check_query_object_type(v, opts, field)\n1124: \n1125:     def check_filterable(self, expression):\n1126:         \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\"\n1127:         if not getattr(expression, 'filterable', True):\n1128:             raise NotSupportedError(\n1129:                 expression.__class__.__name__ + ' is disallowed in the filter '\n1130:                 'clause.'\n1131:             )\n1132:         if hasattr(expression, 'get_source_expressions'):\n1133:             for expr in expression.get_source_expressions():\n1134:                 self.check_filterable(expr)\n1135: \n1136:     def build_lookup(self, lookups, lhs, rhs):\n1137:         \"\"\"\n1138:         Try to extract transforms and lookup from given lhs.\n1139: \n1140:         The lhs value is something that works like SQLExpression.\n1141:         The rhs value is what the lookup is going to compare against.\n1142:         The lookups is a list of names to extract using get_lookup()\n1143:         and get_transform().\n1144:         \"\"\"\n1145:         # __exact is the default lookup if one isn't given.\n1146:         *transforms, lookup_name = lookups or ['exact']\n1147:         for name in transforms:\n1148:             lhs = self.try_transform(lhs, name)\n1149:         # First try get_lookup() so that the lookup takes precedence if the lhs\n1150:         # supports both transform and lookup for the name.\n... (1264 more lines, total 2414)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `check_filterable` method checks if an expression has a `filterable` attribute, and if not, raises a `NotSupportedError`. In the case of `ProductMetaDataType`, the `filterable` field is set to `False`, which causes this error. The fix proposed in the hint involves checking if the RHS is an expression before checking the `filterable` attribute. I will now search for the `filterable` attribute in the `ProductMetaDataType` model to confirm its usage and how it might be affecting the filter.\nAction: grep(\"filterable\", \"adminpricing/models.py\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 3/30 \u2014 27 remaining]\nNo matches found."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `filterable` attribute is defined in the `ProductMetaDataType` model, but it seems that the file `adminpricing/models.py` does not exist in the repository. This might be due to the model being defined in a different file or the repository structure being different. I will search for the `filterable` attribute in the `ProductMetaDataType` model using a broader search to locate the correct file.\nAction: grep(\"filterable\", \"adminpricing/\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 4/30 \u2014 26 remaining]\nNo matches found."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `filterable` attribute is part of the `ProductMetaDataType` model, but it seems that the `adminpricing` directory or its files are not present in the repository. This might be due to the repository structure or the way the models are organized. I will search for the `ProductMetaDataType` model in the repository to locate its definition and understand how the `filterable` attribute is used.\nAction: grep(\"class ProductMetaDataType\", \".\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 5/30 \u2014 25 remaining]\nNo matches found."
+    },
+    {
+      "role": "user",
+      "content": "You are no longer making useful progress.\nBased on the evidence already gathered, provide your final answer now by calling finish() with the most relevant source file(s) and matching test file(s) if they exist.\n\nLikely candidate files already seen:\n- django/db/models/sql/query.py\n\nRespond in EXACTLY this format:\nThought: <brief summary of relevant files found>\nAction: finish(file1.py, file2.py, ...)\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The error is caused by the `check_filterable` method in `django/db/models/sql/query.py`, which checks if an expression has a `filterable` attribute. The `ProductMetaDataType` model has a `filterable` field set to `False`, which triggers the `NotSupportedError`. The relevant file is `django/db/models/sql/query.py`.\nAction: finish(django/db/models/sql/query.py)"
+    }
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "thought": "Thought: The error message indicates that the `ProductMetaDataType` model is disallowed in the filter clause, and the issue is related to the `filterable` attribute. The traceback points to `django/db/models/sql/query.py`, specifically the `check_filterable` method. The `ProductMetaDataType` model has a `filterable` field, which is likely being used to determine if the model can be used in a filter. The fix involves checking if the RHS is an expression. I will start by searching for the `check_filterable` method in the Django source code to understand how it is implemented and why it might be raising the `NotSupportedError`.",
+      "action": "grep",
+      "args": [
+        "check_filterable",
+        "django/db/models/sql/"
+      ],
+      "tokens": 1888,
+      "observation": "/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1125:    def check_filterable(self, expression):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1134:                self.check_filterable(expr)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1203:                     reuse_with_filtered_relation=False, check_filterable=True):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1242:                check_filterable=check_filterable,\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1258:        if check_filterable:\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1259:            self.check_filterable(reffed_expression)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1268:        if check_filterable:\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1269:            self.check_filterable(value)\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1366:               check_filterable=True):\n/tmp/swebench_repos/django__django-13028/django/db/models/sql/query.py:1378:                split_subq=split_subq, check_filterable=check_filterable,"
+    },
+    {
+      "step": 2,
+      "thought": "Thought: The `check_filterable` method is defined in `query.py` and is used in several places within the Django ORM to ensure that expressions used in filters are valid. The error is raised because `ProductMetaDataType` has a `filterable` field set to `False`, and the `check_filterable` method is checking this field to determine if the model can be used in a filter. I will now inspect the `check_filterable` method in `query.py` to understand how it is implemented and why it might be raising the `NotSupportedError`.",
+      "action": "read_file",
+      "args": [
+        "django/db/models/sql/query.py",
+        "1120",
+        "1150"
+      ],
+      "tokens": 2433,
+      "observation": "1120:                 self.check_query_object_type(value, opts, field)\n1121:             elif hasattr(value, '__iter__'):\n1122:                 for v in value:\n1123:                     self.check_query_object_type(v, opts, field)\n1124: \n1125:     def check_filterable(self, expression):\n1126:         \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\"\n1127:         if not getattr(expression, 'filterable', True):\n1128:             raise NotSupportedError(\n1129:                 expression.__class__.__name__ + ' is disallowed in the filter '\n1130:                 'clause.'\n1131:             )\n1132:         if hasattr(expression, 'get_source_expressions'):\n1133:             for expr in expression.get_source_expressions():\n1134:                 self.check_filterable(expr)\n1135: \n1136:     def build_lookup(self, lookups, lhs, rhs):\n1137:         \"\"\"\n1138:         Try to extract transforms and lookup from given lhs.\n1139: \n1140:         The lhs value is something that works like SQLExpression.\n1141:         The rhs value is what the lookup is going to compare against.\n1142:         The lookups is a list of names to extract using get_lookup()\n1143:         and get_transform().\n1144:         \"\"\"\n1145:         # __exact is the default lookup if one isn't given.\n1146:         *transforms, lookup_name = lookups or ['exact']\n1147:         for name in transforms:\n1148:             lhs = self.try_transform(lhs, name)\n1149:         # First try get_lookup() so that the lookup takes precedence if the lhs\n1150:         # supports both transform and lookup for the name.\n... (1264 more lines, total 2414)"
+    },
+    {
+      "step": 3,
+      "thought": "Thought: The `check_filterable` method checks if an expression has a `filterable` attribute, and if not, raises a `NotSupportedError`. In the case of `ProductMetaDataType`, the `filterable` field is set to `False`, which causes this error. The fix proposed in the hint involves checking if the RHS is an expression before checking the `filterable` attribute. I will now search for the `filterable` attribute in the `ProductMetaDataType` model to confirm its usage and how it might be affecting the filter.",
+      "action": "grep",
+      "args": [
+        "filterable",
+        "adminpricing/models.py"
+      ],
+      "tokens": 3035,
+      "observation": "No matches found."
+    },
+    {
+      "step": 4,
+      "thought": "Thought: The `filterable` attribute is defined in the `ProductMetaDataType` model, but it seems that the file `adminpricing/models.py` does not exist in the repository. This might be due to the model being defined in a different file or the repository structure being different. I will search for the `filterable` attribute in the `ProductMetaDataType` model using a broader search to locate the correct file.",
+      "action": "grep",
+      "args": [
+        "filterable",
+        "adminpricing/"
+      ],
+      "tokens": 3162,
+      "observation": "No matches found."
+    },
+    {
+      "step": 5,
+      "thought": "Thought: The `filterable` attribute is part of the `ProductMetaDataType` model, but it seems that the `adminpricing` directory or its files are not present in the repository. This might be due to the repository structure or the way the models are organized. I will search for the `ProductMetaDataType` model in the repository to locate its definition and understand how the `filterable` attribute is used.",
+      "action": "grep",
+      "args": [
+        "class ProductMetaDataType",
+        "."
+      ],
+      "tokens": 3288,
+      "observation": "No matches found."
+    },
+    {
+      "step": 5.5,
+      "thought": "EARLY WRAP-UP: Thought: The error is caused by the `check_filterable` method in `django/db/models/sql/query.py`, which checks if an expression has a `filterable` attribute. The `ProductMetaDataType` model has a `filterable` field set to `False`, which triggers the `NotSupportedError`. The relevant file is `django/db/models/sql/query.py`.",
+      "action": "finish",
+      "args": [
+        "django/db/models/sql/query.py"
+      ],
+      "tokens": 3491
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 17297,
+  "latency_s": 12.72028055699775,
+  "ttft_s": 2.69408035500237,
+  "gold_context": [
+    "django/db/models/sql/query.py",
+    "tests/queries/models.py",
+    "tests/queries/tests.py"
+  ]
+}
