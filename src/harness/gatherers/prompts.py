@@ -182,8 +182,6 @@ You have the following tools available:
    class names, function names, or error messages from the issue.
    Example: keyword_search("authenticate login credentials")
    Example: keyword_search("TypeError NoneType has no attribute", 5)
-
-/nothink
 """
 
 RERAG_SYSTEM_PROMPT = """\
@@ -232,7 +230,7 @@ Action: finish(file1.py, file2.py, ...)
 - Call exactly ONE action per turn.
 - If a tool returns an error or no results, try a different query or tool rather than repeating the same call.
 - Never repeat the exact same tool call with the exact same arguments.
-- Prefer 2-6 total tool calls; do not keep exploring once the likely source file and its test are known.
+- Do not keep exploring once the likely source file and its test are known. Call finish() as soon as you have strong evidence.
 - The finish() arguments must be actual file paths only (e.g. "src/foo.py"). Do NOT pass descriptions, sentences, or list literals.
 - In finish(), list the file you have the STRONGEST evidence for FIRST. The file you read, grepped, or confirmed as most relevant should be the first argument.
 - The finish() arguments should include the file where the error likely is, and the test for that file if it exists.

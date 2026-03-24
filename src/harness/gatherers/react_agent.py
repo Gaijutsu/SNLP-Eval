@@ -184,11 +184,23 @@ def _parse_action(text: str) -> tuple[str, list[str]]:
     non-path arguments from finish() to prevent sentence-in-finish failures.
     """
     # Try function-style first: Action: tool(arg1, arg2)
-    # Use a greedy match to capture content including nested brackets
-    match = re.search(r"Action:\s*(\w+)\(([^)]*(?:\)[^)]*)?)\)", text)
-    if match:
-        tool_name = match.group(1).strip()
-        raw_args = match.group(2).strip()
+    # Use balanced-paren matching to handle nested parens like grep("def foo(bar)", "src/")
+    header = re.search(r"Action:\s*(\w+)\(", text)
+    if header:
+        tool_name = header.group(1).strip()
+        # Walk forward from the opening '(' to find its balanced closing ')'
+        start = header.end() - 1  # index of '('
+        depth = 0
+        end = start
+        for i in range(start, len(text)):
+            if text[i] == "(":
+                depth += 1
+            elif text[i] == ")":
+                depth -= 1
+                if depth == 0:
+                    end = i
+                    break
+        raw_args = text[start + 1 : end].strip()
         # Strip list-syntax brackets: finish(['a.py', 'b.py']) → finish(a.py, b.py)
         raw_args = re.sub(r"[\[\]]+", "", raw_args)
         if not raw_args:
