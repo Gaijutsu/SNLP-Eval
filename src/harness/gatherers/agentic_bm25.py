@@ -27,7 +27,6 @@ from harness.gatherers.react_agent import (
     STAGNATION_PROMPT,
     SOURCE_FILE_SUFFIXES,
     MAX_REPEAT_ACTIONS,
-    MAX_STAGNATION_STEPS,
     _strip_think_blocks,
     _tool_list_dir,
     _tool_read_file,
@@ -46,16 +45,25 @@ from harness.gatherers.react_agent import (
 
 logger = logging.getLogger(__name__)
 
+# Allow more exploration steps after keyword_search before triggering stagnation
+AGENTIC_MAX_STAGNATION_STEPS = 5
 
-def _tool_keyword_search(index: ChunkedIndex, query: str, top_k: int = 10) -> str:
-    """BM25 keyword search over all indexed source files in the repository."""
+
+def _tool_keyword_search(index: ChunkedIndex, query: str, top_k: int = 10) -> tuple[str, list[str]]:
+    """BM25 keyword search over all indexed source files in the repository.
+
+    Returns (formatted_output, list_of_paths) so the caller can automatically
+    register returned paths as candidates.
+    """
     results = index.search(query, top_k=top_k)
     if not results:
-        return "No results found."
+        return "No results found.", []
     lines = []
+    paths = []
     for rank, (path, score) in enumerate(results, 1):
         lines.append(f"  {rank}. {path}  (score: {score:.4f})")
-    return "BM25 search results:\n" + "\n".join(lines)
+        paths.append(path)
+    return "BM25 search results:\n" + "\n".join(lines), paths
 
 
 class ReActBM25Gatherer(ContextGatherer):
@@ -108,6 +116,37 @@ class ReActBM25Gatherer(ContextGatherer):
         last_action: tuple[str, tuple[str, ...]] | None = None
         repeat_count = 0
         stagnation_count = 0
+
+        # ---- Improvement: auto-run initial keyword_search with the full issue ----
+        # This mirrors what rag_bm25 does (using the full issue text), giving the
+        # agent a strong starting set of candidates before it even takes a turn.
+        initial_output, initial_paths = _tool_keyword_search(
+            bm25_index, instance.query, self.bm25_top_k
+        )
+        for p in initial_paths:
+            _add_candidate_path(p, repo, candidate_paths, candidate_seen)
+        # Inject the results as a system-level hint so the agent sees them
+        messages.append(
+            {
+                "role": "user",
+                "content": (
+                    "Here are the initial BM25 keyword search results using the "
+                    "full issue text as query. Use these as a starting point, "
+                    "but feel free to run additional keyword_search() calls with "
+                    "more focused queries to refine results.\n\n" + initial_output
+                ),
+            }
+        )
+        trace.append(
+            {
+                "step": 0,
+                "thought": "AUTO: initial keyword_search with full issue text",
+                "action": "keyword_search",
+                "args": ["<full_issue_text>"],
+                "tokens": 0,
+                "observation": initial_output,
+            }
+        )
 
         for step in range(self.max_steps):
             # Call LLM
@@ -164,7 +203,10 @@ class ReActBM25Gatherer(ContextGatherer):
             elif tool_name == "keyword_search":
                 query = args[0] if args else instance.query
                 top_k = int(args[1]) if len(args) > 1 else self.bm25_top_k
-                observation = _tool_keyword_search(bm25_index, query, top_k)
+                observation, ks_paths = _tool_keyword_search(bm25_index, query, top_k)
+                # Auto-register keyword_search result paths as candidates
+                for p in ks_paths:
+                    _add_candidate_path(p, repo, candidate_paths, candidate_seen)
             else:
                 observation = (
                     f"Error: unknown tool '{tool_name}'. "
@@ -180,7 +222,12 @@ class ReActBM25Gatherer(ContextGatherer):
                 candidate_paths,
                 candidate_seen,
             )
-            if tool_name == "error" or new_candidates == 0:
+            # keyword_search is an overview/discovery tool — don't penalise it
+            # for not finding *new* candidates (it may return files already seen
+            # from the initial auto-search).
+            if tool_name == "keyword_search":
+                stagnation_count = 0
+            elif tool_name == "error" or new_candidates == 0:
                 stagnation_count += 1
             else:
                 stagnation_count = 0
@@ -212,7 +259,7 @@ class ReActBM25Gatherer(ContextGatherer):
                 and step + 1 < self.max_steps
                 and (
                     repeat_count >= MAX_REPEAT_ACTIONS
-                    or stagnation_count >= MAX_STAGNATION_STEPS
+                    or stagnation_count >= AGENTIC_MAX_STAGNATION_STEPS
                 )
             )
             if should_force_wrap_up:
