@@ -1,0 +1,97 @@
+{
+  "instance_id": "astropy__astropy-14182",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.6871027500001219,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/io/ascii/ui.py",
+    "astropy/io/ascii/qdp.py",
+    "astropy/io/ascii/core.py",
+    "astropy/io/ascii/cds.py",
+    "astropy/io/ascii/ipac.py",
+    "astropy/io/ascii/fastbasic.py",
+    "astropy/io/ascii/tests/test_write.py",
+    "astropy/io/ascii/docs.py",
+    "astropy/table/connect.py",
+    "astropy/io/fits/scripts/fitsheader.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 894,
+      "results": [
+        {
+          "file": "astropy/io/ascii/ui.py",
+          "score": 332.6477
+        },
+        {
+          "file": "astropy/io/ascii/qdp.py",
+          "score": 275.9107
+        },
+        {
+          "file": "astropy/io/ascii/core.py",
+          "score": 266.9199
+        },
+        {
+          "file": "astropy/io/ascii/cds.py",
+          "score": 265.2511
+        },
+        {
+          "file": "astropy/io/ascii/ipac.py",
+          "score": 253.7215
+        },
+        {
+          "file": "astropy/io/ascii/fastbasic.py",
+          "score": 240.0088
+        },
+        {
+          "file": "astropy/io/ascii/tests/test_write.py",
+          "score": 237.8962
+        },
+        {
+          "file": "astropy/io/ascii/docs.py",
+          "score": 237.1652
+        },
+        {
+          "file": "astropy/table/connect.py",
+          "score": 231.9211
+        },
+        {
+          "file": "astropy/io/fits/scripts/fitsheader.py",
+          "score": 220.816
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.6871027500001219,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/io/ascii/rst.py",
+    "astropy/io/ascii/tests/test_rst.py"
+  ]
+}
