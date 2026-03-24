@@ -91,6 +91,46 @@ Then generate the patch. Rules:
 """
 
 
+AGENTLESS_BM25_FILE_LOCALIZATION_PROMPT = """\
+You are an expert software engineer performing fault localization on a code repository.
+- Sort candidate files by relevance, with the most relevant first. Relevance is based on how strongly the file is connected to the issue through identifiers, directory structure, and content.
+- You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.
+
+
+## Issue
+{query}
+
+## BM25 Keyword Search Results
+The following files were returned by a BM25 keyword search over the repository
+using the issue text as the query. They are ranked by relevance score.
+Use these as a strong starting point — the correct file is often in this list.
+
+{bm25_results}
+
+## Repository Files
+{file_listing}
+
+## Task
+Identify which files are most relevant to this issue. Reason step by step:
+
+1. Extract key identifiers from the issue: function/class names, error messages,
+   feature keywords, and module names that appear in the issue description.
+2. Check the BM25 results first — if a top-ranked file clearly matches the key
+   identifiers, it is very likely relevant.
+3. Cross-reference against the full file listing using path names and directory
+   structure (e.g. an auth bug likely lives under `auth/` or `login`).
+4. Consider indirect relevance: configuration files, shared utilities, and test
+   files that the primary file depends on or exercises.
+
+Respond with a JSON array of up to {top_n} file paths, ranked by relevance
+(most relevant first). Output ONLY the JSON array, with no surrounding text.
+
+Example: ["src/auth/login.py", "tests/test_auth.py", "src/models/user.py"]
+
+/nothink
+"""
+
+
 REACT_TOOL_DESCRIPTIONS = """\
 You have the following tools available:
 
