@@ -100,27 +100,22 @@ You are an expert software engineer performing fault localization on a code repo
 ## Issue
 {query}
 
-## BM25 Keyword Search Results
-The following files were returned by a BM25 keyword search over the repository
-using the issue text as the query. They are ranked by relevance score.
-Use these as a strong starting point — the correct file is often in this list.
-
-{bm25_results}
-
 ## Repository Files
 {file_listing}
 
-## Task
-Identify which files are most relevant to this issue. Reason step by step:
+## BM25 Keyword Search Results
+The following files were returned by a BM25 keyword search over the repository
+using the issue text as the query. They are ranked by relevance score.
+**The correct file is almost always in this list. Start here.**
 
-1. Extract key identifiers from the issue: function/class names, error messages,
-   feature keywords, and module names that appear in the issue description.
-2. Check the BM25 results first — if a top-ranked file clearly matches the key
-   identifiers, it is very likely relevant.
-3. Cross-reference against the full file listing using path names and directory
-   structure (e.g. an auth bug likely lives under `auth/` or `login`).
-4. Consider indirect relevance: configuration files, shared utilities, and test
-   files that the primary file depends on or exercises.
+{bm25_results}
+
+## Task
+Identify which files are most relevant to this issue.
+
+IMPORTANT: The BM25 results above are highly accurate. The top-ranked BM25
+files that match key identifiers from the issue should be your primary picks.
+Only add files NOT in the BM25 list if you have strong reason to.
 
 Respond with a JSON array of up to {top_n} file paths, ranked by relevance
 (most relevant first). Output ONLY the JSON array, with no surrounding text.

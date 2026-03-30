@@ -1,0 +1,563 @@
+{
+  "rag_bm25": {
+    "applied": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "fail_to_pass": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "latency_s": {
+      "mean": 0.6709,
+      "std": 0.0208,
+      "min": 0.6501,
+      "max": 0.6917,
+      "n": 2
+    },
+    "mrr": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@1": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@10": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@3": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@5": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "pass_to_pass": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "precision@1": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "precision@10": {
+      "mean": 0.1,
+      "std": 0.1,
+      "min": 0.0,
+      "max": 0.2,
+      "n": 2
+    },
+    "precision@3": {
+      "mean": 0.3333,
+      "std": 0.3333,
+      "min": 0.0,
+      "max": 0.6667,
+      "n": 2
+    },
+    "precision@5": {
+      "mean": 0.2,
+      "std": 0.2,
+      "min": 0.0,
+      "max": 0.4,
+      "n": 2
+    },
+    "recall@1": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@10": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@3": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@5": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "tests_passed": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "token_usage": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    }
+  },
+  "agentless_bm25": {
+    "applied": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "fail_to_pass": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "latency_s": {
+      "mean": 116.5408,
+      "std": 69.4,
+      "min": 47.1409,
+      "max": 185.9408,
+      "n": 2
+    },
+    "mrr": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@1": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@10": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@3": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@5": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "pass_to_pass": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "precision@1": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "precision@10": {
+      "mean": 0.1,
+      "std": 0.1,
+      "min": 0.0,
+      "max": 0.2,
+      "n": 2
+    },
+    "precision@3": {
+      "mean": 0.3333,
+      "std": 0.3333,
+      "min": 0.0,
+      "max": 0.6667,
+      "n": 2
+    },
+    "precision@5": {
+      "mean": 0.2,
+      "std": 0.2,
+      "min": 0.0,
+      "max": 0.4,
+      "n": 2
+    },
+    "recall@1": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@10": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@3": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@5": {
+      "mean": 0.5,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "tests_passed": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "token_usage": {
+      "mean": 10450.5,
+      "std": 1939.5,
+      "min": 8511.0,
+      "max": 12390.0,
+      "n": 2
+    },
+    "ttft_s": {
+      "mean": 21.8348,
+      "std": 2.1753,
+      "min": 19.6595,
+      "max": 24.0102,
+      "n": 2
+    }
+  },
+  "agentic_bm25": {
+    "applied": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "fail_to_pass": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "latency_s": {
+      "mean": 56.8863,
+      "std": 6.047,
+      "min": 50.8392,
+      "max": 62.9333,
+      "n": 2
+    },
+    "mrr": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@1": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@10": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@3": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@5": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "pass_to_pass": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "precision@1": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "precision@10": {
+      "mean": 0.2,
+      "std": 0.0,
+      "min": 0.2,
+      "max": 0.2,
+      "n": 2
+    },
+    "precision@3": {
+      "mean": 0.6667,
+      "std": 0.0,
+      "min": 0.6667,
+      "max": 0.6667,
+      "n": 2
+    },
+    "precision@5": {
+      "mean": 0.4,
+      "std": 0.0,
+      "min": 0.4,
+      "max": 0.4,
+      "n": 2
+    },
+    "recall@1": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@10": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@3": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@5": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "tests_passed": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "token_usage": {
+      "mean": 21840.5,
+      "std": 2982.5,
+      "min": 18858.0,
+      "max": 24823.0,
+      "n": 2
+    },
+    "ttft_s": {
+      "mean": 8.5702,
+      "std": 1.5269,
+      "min": 7.0434,
+      "max": 10.0971,
+      "n": 2
+    }
+  },
+  "react_agent": {
+    "applied": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "fail_to_pass": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "latency_s": {
+      "mean": 65.2548,
+      "std": 19.3301,
+      "min": 45.9246,
+      "max": 84.5849,
+      "n": 2
+    },
+    "mrr": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@1": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@10": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@3": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "ndcg@5": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "pass_to_pass": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "precision@1": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "precision@10": {
+      "mean": 0.6429,
+      "std": 0.3571,
+      "min": 0.2857,
+      "max": 1.0,
+      "n": 2
+    },
+    "precision@3": {
+      "mean": 0.8333,
+      "std": 0.1667,
+      "min": 0.6667,
+      "max": 1.0,
+      "n": 2
+    },
+    "precision@5": {
+      "mean": 0.7,
+      "std": 0.3,
+      "min": 0.4,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@1": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@10": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@3": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "recall@5": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 2
+    },
+    "tests_passed": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 2
+    },
+    "token_usage": {
+      "mean": 17840.5,
+      "std": 4815.5,
+      "min": 13025.0,
+      "max": 22656.0,
+      "n": 2
+    },
+    "ttft_s": {
+      "mean": 4.9804,
+      "std": 0.1775,
+      "min": 4.8029,
+      "max": 5.1579,
+      "n": 2
+    }
+  }
+}

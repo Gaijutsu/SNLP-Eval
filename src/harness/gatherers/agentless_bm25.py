@@ -184,36 +184,39 @@ class AgentlessBM25Gatherer(ContextGatherer):
         )
 
         # ── Phase 3: Repair (generate candidate patches) ─────────
-        code_regions = self._build_targeted_regions(regions, repo, file_contents)
         patches: list[str] = []
+        repair_tokens = 0
 
-        for sample_idx in range(self.n_samples):
-            phase3_msgs = [
-                {
-                    "role": "system",
-                    "content": "You are an expert software engineer.",
-                },
-                {
-                    "role": "user",
-                    "content": AGENTLESS_REPAIR_PROMPT.format(
-                        query=instance.query[:ISSUE_TRUNCATION_LIMIT],
-                        code_regions=code_regions[:FILE_CONTENT_TRUNCATION_LIMIT],
-                    ),
-                },
-            ]
-            resp3 = self.llm.chat(phase3_msgs, temperature=0.8)
-            total_tokens += resp3.total_tokens
-            conversation.extend(phase3_msgs)
-            conversation.append({"role": "assistant", "content": resp3.content})
-            patch = self._extract_diff(_strip_think_blocks(resp3.content))
-            if patch:
-                patches.append(patch)
+        if self.n_samples > 0:
+            code_regions = self._build_targeted_regions(regions, repo, file_contents)
+            for sample_idx in range(self.n_samples):
+                phase3_msgs = [
+                    {
+                        "role": "system",
+                        "content": "You are an expert software engineer.",
+                    },
+                    {
+                        "role": "user",
+                        "content": AGENTLESS_REPAIR_PROMPT.format(
+                            query=instance.query[:ISSUE_TRUNCATION_LIMIT],
+                            code_regions=code_regions[:FILE_CONTENT_TRUNCATION_LIMIT],
+                        ),
+                    },
+                ]
+                resp3 = self.llm.chat(phase3_msgs, temperature=0.8)
+                total_tokens += resp3.total_tokens
+                repair_tokens = resp3.total_tokens
+                conversation.extend(phase3_msgs)
+                conversation.append({"role": "assistant", "content": resp3.content})
+                patch = self._extract_diff(_strip_think_blocks(resp3.content))
+                if patch:
+                    patches.append(patch)
 
         trace.append(
             {
                 "phase": "repair",
                 "n_patches_generated": len(patches),
-                "tokens_per_sample": resp3.total_tokens if patches else 0,
+                "tokens_per_sample": repair_tokens,
             }
         )
 
