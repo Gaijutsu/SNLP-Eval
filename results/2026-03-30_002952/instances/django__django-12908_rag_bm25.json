@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-12908",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 1.0,
+    "ndcg@1": 1.0,
+    "precision@3": 0.3333333333333333,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.2,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 0.8065735963827293,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.1972110000060638,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/queries/test_qs_combinators.py",
+    "tests/queries/tests.py",
+    "tests/gis_tests/relatedapp/tests.py",
+    "tests/aggregation_regress/tests.py",
+    "tests/distinct_on_fields/tests.py",
+    "tests/extra_regress/tests.py",
+    "tests/aggregation/tests.py",
+    "django/db/models/query.py",
+    "tests/filtered_relation/tests.py",
+    "tests/gis_tests/geoapp/tests.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2196,
+      "results": [
+        {
+          "file": "tests/queries/test_qs_combinators.py",
+          "score": 254.6469
+        },
+        {
+          "file": "tests/queries/tests.py",
+          "score": 224.3884
+        },
+        {
+          "file": "tests/gis_tests/relatedapp/tests.py",
+          "score": 218.2411
+        },
+        {
+          "file": "tests/aggregation_regress/tests.py",
+          "score": 209.3226
+        },
+        {
+          "file": "tests/distinct_on_fields/tests.py",
+          "score": 202.5686
+        },
+        {
+          "file": "tests/extra_regress/tests.py",
+          "score": 193.7508
+        },
+        {
+          "file": "tests/aggregation/tests.py",
+          "score": 186.1053
+        },
+        {
+          "file": "django/db/models/query.py",
+          "score": 181.6188
+        },
+        {
+          "file": "tests/filtered_relation/tests.py",
+          "score": 177.9114
+        },
+        {
+          "file": "tests/gis_tests/geoapp/tests.py",
+          "score": 177.2351
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.1972110000060638,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/query.py",
+    "tests/queries/test_qs_combinators.py"
+  ]
+}

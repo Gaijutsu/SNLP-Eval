@@ -1,0 +1,98 @@
+{
+  "instance_id": "django__django-12470",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.2,
+    "recall@5": 0.3333333333333333,
+    "ndcg@5": 0.18154179253735267,
+    "precision@10": 0.2,
+    "recall@10": 0.6666666666666666,
+    "ndcg@10": 0.3379680345449381,
+    "mrr": 0.2,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.1006463329977123,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "tests/queries/tests.py",
+    "tests/model_inheritance_regress/tests.py",
+    "tests/ordering/tests.py",
+    "tests/invalid_models_tests/test_models.py",
+    "tests/model_inheritance/tests.py",
+    "tests/admin_changelist/tests.py",
+    "django/db/models/sql/compiler.py",
+    "django/db/models/sql/query.py",
+    "django/templatetags/static.py",
+    "django/db/models/base.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2183,
+      "results": [
+        {
+          "file": "tests/queries/tests.py",
+          "score": 110.7646
+        },
+        {
+          "file": "tests/model_inheritance_regress/tests.py",
+          "score": 105.9034
+        },
+        {
+          "file": "tests/ordering/tests.py",
+          "score": 104.6436
+        },
+        {
+          "file": "tests/invalid_models_tests/test_models.py",
+          "score": 99.8048
+        },
+        {
+          "file": "tests/model_inheritance/tests.py",
+          "score": 99.3815
+        },
+        {
+          "file": "tests/admin_changelist/tests.py",
+          "score": 97.4111
+        },
+        {
+          "file": "django/db/models/sql/compiler.py",
+          "score": 94.7309
+        },
+        {
+          "file": "django/db/models/sql/query.py",
+          "score": 93.1535
+        },
+        {
+          "file": "django/templatetags/static.py",
+          "score": 91.2207
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 89.8553
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.1006463329977123,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/sql/compiler.py",
+    "tests/model_inheritance/models.py",
+    "tests/model_inheritance/tests.py"
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "instance_id": "django__django-11848",
+  "gatherer": "react_agent",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 1.0,
+    "ndcg@1": 1.0,
+    "precision@3": 1.0,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 1.0,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 1.0,
+    "recall@10": 0.5,
+    "ndcg@10": 0.6131471927654584,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 13247.0,
+    "latency_s": 8.257196320999356,
+    "ttft_s": 1.4099892749982246
+  },
+  "retrieved_documents": [
+    "django/utils/http.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are a code investigation agent. Your goal is to identify the files most\nrelevant to a given issue in a code repository.\n\nYou have the following tools available:\n\n1. list_dir(path: str) -> str\n   List files and subdirectories in the given directory (relative to repo root).\n   Use this to understand project layout around a candidate directory.\n   Example: list_dir(\"src/auth\")\n\n2. grep(pattern: str, path: str = \".\") -> str\n   Search for a regex pattern in source files (.py/.java/.ts/.js/.cs) under the\n   given path. Returns matching lines with file:line format. Use this to find\n   where a specific function, class, or error message is defined or called.\n   Example: grep(\"def authenticate\", \"src/\")\n\n3. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str\n   Read the contents of a file (relative to repo root). Use this to confirm a\n   file's relevance by inspecting its implementation. You may optionally pass a\n   start and end line range when grep already showed the interesting region.\n   Example: read_file(\"src/auth/login.py\")\n   Example: read_file(\"src/auth/login.py\", 120, 220)\n\n4. find_tests(source_path: str) -> str\n   Find likely test files for a given source file path.\n   Use this after you have identified a likely source file.\n   Example: find_tests(\"src/auth/login.py\")\n\n/nothink\n\n\n## Exploration Strategy\nFollow this general approach:\n1. Start with one focused grep() using the most distinctive identifier from the issue.\n2. If the issue text includes traceback paths, class names, or function names, prioritize those as primary suspects.\n3. Use read_file() to confirm the likely fault location(s) first; only explore parent/base/helper files if needed to confirm behavior.\n4. Use list_dir() only when you need to understand a promising directory.\n5. After identifying likely source file(s), call find_tests() for each likely source file.\n6. Stop early once you have enough evidence, then call finish().\n\n## Response Format\nOn EVERY turn, respond in EXACTLY this format:\nThought: <your reasoning about what you know so far and what to do next>\nAction: <tool_name>(arg1, arg2, ...)\n\nWhen you have gathered sufficient evidence, respond:\nThought: <summary of the relevant files found and why>\nAction: finish(file1.py, file2.py, ...)\n\n## Rules\n- Always start with a Thought.\n- Call exactly ONE action per turn.\n- If a tool returns an error or no results, try a different query or tool rather than repeating the same call.\n- Never repeat the exact same tool call with the exact same arguments.\n- Prefer 2-6 total tool calls; do not keep exploring once the likely fault location(s) and matching test file(s) are known.\n- Focus on likely fault location(s), not all tangentially related files.\n- It is valid to return multiple source files and multiple tests when evidence supports them.\n- Do not switch away from a traceback-named or directly-matched suspect file unless you found concrete evidence it is not the likely fault location.\n- The finish() arguments are the relevant file paths, which should include likely fault source file(s) and matching test file(s), if they exist.\n- You have at most 30 steps. If approaching the limit, call finish() with your best findings so far.\n- You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.\n\n/nothink\n"
+    },
+    {
+      "role": "user",
+      "content": "Find the files most relevant to this issue:\n\ndjango.utils.http.parse_http_date two digit year check is incorrect\nDescription\n\t \n\t\t(last modified by Ad Timmering)\n\t \nRFC 850 does not mention this, but in RFC 7231 (and there's something similar in RFC 2822), there's the following quote:\nRecipients of a timestamp value in rfc850-date format, which uses a\ntwo-digit year, MUST interpret a timestamp that appears to be more\nthan 50 years in the future as representing the most recent year in\nthe past that had the same last two digits.\nCurrent logic is hard coded to consider 0-69 to be in 2000-2069, and 70-99 to be 1970-1999, instead of comparing versus the current year.\n\n\nHints:\nAccepted, however I don't think your patch is correct. The check should be relative to the current year, if I read the RFC quote correctly.\nCreated a pull request: Created a pull request: \u200bhttps://github.com/django/django/pull/9214\nStill some suggested edits on the PR.\nI added regression test that fails with old code (test_parsing_rfc850_year_69), updated commit message to hopefully follow the guidelines, and added additional comments about the change. Squashed commits as well. Could you review the pull request again?\nsent new pull request\nThis is awaiting for changes from Tim's feedback on PR. (Please uncheck \"Patch needs improvement\" again when that's done. \ud83d\ude42)\nAs this issue hasn't received any updates in the last 8 months, may I work on this ticket?\nGo for it, I don't think I will have time to finish it.\nThanks, I'll pick up from where you left off in the PR and make the recommended changes on a new PR.\nTameesh Biswas Are you working on this ?\nYes, I am.\nI've just picked up from the previous PR and opened a new PR here: \u200bhttps://github.com/django/django/pull/10749 It adds regression tests in the first commit that pass without applying the fix and adds the fix with another test-case that only passes with the fix applied. Could you please review the changes?\nTameesh, I left a comment on the PR regarding the use of non-UTC today.\nAs an issue haven't received an update for 4 months, I'm taking it over (djangocon europe 2019 sprint day 1).\nCreated new PR: \u200bhttps://github.com/django/django/pull/11212\nI think an earlier comment by Simon Charette (about using a fixed year in the tests) still applies to the new PR; I've added it.\nTaking the liberty to reassign due to inactivity (6 months) and adding a pull request with revised code and addressing feedback on prior PRs. Please add give your comments for any concerns:) PR => \u200bhttps://github.com/django/django/pull/11848 Year is now checked in relation to current year, rolling over to the past if more than 50 years in the future Test now uses a patched version of datetime.datetime to pin to a specific year and have static test cases, addressing feedback from charettes@ on PR 10749 in Dec 2018."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The issue is related to the `django.utils.http.parse_http_date` function and its handling of two-digit years. I will start by searching for this function in the Django source code to locate the relevant file.\nAction: grep(\"def parse_http_date\", \"django/utils/http.py\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 1/30 \u2014 29 remaining]\n158:def parse_http_date(date):\n194:def parse_http_date_safe(date):"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `parse_http_date` function is defined in `django/utils/http.py`. I will now inspect this file to understand how the two-digit year check is implemented.\nAction: read_file(\"django/utils/http.py\", 158, 194)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 2/30 \u2014 28 remaining]\n 158: def parse_http_date(date):\n 159:     \"\"\"\n 160:     Parse a date format as specified by HTTP RFC7231 section 7.1.1.1.\n 161: \n 162:     The three formats allowed by the RFC are accepted, even if only the first\n 163:     one is still in widespread use.\n 164: \n 165:     Return an integer expressed in seconds since the epoch, in UTC.\n 166:     \"\"\"\n 167:     # email.utils.parsedate() does the job for RFC1123 dates; unfortunately\n 168:     # RFC7231 makes it mandatory to support RFC850 dates too. So we roll\n 169:     # our own RFC-compliant parsing.\n 170:     for regex in RFC1123_DATE, RFC850_DATE, ASCTIME_DATE:\n 171:         m = regex.match(date)\n 172:         if m is not None:\n 173:             break\n 174:     else:\n 175:         raise ValueError(\"%r is not in a valid HTTP date format\" % date)\n 176:     try:\n 177:         year = int(m.group('year'))\n 178:         if year < 100:\n 179:             if year < 70:\n 180:                 year += 2000\n 181:             else:\n 182:                 year += 1900\n 183:         month = MONTHS.index(m.group('mon').lower()) + 1\n 184:         day = int(m.group('day'))\n 185:         hour = int(m.group('hour'))\n 186:         min = int(m.group('min'))\n 187:         sec = int(m.group('sec'))\n 188:         result = datetime.datetime(year, month, day, hour, min, sec)\n 189:         return calendar.timegm(result.utctimetuple())\n 190:     except Exception as exc:\n 191:         raise ValueError(\"%r is not a valid date\" % date) from exc\n 192: \n 193: \n 194: def parse_http_date_safe(date):\n... (280 more lines, total 474)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The code in `django/utils/http.py` handles the two-digit year by adding 2000 if the year is less than 70 and 1900 otherwise. This logic is incorrect according to the RFC, as it should be relative to the current year. I will now look for test files related to this function to identify any regression tests or existing test cases.\nAction: find_tests(\"django/utils/http.py\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 3/30 \u2014 27 remaining]\nNo likely test files found."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: There are no test files directly related to `django/utils/http.py`, but the issue description mentions a regression test that was added in a pull request. I will search for test files in the Django test directory that might include tests for `parse_http_date`.\nAction: grep(\"test_parse_http_date\", \"tests/regressiontests/httpwrappers/\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 4/30 \u2014 26 remaining]\nNo matches found."
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: Since there are no direct test files for `django/utils/http.py`, I will search for any test files in the Django test directory that might include tests for date parsing functionality.\nAction: grep(\"test_http_date\", \"tests/regressiontests/\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 5/30 \u2014 25 remaining]\nNo matches found."
+    },
+    {
+      "role": "user",
+      "content": "You are no longer making useful progress.\nBased on the evidence already gathered, provide your final answer now by calling finish() with the most relevant source file(s) and matching test file(s) if they exist.\n\nLikely candidate files already seen:\n- django/utils/http.py\n\nRespond in EXACTLY this format:\nThought: <brief summary of relevant files found>\nAction: finish(file1.py, file2.py, ...)\n"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The relevant source file is `django/utils/http.py`, which contains the `parse_http_date` function with the incorrect two-digit year handling logic. No test files were found directly related to this function.\nAction: finish(django/utils/http.py)"
+    }
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "thought": "Thought: The issue is related to the `django.utils.http.parse_http_date` function and its handling of two-digit years. I will start by searching for this function in the Django source code to locate the relevant file.",
+      "action": "grep",
+      "args": [
+        "def parse_http_date",
+        "django/utils/http.py"
+      ],
+      "tokens": 1575,
+      "observation": "158:def parse_http_date(date):\n194:def parse_http_date_safe(date):"
+    },
+    {
+      "step": 2,
+      "thought": "Thought: The `parse_http_date` function is defined in `django/utils/http.py`. I will now inspect this file to understand how the two-digit year check is implemented.",
+      "action": "read_file",
+      "args": [
+        "django/utils/http.py",
+        "158",
+        "194"
+      ],
+      "tokens": 1675,
+      "observation": " 158: def parse_http_date(date):\n 159:     \"\"\"\n 160:     Parse a date format as specified by HTTP RFC7231 section 7.1.1.1.\n 161: \n 162:     The three formats allowed by the RFC are accepted, even if only the first\n 163:     one is still in widespread use.\n 164: \n 165:     Return an integer expressed in seconds since the epoch, in UTC.\n 166:     \"\"\"\n 167:     # email.utils.parsedate() does the job for RFC1123 dates; unfortunately\n 168:     # RFC7231 makes it mandatory to support RFC850 dates too. So we roll\n 169:     # our own RFC-compliant parsing.\n 170:     for regex in RFC1123_DATE, RFC850_DATE, ASCTIME_DATE:\n 171:         m = regex.match(date)\n 172:         if m is not None:\n 173:             break\n 174:     else:\n 175:         raise ValueError(\"%r is not in a valid HTTP date format\" % date)\n 176:     try:\n 177:         year = int(m.group('year'))\n 178:         if year < 100:\n 179:             if year < 70:\n 180:                 year += 2000\n 181:             else:\n 182:                 year += 1900\n 183:         month = MONTHS.index(m.group('mon').lower()) + 1\n 184:         day = int(m.group('day'))\n 185:         hour = int(m.group('hour'))\n 186:         min = int(m.group('min'))\n 187:         sec = int(m.group('sec'))\n 188:         result = datetime.datetime(year, month, day, hour, min, sec)\n 189:         return calendar.timegm(result.utctimetuple())\n 190:     except Exception as exc:\n 191:         raise ValueError(\"%r is not a valid date\" % date) from exc\n 192: \n 193: \n 194: def parse_http_date_safe(date):\n... (280 more lines, total 474)"
+    },
+    {
+      "step": 3,
+      "thought": "Thought: The code in `django/utils/http.py` handles the two-digit year by adding 2000 if the year is less than 70 and 1900 otherwise. This logic is incorrect according to the RFC, as it should be relative to the current year. I will now look for test files related to this function to identify any regression tests or existing test cases.",
+      "action": "find_tests",
+      "args": [
+        "django/utils/http.py"
+      ],
+      "tokens": 2340,
+      "observation": "No likely test files found."
+    },
+    {
+      "step": 4,
+      "thought": "Thought: There are no test files directly related to `django/utils/http.py`, but the issue description mentions a regression test that was added in a pull request. I will search for test files in the Django test directory that might include tests for `parse_http_date`.",
+      "action": "grep",
+      "args": [
+        "test_parse_http_date",
+        "tests/regressiontests/httpwrappers/"
+      ],
+      "tokens": 2443,
+      "observation": "No matches found."
+    },
+    {
+      "step": 5,
+      "thought": "Thought: Since there are no direct test files for `django/utils/http.py`, I will search for any test files in the Django test directory that might include tests for date parsing functionality.",
+      "action": "grep",
+      "args": [
+        "test_http_date",
+        "tests/regressiontests/"
+      ],
+      "tokens": 2524,
+      "observation": "No matches found."
+    },
+    {
+      "step": 5.5,
+      "thought": "EARLY WRAP-UP: Thought: The relevant source file is `django/utils/http.py`, which contains the `parse_http_date` function with the incorrect two-digit year handling logic. No test files were found directly related to this function.",
+      "action": "finish",
+      "args": [
+        "django/utils/http.py"
+      ],
+      "tokens": 2690
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 13247,
+  "latency_s": 8.257196320999356,
+  "ttft_s": 1.4099892749982246,
+  "gold_context": [
+    "django/utils/http.py",
+    "tests/utils_tests/test_http.py"
+  ]
+}

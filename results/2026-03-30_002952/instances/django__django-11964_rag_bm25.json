@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-11964",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 0.0,
+    "recall@1": 0.0,
+    "ndcg@1": 0.0,
+    "precision@3": 0.0,
+    "recall@3": 0.0,
+    "ndcg@3": 0.0,
+    "precision@5": 0.0,
+    "recall@5": 0.0,
+    "ndcg@5": 0.0,
+    "precision@10": 0.0,
+    "recall@10": 0.0,
+    "ndcg@10": 0.0,
+    "mrr": 0.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 1.185184333997313,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "django/db/models/fields/__init__.py",
+    "django/forms/models.py",
+    "tests/postgres_tests/test_array.py",
+    "tests/forms_tests/tests/test_forms.py",
+    "django/db/models/fields/files.py",
+    "django/db/models/base.py",
+    "tests/model_forms/tests.py",
+    "tests/model_forms/test_modelchoicefield.py",
+    "tests/admin_views/models.py",
+    "tests/proxy_models/tests.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 2163,
+      "results": [
+        {
+          "file": "django/db/models/fields/__init__.py",
+          "score": 446.5874
+        },
+        {
+          "file": "django/forms/models.py",
+          "score": 422.4541
+        },
+        {
+          "file": "tests/postgres_tests/test_array.py",
+          "score": 407.1117
+        },
+        {
+          "file": "tests/forms_tests/tests/test_forms.py",
+          "score": 402.8026
+        },
+        {
+          "file": "django/db/models/fields/files.py",
+          "score": 399.3361
+        },
+        {
+          "file": "django/db/models/base.py",
+          "score": 398.8419
+        },
+        {
+          "file": "tests/model_forms/tests.py",
+          "score": 398.5809
+        },
+        {
+          "file": "tests/model_forms/test_modelchoicefield.py",
+          "score": 397.918
+        },
+        {
+          "file": "tests/admin_views/models.py",
+          "score": 392.6451
+        },
+        {
+          "file": "tests/proxy_models/tests.py",
+          "score": 390.3879
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 1.185184333997313,
+  "ttft_s": null,
+  "gold_context": [
+    "django/db/models/enums.py",
+    "tests/model_enums/tests.py"
+  ]
+}

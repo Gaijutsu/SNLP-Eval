@@ -1,0 +1,97 @@
+{
+  "instance_id": "astropy__astropy-12907",
+  "gatherer": "rag_bm25",
+  "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 1.0,
+    "ndcg@1": 1.0,
+    "precision@3": 0.6666666666666666,
+    "recall@3": 1.0,
+    "ndcg@3": 1.0,
+    "precision@5": 0.4,
+    "recall@5": 1.0,
+    "ndcg@5": 1.0,
+    "precision@10": 0.2,
+    "recall@10": 1.0,
+    "ndcg@10": 1.0,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 0.0,
+    "latency_s": 0.7908781249989261,
+    "ttft_s": null
+  },
+  "retrieved_documents": [
+    "astropy/modeling/separable.py",
+    "astropy/modeling/tests/test_separable.py",
+    "astropy/io/votable/tests/vo_test.py",
+    "astropy/wcs/wcsapi/wrappers/tests/test_sliced_wcs.py",
+    "astropy/time/tests/test_mask.py",
+    "astropy/wcs/wcsapi/tests/test_fitswcs.py",
+    "astropy/table/tests/test_column.py",
+    "astropy/utils/masked/tests/test_function_helpers.py",
+    "astropy/wcs/tests/test_utils.py",
+    "astropy/wcs/utils.py"
+  ],
+  "conversation": [],
+  "trace": [
+    {
+      "step": "bm25_search",
+      "top_k": 10,
+      "num_indexed_files": 875,
+      "results": [
+        {
+          "file": "astropy/modeling/separable.py",
+          "score": 416.1107
+        },
+        {
+          "file": "astropy/modeling/tests/test_separable.py",
+          "score": 261.1852
+        },
+        {
+          "file": "astropy/io/votable/tests/vo_test.py",
+          "score": 232.4273
+        },
+        {
+          "file": "astropy/wcs/wcsapi/wrappers/tests/test_sliced_wcs.py",
+          "score": 197.5677
+        },
+        {
+          "file": "astropy/time/tests/test_mask.py",
+          "score": 197.4366
+        },
+        {
+          "file": "astropy/wcs/wcsapi/tests/test_fitswcs.py",
+          "score": 187.2794
+        },
+        {
+          "file": "astropy/table/tests/test_column.py",
+          "score": 179.4403
+        },
+        {
+          "file": "astropy/utils/masked/tests/test_function_helpers.py",
+          "score": 176.886
+        },
+        {
+          "file": "astropy/wcs/tests/test_utils.py",
+          "score": 175.8648
+        },
+        {
+          "file": "astropy/wcs/utils.py",
+          "score": 173.5013
+        }
+      ]
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 0,
+  "latency_s": 0.7908781249989261,
+  "ttft_s": null,
+  "gold_context": [
+    "astropy/modeling/separable.py",
+    "astropy/modeling/tests/test_separable.py"
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "instance_id": "django__django-11999",
+  "gatherer": "react_agent",
+  "model": "hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M",
+  "metrics": {
+    "precision@1": 1.0,
+    "recall@1": 1.0,
+    "ndcg@1": 1.0,
+    "precision@3": 0.5,
+    "recall@3": 0.5,
+    "ndcg@3": 0.6131471927654584,
+    "precision@5": 0.5,
+    "recall@5": 0.5,
+    "ndcg@5": 0.6131471927654584,
+    "precision@10": 0.5,
+    "recall@10": 0.5,
+    "ndcg@10": 0.6131471927654584,
+    "mrr": 1.0,
+    "applied": false,
+    "tests_passed": false,
+    "fail_to_pass": 0,
+    "pass_to_pass": 0,
+    "token_usage": 14632.0,
+    "latency_s": 9.070983535999403,
+    "ttft_s": 2.023707549997198
+  },
+  "retrieved_documents": [
+    "django/db/models/fields/__init__.py",
+    "django/db/models/base.py"
+  ],
+  "conversation": [
+    {
+      "role": "system",
+      "content": "You are a code investigation agent. Your goal is to identify the files most\nrelevant to a given issue in a code repository.\n\nYou have the following tools available:\n\n1. list_dir(path: str) -> str\n   List files and subdirectories in the given directory (relative to repo root).\n   Use this to understand project layout around a candidate directory.\n   Example: list_dir(\"src/auth\")\n\n2. grep(pattern: str, path: str = \".\") -> str\n   Search for a regex pattern in source files (.py/.java/.ts/.js/.cs) under the\n   given path. Returns matching lines with file:line format. Use this to find\n   where a specific function, class, or error message is defined or called.\n   Example: grep(\"def authenticate\", \"src/\")\n\n3. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str\n   Read the contents of a file (relative to repo root). Use this to confirm a\n   file's relevance by inspecting its implementation. You may optionally pass a\n   start and end line range when grep already showed the interesting region.\n   Example: read_file(\"src/auth/login.py\")\n   Example: read_file(\"src/auth/login.py\", 120, 220)\n\n4. find_tests(source_path: str) -> str\n   Find likely test files for a given source file path.\n   Use this after you have identified a likely source file.\n   Example: find_tests(\"src/auth/login.py\")\n\n/nothink\n\n\n## Exploration Strategy\nFollow this general approach:\n1. Start with one focused grep() using the most distinctive identifier from the issue.\n2. If the issue text includes traceback paths, class names, or function names, prioritize those as primary suspects.\n3. Use read_file() to confirm the likely fault location(s) first; only explore parent/base/helper files if needed to confirm behavior.\n4. Use list_dir() only when you need to understand a promising directory.\n5. After identifying likely source file(s), call find_tests() for each likely source file.\n6. Stop early once you have enough evidence, then call finish().\n\n## Response Format\nOn EVERY turn, respond in EXACTLY this format:\nThought: <your reasoning about what you know so far and what to do next>\nAction: <tool_name>(arg1, arg2, ...)\n\nWhen you have gathered sufficient evidence, respond:\nThought: <summary of the relevant files found and why>\nAction: finish(file1.py, file2.py, ...)\n\n## Rules\n- Always start with a Thought.\n- Call exactly ONE action per turn.\n- If a tool returns an error or no results, try a different query or tool rather than repeating the same call.\n- Never repeat the exact same tool call with the exact same arguments.\n- Prefer 2-6 total tool calls; do not keep exploring once the likely fault location(s) and matching test file(s) are known.\n- Focus on likely fault location(s), not all tangentially related files.\n- It is valid to return multiple source files and multiple tests when evidence supports them.\n- Do not switch away from a traceback-named or directly-matched suspect file unless you found concrete evidence it is not the likely fault location.\n- The finish() arguments are the relevant file paths, which should include likely fault source file(s) and matching test file(s), if they exist.\n- You have at most 30 steps. If approaching the limit, call finish() with your best findings so far.\n- You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.\n\n/nothink\n"
+    },
+    {
+      "role": "user",
+      "content": "Find the files most relevant to this issue:\n\nCannot override get_FOO_display() in Django 2.2+.\nDescription\n\t\nI cannot override the get_FIELD_display function on models since version 2.2. It works in version 2.1.\nExample:\nclass FooBar(models.Model):\n\tfoo_bar = models.CharField(_(\"foo\"), choices=[(1, 'foo'), (2, 'bar')])\n\tdef __str__(self):\n\t\treturn self.get_foo_bar_display() # This returns 'foo' or 'bar' in 2.2, but 'something' in 2.1\n\tdef get_foo_bar_display(self):\n\t\treturn \"something\"\nWhat I expect is that I should be able to override this function.\n\n\nHints:\nThanks for this report. Regression in a68ea231012434b522ce45c513d84add516afa60. Reproduced at 54a7b021125d23a248e70ba17bf8b10bc8619234.\nOK, I have a lead on this. Not at all happy about how it looks at first pass, but I'll a proof of concept PR together for it tomorrow AM.\nI don't think it should be marked as blocker since it looks like it was never supported, because it depends on the order of attrs passed in ModelBase.__new__(). So on Django 2.1 and Python 3.7: In [1]: import django ...: django.VERSION In [2]: from django.db import models ...: ...: class FooBar(models.Model): ...: def get_foo_bar_display(self): ...: return \"something\" ...: ...: foo_bar = models.CharField(\"foo\", choices=[(1, 'foo'), (2, 'bar')]) ...: ...: def __str__(self): ...: return self.get_foo_bar_display() # This returns 'foo' or 'bar' in 2.2, but 'something' in 2.1 ...: ...: class Meta: ...: app_label = 'test' ...: ...: FooBar(foo_bar=1) Out[2]: <FooBar: foo> Before \u200bPython 3.6 the order of attrs wasn't defined at all.\nSergey, an example from the ticket description works for me with Django 2.1 and Python 3.6, 3.7 and 3.8.\nIn [2]: import django ...: django.VERSION Out[2]: (2, 1, 13, 'final', 0) In [3]: import sys ...: sys.version Out[3]: '3.5.7 (default, Oct 17 2019, 07:04:41) \\n[GCC 8.3.0]' In [4]: from django.db import models ...: ...: class FooBar(models.Model): ...: foo_bar = models.CharField(\"foo\", choices=[(1, 'foo'), (2, 'bar')]) ...: ...: def __str__(self): ...: return self.get_foo_bar_display() # This returns 'foo' or 'bar' in 2.2, but 'something' in 2.1 ...: ...: def get_foo_bar_display(self): ...: return \"something\" ...: ...: class Meta: ...: app_label = 'test' ...: ...: FooBar(foo_bar=1) Out[4]: <FooBar: foo>\nOK, so there is a behaviour change here, but Sergey is correct that it does depend on attr order, so it's hard to say that this can be said to ever have been thought of as supported, with the exact example provided. This example produces the opposite result on 2.1 (even on >=PY36): def test_overriding_display_backwards(self): class FooBar2(models.Model): def get_foo_bar_display(self): return \"something\" foo_bar = models.CharField(\"foo\", choices=[(1, 'foo'), (2, 'bar')]) f = FooBar2(foo_bar=1) # This returns 'foo' or 'bar' in both 2.2 and 2.1 self.assertEqual(f.get_foo_bar_display(), \"foo\") Because get_foo_bar_display() is defined before foo_bar is gets replaced in the the add_to_class() step. Semantically order shouldn't make a difference. Given that it does, I can't see that we're bound to maintain that behaviour. (There's a possible fix in Field.contribute_to_class() but implementing that just reverses the pass/fail behaviour depending on order...) Rather, the correct way to implement this on 2.2+ is: def test_overriding_display(self): class FooBar(models.Model): foo_bar = models.CharField(\"foo\", choices=[(1, 'foo'), (2, 'bar')]) def _get_FIELD_display(self, field): if field.attname == 'foo_bar': return \"something\" return super()._get_FIELD_display(field) f = FooBar(foo_bar=1) self.assertEqual(f.get_foo_bar_display(), \"something\") This is stable for declaration order on version 2.2+. This approach requires overriding _get_FIELD_display() before declaring fields on 2.1, because otherwise Model._get_FIELD_display() is picked up during Field.contribute_to_class(). This ordering dependency is, ultimately, the same issue that was addressed in a68ea231012434b522ce45c513d84add516afa60, and the follow-up in #30254. The behaviour in 2.1 (and before) was incorrect. Yes, there's a behaviour change here but it's a bugfix, and all bugfixes are breaking changes if you're depending on the broken behaviour. I'm going to downgrade this from Release Blocker accordingly. I'll reclassify this as a Documentation issue and provide the working example, as overriding _get_FIELD_display() is a legitimate use-case I'd guess.\nReplying to Carlton Gibson: (There's a possible fix in Field.contribute_to_class() but implementing that just reverses the pass/fail behaviour depending on order...) Doesn't this fix it? if not hasattr(cls, 'get_%s_display' % self.name): setattr(cls, 'get_%s_display' % self.name, partialmethod(cls._get_FIELD_display, field=self))"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The issue is related to overriding `get_FIELD_display()` in Django models, and the discussion suggests that the behavior change in Django 2.2+ is due to how `add_to_class()` processes model attributes. I should search for the `get_FIELD_display` method and related code in Django's source files to identify the relevant files.\nAction: grep(\"get_FIELD_display\", \"django/db/models/\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 1/30 \u2014 29 remaining]\n/tmp/swebench_repos/django__django-11999/django/db/models/fields/__init__.py:767:                    partialmethod(cls._get_FIELD_display, field=self))\n/tmp/swebench_repos/django__django-11999/django/db/models/base.py:941:    def _get_FIELD_display(self, field):"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The relevant files are `fields/__init__.py` and `base.py` in the `django/db/models` directory. These files contain the implementation of `get_FIELD_display` and related methods. I will now inspect these files to confirm their relevance.\nAction: read_file(\"django/db/models/fields/__init__.py\", 760, 780)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 2/30 \u2014 28 remaining]\n 760:             # Don't override classmethods with the descriptor. This means that\n 761:             # if you have a classmethod and a field with the same name, then\n 762:             # such fields can't be deferred (we don't have a check for this).\n 763:             if not getattr(cls, self.attname, None):\n 764:                 setattr(cls, self.attname, self.descriptor_class(self))\n 765:         if self.choices is not None:\n 766:             setattr(cls, 'get_%s_display' % self.name,\n 767:                     partialmethod(cls._get_FIELD_display, field=self))\n 768: \n 769:     def get_filter_kwargs_for_object(self, obj):\n 770:         \"\"\"\n 771:         Return a dict that when passed as kwargs to self.model.filter(), would\n 772:         yield all instances having the same value for this field as obj has.\n 773:         \"\"\"\n 774:         return {self.name: getattr(obj, self.attname)}\n 775: \n 776:     def get_attname(self):\n 777:         return self.name\n 778: \n 779:     def get_attname_column(self):\n 780:         attname = self.get_attname()\n... (1641 more lines, total 2421)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The code in `fields/__init__.py` shows that `get_%s_display` is set using `partialmethod(cls._get_FIELD_display, field=self)`, which is related to the issue. I will now inspect `base.py` to check for the `_get_FIELD_display` method.\nAction: read_file(\"django/db/models/base.py\", 930, 960)"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 3/30 \u2014 27 remaining]\n 930:         assert self.pk is not None, (\n 931:             \"%s object can't be deleted because its %s attribute is set to None.\" %\n 932:             (self._meta.object_name, self._meta.pk.attname)\n 933:         )\n 934: \n 935:         collector = Collector(using=using)\n 936:         collector.collect([self], keep_parents=keep_parents)\n 937:         return collector.delete()\n 938: \n 939:     delete.alters_data = True\n 940: \n 941:     def _get_FIELD_display(self, field):\n 942:         value = getattr(self, field.attname)\n 943:         # force_str() to coerce lazy strings.\n 944:         return force_str(dict(field.flatchoices).get(value, value), strings_only=True)\n 945: \n 946:     def _get_next_or_previous_by_FIELD(self, field, is_next, **kwargs):\n 947:         if not self.pk:\n 948:             raise ValueError(\"get_next/get_previous cannot be used on unsaved objects.\")\n 949:         op = 'gt' if is_next else 'lt'\n 950:         order = '' if is_next else '-'\n 951:         param = getattr(self, field.attname)\n 952:         q = Q(**{'%s__%s' % (field.name, op): param})\n 953:         q = q | Q(**{field.name: param, 'pk__%s' % op: self.pk})\n 954:         qs = self.__class__._default_manager.using(self._state.db).filter(**kwargs).filter(q).order_by(\n 955:             '%s%s' % (order, field.name), '%spk' % order\n 956:         )\n 957:         try:\n 958:             return qs[0]\n 959:         except IndexError:\n 960:             raise self.DoesNotExist(\"%s matching query does not exist.\" % self.__class__._meta.object_name)\n... (949 more lines, total 1909)"
+    },
+    {
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\nThought: The `_get_FIELD_display` method in `base.py` is responsible for retrieving the display value of a field, and the `get_%s_display` method in `fields/__init__.py` is dynamically set using `partialmethod`. These files are directly related to the issue. I will now look for test files that cover this functionality.\nAction: find_tests(\"django/db/models/fields/__init__.py\")"
+    },
+    {
+      "role": "user",
+      "content": "Observation:\n[Step 4/30 \u2014 26 remaining]\nNo likely test files found."
+    }
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "thought": "Thought: The issue is related to overriding `get_FIELD_display()` in Django models, and the discussion suggests that the behavior change in Django 2.2+ is due to how `add_to_class()` processes model attributes. I should search for the `get_FIELD_display` method and related code in Django's source files to identify the relevant files.",
+      "action": "grep",
+      "args": [
+        "get_FIELD_display",
+        "django/db/models/"
+      ],
+      "tokens": 2251,
+      "observation": "/tmp/swebench_repos/django__django-11999/django/db/models/fields/__init__.py:767:                    partialmethod(cls._get_FIELD_display, field=self))\n/tmp/swebench_repos/django__django-11999/django/db/models/base.py:941:    def _get_FIELD_display(self, field):"
+    },
+    {
+      "step": 2,
+      "thought": "Thought: The relevant files are `fields/__init__.py` and `base.py` in the `django/db/models` directory. These files contain the implementation of `get_FIELD_display` and related methods. I will now inspect these files to confirm their relevance.",
+      "action": "read_file",
+      "args": [
+        "django/db/models/fields/__init__.py",
+        "760",
+        "780"
+      ],
+      "tokens": 2435,
+      "observation": " 760:             # Don't override classmethods with the descriptor. This means that\n 761:             # if you have a classmethod and a field with the same name, then\n 762:             # such fields can't be deferred (we don't have a check for this).\n 763:             if not getattr(cls, self.attname, None):\n 764:                 setattr(cls, self.attname, self.descriptor_class(self))\n 765:         if self.choices is not None:\n 766:             setattr(cls, 'get_%s_display' % self.name,\n 767:                     partialmethod(cls._get_FIELD_display, field=self))\n 768: \n 769:     def get_filter_kwargs_for_object(self, obj):\n 770:         \"\"\"\n 771:         Return a dict that when passed as kwargs to self.model.filter(), would\n 772:         yield all instances having the same value for this field as obj has.\n 773:         \"\"\"\n 774:         return {self.name: getattr(obj, self.attname)}\n 775: \n 776:     def get_attname(self):\n 777:         return self.name\n 778: \n 779:     def get_attname_column(self):\n 780:         attname = self.get_attname()\n... (1641 more lines, total 2421)"
+    },
+    {
+      "step": 3,
+      "thought": "Thought: The code in `fields/__init__.py` shows that `get_%s_display` is set using `partialmethod(cls._get_FIELD_display, field=self)`, which is related to the issue. I will now inspect `base.py` to check for the `_get_FIELD_display` method.",
+      "action": "read_file",
+      "args": [
+        "django/db/models/base.py",
+        "930",
+        "960"
+      ],
+      "tokens": 2866,
+      "observation": " 930:         assert self.pk is not None, (\n 931:             \"%s object can't be deleted because its %s attribute is set to None.\" %\n 932:             (self._meta.object_name, self._meta.pk.attname)\n 933:         )\n 934: \n 935:         collector = Collector(using=using)\n 936:         collector.collect([self], keep_parents=keep_parents)\n 937:         return collector.delete()\n 938: \n 939:     delete.alters_data = True\n 940: \n 941:     def _get_FIELD_display(self, field):\n 942:         value = getattr(self, field.attname)\n 943:         # force_str() to coerce lazy strings.\n 944:         return force_str(dict(field.flatchoices).get(value, value), strings_only=True)\n 945: \n 946:     def _get_next_or_previous_by_FIELD(self, field, is_next, **kwargs):\n 947:         if not self.pk:\n 948:             raise ValueError(\"get_next/get_previous cannot be used on unsaved objects.\")\n 949:         op = 'gt' if is_next else 'lt'\n 950:         order = '' if is_next else '-'\n 951:         param = getattr(self, field.attname)\n 952:         q = Q(**{'%s__%s' % (field.name, op): param})\n 953:         q = q | Q(**{field.name: param, 'pk__%s' % op: self.pk})\n 954:         qs = self.__class__._default_manager.using(self._state.db).filter(**kwargs).filter(q).order_by(\n 955:             '%s%s' % (order, field.name), '%spk' % order\n 956:         )\n 957:         try:\n 958:             return qs[0]\n 959:         except IndexError:\n 960:             raise self.DoesNotExist(\"%s matching query does not exist.\" % self.__class__._meta.object_name)\n... (949 more lines, total 1909)"
+    },
+    {
+      "step": 4,
+      "thought": "Thought: The `_get_FIELD_display` method in `base.py` is responsible for retrieving the display value of a field, and the `get_%s_display` method in `fields/__init__.py` is dynamically set using `partialmethod`. These files are directly related to the issue. I will now look for test files that cover this functionality.",
+      "action": "find_tests",
+      "args": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "tokens": 3483,
+      "observation": "No likely test files found."
+    },
+    {
+      "step": 5,
+      "thought": "Thought: The test files for `fields/__init__.py` could not be found, but the relevant source files are `django/db/models/fields/__init__.py` and `django/db/models/base.py`. These files directly handle the `get_FIELD_display` method and its behavior in Django models.",
+      "action": "finish",
+      "args": [
+        "django/db/models/fields/__init__.py",
+        "django/db/models/base.py"
+      ],
+      "tokens": 3597
+    }
+  ],
+  "generated_patch": null,
+  "token_usage": 14632,
+  "latency_s": 9.070983535999403,
+  "ttft_s": 2.023707549997198,
+  "gold_context": [
+    "django/db/models/fields/__init__.py",
+    "tests/model_fields/tests.py"
+  ]
+}

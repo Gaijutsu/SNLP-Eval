@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import math
 import re
 import time
@@ -11,6 +12,8 @@ from typing import Any
 
 from harness.benchmarks.base import BenchmarkInstance
 from harness.gatherers.base import ContextGatherer, GatherResult
+
+logger = logging.getLogger(__name__)
 
 
 def _tokenize(text: str) -> list[str]:
@@ -82,7 +85,7 @@ class _BM25:
 
 
 class ChunkedIndex:
-    """Indexes a repository by file, storing file paths and their content."""
+    """Indexes a repository by file, storing file paths and BM25 corpus."""
 
     def __init__(
         self,
@@ -92,10 +95,17 @@ class ChunkedIndex:
         self.file_paths: list[str] = []
         tokenized_corpus: list[list[str]] = []
         self._build(repo_path, extensions, tokenized_corpus)
+
         if tokenized_corpus:
             self.bm25 = _BM25(tokenized_corpus)
+            logger.info(
+                "Built BM25 index: %s (%d files)",
+                repo_path.name,
+                len(self.file_paths),
+            )
         else:
             self.bm25 = None
+            logger.warning("BM25 index empty: %s", repo_path.name)
 
     def _build(
         self,
@@ -104,6 +114,8 @@ class ChunkedIndex:
         tokenized_corpus: list[list[str]],
     ) -> None:
         """Walk the repo and index each eligible file."""
+        logger.info("Building BM25 index: %s", repo_path.name)
+
         for fpath in sorted(repo_path.rglob("*")):
             if not fpath.is_file():
                 continue
@@ -146,17 +158,33 @@ class BM25RAGGatherer(ContextGatherer):
 
     name = "rag_bm25"
 
+    _index_cache: dict[Path, ChunkedIndex] = {}
+
     def __init__(self, top_k: int = 10, **kwargs: Any):
         self.top_k = top_k
 
     def gather(self, instance: BenchmarkInstance) -> GatherResult:
         t0 = time.perf_counter()
 
-        index = ChunkedIndex(instance.repo_snapshot)
+        repo_path = instance.repo_snapshot.resolve()
+
+        if repo_path not in self._index_cache:
+            self._index_cache[repo_path] = ChunkedIndex(repo_path)
+        else:
+            logger.debug("BM25 index cache hit: %s", repo_path.name)
+
+        index = self._index_cache[repo_path]
         results = index.search(instance.query, top_k=self.top_k)
         retrieved = [path for path, _ in results]
 
         latency = time.perf_counter() - t0
+
+        logger.debug(
+            "BM25 search complete: repo=%s results=%d latency=%.2fs",
+            repo_path.name,
+            len(retrieved),
+            latency,
+        )
 
         return GatherResult(
             retrieved_contexts=retrieved,
