@@ -1,17 +1,17 @@
 benchmark:
   name: swebench_lite
   split: test
-  limit: 50            # for quick dev runs
+  limit: 5            # for quick dev runs
   gold_context_strategy: patch_and_tests
 
 llm:
   provider: local
-  model: hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M
+  model: hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M
   base_url: http://localhost:11434/v1
 
 gatherers:
   - name: agentic_bm25
-    llm: hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M
+    llm: hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M
     n_samples: 5
     max_tool_rounds: 3
     bm25_top_k: 10

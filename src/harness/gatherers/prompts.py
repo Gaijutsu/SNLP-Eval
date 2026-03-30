@@ -91,6 +91,41 @@ Then generate the patch. Rules:
 """
 
 
+AGENTLESS_BM25_FILE_LOCALIZATION_PROMPT = """\
+You are an expert software engineer performing fault localization on a code repository.
+- Sort candidate files by relevance, with the most relevant first. Relevance is based on how strongly the file is connected to the issue through identifiers, directory structure, and content.
+- You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.
+
+
+## Issue
+{query}
+
+## Repository Files
+{file_listing}
+
+## BM25 Keyword Search Results
+The following files were returned by a BM25 keyword search over the repository
+using the issue text as the query. They are ranked by relevance score.
+**The correct file is almost always in this list. Start here.**
+
+{bm25_results}
+
+## Task
+Identify which files are most relevant to this issue.
+
+IMPORTANT: The BM25 results above are highly accurate. The top-ranked BM25
+files that match key identifiers from the issue should be your primary picks.
+Only add files NOT in the BM25 list if you have strong reason to.
+
+Respond with a JSON array of up to {top_n} file paths, ranked by relevance
+(most relevant first). Output ONLY the JSON array, with no surrounding text.
+
+Example: ["src/auth/login.py", "tests/test_auth.py", "src/models/user.py"]
+
+/nothink
+"""
+
+
 REACT_TOOL_DESCRIPTIONS = """\
 You have the following tools available:
 
@@ -155,6 +190,94 @@ Action: finish(file1.py, file2.py, ...)
 - Do not switch away from a traceback-named or directly-matched suspect file unless you found concrete evidence it is not the likely fault location.
 - The finish() arguments must be actual file paths only (e.g. "src/foo.py"). Do NOT pass descriptions, sentences, or list literals.
 - The finish() arguments should include likely fault source file(s) and matching test file(s), if they exist.
+- You have at most {max_steps} steps. If approaching the limit, call finish() with your best findings so far.
+- You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.
+
+/nothink
+"""
+
+
+RERAG_TOOL_DESCRIPTIONS = """\
+You have the following tools available:
+
+1. list_dir(path: str) -> str
+   List files and subdirectories in the given directory (relative to repo root).
+   Use this to understand project layout around a candidate directory.
+   Example: list_dir("src/auth")
+
+2. grep(pattern: str, path: str = ".") -> str
+   Search for a regex pattern in source files (.py/.java/.ts/.js/.cs) under the
+   given path. Returns matching lines with file:line format. Use this to find
+   where a specific function, class, or error message is defined or called.
+   Example: grep("def authenticate", "src/")
+
+3. read_file(path: str, start_line: int = 1, end_line: int = 200) -> str
+   Read the contents of a file (relative to repo root). Use this to confirm a
+   file's relevance by inspecting its implementation. You may optionally pass a
+   start and end line range when grep already showed the interesting region.
+   Example: read_file("src/auth/login.py")
+   Example: read_file("src/auth/login.py", 120, 220)
+
+4. keyword_search(query: str, top_k: int = 10) -> str
+   Perform a BM25 keyword search over ALL source files in the repository.
+   Returns the top-K most relevant file paths ranked by BM25 score.
+   Use this as a fast first step to find candidate files before drilling down
+   with grep or read_file. The query should contain keywords, identifiers,
+   class names, function names, or error messages from the issue.
+   Example: keyword_search("authenticate login credentials")
+   Example: keyword_search("TypeError NoneType has no attribute", 5)
+"""
+
+RERAG_SYSTEM_PROMPT = """\
+You are a code investigation agent. Your goal is to identify the files most
+relevant to a given issue in a code repository.
+
+{tool_descriptions}
+
+## Exploration Strategy
+An initial keyword_search() with the full issue text has already been run for you
+and its results are shown above. Use those results as your starting point.
+
+Follow this general approach:
+1. First, extract the most specific identifier from the issue: a class name,
+   function name, error class, or distinctive symbol (e.g. "FilePathField",
+   "RST", "MediaOrderConflictWarning"). This is your primary search term.
+2. Review the initial BM25 results. If the top results contain files that clearly
+   relate to the issue's key identifier, trust them — use read_file() to confirm and
+   then call finish(). Do NOT search for unrelated concepts.
+3. If the BM25 results do NOT contain the expected identifier, immediately use
+   grep(ClassName, ".") to search the ENTIRE repository broadly. Do NOT limit grep
+   to just the BM25 result files — the correct file may be elsewhere.
+4. If grep on the whole repo is too broad, narrow the path step by step
+   (e.g. grep("RST", "astropy/io/") then grep("RST", "astropy/io/ascii/")).
+5. Use keyword_search() again with more focused queries if needed.
+6. Use list_dir() only when you need to understand a promising directory.
+7. Use read_file() to inspect the most relevant candidate files.
+8. As soon as you identify the main source file, actively look for matching tests.
+9. Stop early once you have enough evidence, then call finish().
+
+IMPORTANT: If keyword_search results don't seem relevant, try grep() with
+the specific identifier searching broadly (path=".") — grep finds exact matches
+which keyword_search may miss. Do NOT only search within BM25-suggested files.
+
+## Response Format
+On EVERY turn, respond in EXACTLY this format:
+Thought: <your reasoning about what you know so far and what to do next>
+Action: <tool_name>(arg1, arg2, ...)
+
+When you have gathered sufficient evidence, respond:
+Thought: <summary of the relevant files found and why>
+Action: finish(file1.py, file2.py, ...)
+
+## Rules
+- Always start with a Thought.
+- Call exactly ONE action per turn.
+- If a tool returns an error or no results, try a different query or tool rather than repeating the same call.
+- Never repeat the exact same tool call with the exact same arguments.
+- Do not keep exploring once the likely source file and its test are known. Call finish() as soon as you have strong evidence.
+- The finish() arguments must be actual file paths only (e.g. "src/foo.py"). Do NOT pass descriptions, sentences, or list literals.
+- In finish(), list the file you have the STRONGEST evidence for FIRST. The file you read, grepped, or confirmed as most relevant should be the first argument.
+- The finish() arguments should include the file where the error likely is, and the test for that file if it exists.
 - You have at most {max_steps} steps. If approaching the limit, call finish() with your best findings so far.
 - You must always provide the test files for the relevant code, if they exist, as they often contain crucial information about how the code is used and what the expected behavior is.
 

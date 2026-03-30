@@ -1,0 +1,36 @@
+{
+  "run_id": "2026-03-20_123517",
+  "timestamp": "2026-03-20T12:35:17.734726+00:00",
+  "config": {
+    "benchmark": {
+      "name": "swebench_lite",
+      "split": "test",
+      "limit": 5,
+      "gold_context_strategy": "patch_and_tests"
+    },
+    "llm": {
+      "provider": "local",
+      "model": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+      "base_url": "http://localhost:11434/v1"
+    },
+    "gatherers": [
+      {
+        "name": "agentic_bm25",
+        "llm": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M",
+        "max_steps": 30,
+        "bm25_top_k": 10
+      }
+    ],
+    "k_values": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "dashboard": {
+      "enabled": true,
+      "port": 8765
+    },
+    "output_dir": "./results"
+  }
+}
