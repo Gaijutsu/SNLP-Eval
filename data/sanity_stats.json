@@ -1,0 +1,31 @@
+{
+  "n_tasks": 30,
+  "n_unique_repos": 12,
+  "repos": {
+    "django/django": 11,
+    "sympy/sympy": 7,
+    "matplotlib/matplotlib": 2,
+    "scikit-learn/scikit-learn": 2,
+    "astropy/astropy": 1,
+    "mwaskom/seaborn": 1,
+    "pallets/flask": 1,
+    "psf/requests": 1,
+    "pydata/xarray": 1,
+    "pylint-dev/pylint": 1,
+    "pytest-dev/pytest": 1,
+    "sphinx-doc/sphinx": 1
+  },
+  "gold_files": {
+    "mean": 1.0,
+    "median": 1,
+    "min": 1,
+    "max": 1,
+    "std": 0.0,
+    "distribution": {
+      "1": 30
+    }
+  },
+  "caveats": [
+    "No parsing caveats detected \u2014 paths look clean."
+  ]
+}

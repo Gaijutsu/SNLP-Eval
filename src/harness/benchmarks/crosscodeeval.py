@@ -41,11 +41,16 @@ class CrossCodeEvalAdapter(BenchmarkAdapter):
         self,
         split: str = "test",
         limit: int | None = None,
+        task_ids: list[str] | None = None,
     ) -> list[BenchmarkInstance]:
         from datasets import load_dataset
 
         ds = load_dataset(self.HF_DATASET, self.language, split=split)
-        if limit:
+
+        if task_ids:
+            task_id_set = set(task_ids)
+            ds = ds.filter(lambda row: row.get("task_id", "") in task_id_set)
+        elif limit:
             ds = ds.select(range(min(limit, len(ds))))
 
         instances: list[BenchmarkInstance] = []

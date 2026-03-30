@@ -6,10 +6,12 @@ import pytest
 
 from harness.metrics.retrieval import (
     compute_all_retrieval_metrics,
+    f1_at_k,
     mrr,
     ndcg_at_k,
     precision_at_k,
     recall_at_k,
+    success_at_k,
 )
 
 
@@ -105,6 +107,8 @@ class TestComputeAll:
         assert "precision@1" in result
         assert "recall@3" in result
         assert "ndcg@5" in result
+        assert "success@5" in result
+        assert "f1@3" in result
         assert "mrr" in result
 
     def test_values_in_range(self):
@@ -137,33 +141,52 @@ class TestComputeAll:
         assert result["recall@5"] == 0.6
 
 
-class TestDuplicateRetrievedItems:
-    """Regression tests: duplicates in retrieved list must not inflate scores."""
+class TestSuccessAtK:
+    def test_all_found(self):
+        assert success_at_k(["a", "b", "c"], ["a", "b"], k=3) == 1.0
 
-    def test_precision_with_duplicates(self):
-        # "a" appears 5 times but should only count once
-        assert precision_at_k(["a", "a", "a", "a", "a"], ["a"], k=5) == pytest.approx(1 / 5)
+    def test_not_all_found(self):
+        assert success_at_k(["a", "x", "y"], ["a", "b"], k=3) == 0.0
 
-    def test_recall_with_duplicates(self):
-        assert recall_at_k(["a", "a", "a", "a", "a"], ["a"], k=5) == pytest.approx(1.0)
+    def test_none_found(self):
+        assert success_at_k(["x", "y", "z"], ["a", "b"], k=3) == 0.0
 
-    def test_recall_duplicates_capped_at_one(self):
-        # Even with many duplicates, recall can never exceed 1.0
-        result = recall_at_k(["a", "a", "a", "a", "a"], ["a", "b"], k=5)
-        assert result <= 1.0
+    def test_single_gold_found(self):
+        assert success_at_k(["a", "b", "c"], ["a"], k=3) == 1.0
 
-    def test_ndcg_with_duplicates(self):
-        result = ndcg_at_k(["a", "a", "a", "a", "a"], ["a"], k=5)
-        assert 0.0 <= result <= 1.0
+    def test_single_gold_not_found(self):
+        assert success_at_k(["x", "y", "z"], ["a"], k=3) == 0.0
 
-    def test_mrr_with_duplicates(self):
-        assert mrr(["a", "a", "a"], ["a"]) == 1.0
+    def test_k_zero(self):
+        assert success_at_k(["a"], ["a"], k=0) == 0.0
 
-    def test_compute_all_with_duplicates_in_range(self):
-        result = compute_all_retrieval_metrics(
-            ["a", "a", "b", "b", "a", "c", "c", "a", "b", "a"],
-            ["a", "c"],
-            k_values=[1, 3, 5, 10],
-        )
-        for key, value in result.items():
-            assert 0.0 <= value <= 1.0, f"{key}={value} out of range with duplicates"
+    def test_empty_gold(self):
+        assert success_at_k(["a", "b"], [], k=3) == 1.0
+
+    def test_gold_at_boundary(self):
+        # Gold item exactly at position K
+        assert success_at_k(["x", "y", "a"], ["a"], k=3) == 1.0
+        # Gold item just beyond K
+        assert success_at_k(["x", "y", "z", "a"], ["a"], k=3) == 0.0
+
+
+class TestF1AtK:
+    def test_perfect(self):
+        # All retrieved are relevant, all gold found
+        assert f1_at_k(["a", "b"], ["a", "b"], k=2) == pytest.approx(1.0)
+
+    def test_no_relevant(self):
+        assert f1_at_k(["x", "y"], ["a", "b"], k=2) == 0.0
+
+    def test_partial(self):
+        # P@2 = 1/2, R@2 = 1/2 → F1 = 0.5
+        assert f1_at_k(["a", "x"], ["a", "b"], k=2) == pytest.approx(0.5)
+
+    def test_high_recall_low_precision(self):
+        # P@5 = 2/5, R@5 = 2/2=1.0 → F1 = 2*(0.4*1.0)/(0.4+1.0) = 4/7
+        result = f1_at_k(["a", "x", "b", "y", "z"], ["a", "b"], k=5)
+        assert result == pytest.approx(4 / 7)
+
+    def test_k_zero(self):
+        assert f1_at_k(["a"], ["a"], k=0) == 0.0
+

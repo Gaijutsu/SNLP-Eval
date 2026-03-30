@@ -27,12 +27,15 @@ class BenchmarkAdapter(ABC):
         self,
         split: str = "test",
         limit: int | None = None,
+        task_ids: list[str] | None = None,
     ) -> list[BenchmarkInstance]:
         """Return a list of benchmark instances.
 
         Args:
             split: Dataset split to load (e.g. "test", "dev").
             limit: Cap the number of instances (``None`` for all).
+            task_ids: Optional list of specific instance IDs to load
+                (for reproducible subsets).
         """
         ...
 

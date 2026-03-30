@@ -1,0 +1,22 @@
+# RAG Proof-of-Life — quick smoke test on 5 tasks
+# Owned by RAG subteam (Mert/Sara/Jonas)
+benchmark:
+  name: swebench_lite
+  split: test
+  limit: 5
+
+llm:
+  provider: local
+  model: qwen3:0.6b
+  base_url: http://localhost:11434/v1
+
+gatherers:
+  - name: rag_bm25
+    top_k: 20
+
+k_values: [5, 10, 20]
+
+dashboard:
+  enabled: false
+
+output_dir: ./results/proof_of_life

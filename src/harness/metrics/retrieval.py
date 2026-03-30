@@ -111,6 +111,46 @@ def ndcg_at_k(
     return dcg / idcg
 
 
+def success_at_k(
+    retrieved: Sequence[str],
+    gold: Sequence[str],
+    k: int,
+) -> float:
+    """Success@K — 1.0 if ALL gold items are found in top-K, else 0.0.
+
+    This is a stricter metric than Recall@K: it requires *every* relevant
+    item to appear in the top-K results.  Useful when downstream tasks
+    (e.g., patch generation) need *all* modified files to succeed.
+
+    Returns:
+        1.0 or 0.0.  Returns 1.0 when gold is empty (vacuously true).
+    """
+    if not gold or k <= 0:
+        return 0.0 if (gold and k <= 0) else (1.0 if not gold else 0.0)
+    top_k = set(retrieved[:k])
+    return 1.0 if set(gold).issubset(top_k) else 0.0
+
+
+def f1_at_k(
+    retrieved: Sequence[str],
+    gold: Sequence[str],
+    k: int,
+) -> float:
+    """F1@K — harmonic mean of Precision@K and Recall@K.
+
+    Balances the trade-off between retrieving relevant items (recall)
+    and avoiding irrelevant ones (precision).
+
+    Returns:
+        F1 value in [0, 1].  Returns 0.0 if both precision and recall are 0.
+    """
+    p = precision_at_k(retrieved, gold, k)
+    r = recall_at_k(retrieved, gold, k)
+    if p + r == 0:
+        return 0.0
+    return 2.0 * p * r / (p + r)
+
+
 def compute_all_retrieval_metrics(
     retrieved: Sequence[str],
     gold: Sequence[str],
@@ -124,6 +164,8 @@ def compute_all_retrieval_metrics(
             "precision@1": 1.0,
             "precision@3": 0.33,
             "recall@1": 0.5,
+            "success@5": 1.0,
+            "f1@5": 0.33,
             ...
             "mrr": 0.5,
             "ndcg@5": 0.72,
@@ -135,6 +177,8 @@ def compute_all_retrieval_metrics(
         results[f"precision@{k}"] = precision_at_k(retrieved, gold, k)
         results[f"recall@{k}"] = recall_at_k(retrieved, gold, k)
         results[f"ndcg@{k}"] = ndcg_at_k(retrieved, gold, k)
+        results[f"success@{k}"] = success_at_k(retrieved, gold, k)
+        results[f"f1@{k}"] = f1_at_k(retrieved, gold, k)
 
     results["mrr"] = mrr(retrieved, gold)
     return results

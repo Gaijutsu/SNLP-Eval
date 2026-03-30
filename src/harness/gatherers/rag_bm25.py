@@ -121,6 +121,7 @@ class ChunkedIndex:
                 continue
             if fpath.suffix not in extensions:
                 continue
+
             rel = fpath.relative_to(repo_path).as_posix()
             if any(part.startswith(".") for part in rel.split("/")):
                 continue
@@ -141,9 +142,7 @@ class ChunkedIndex:
         if not self.bm25:
             return []
 
-        # VERY IMPORTANT: `query` is a raw string here! It MUST be tokenized!
         tokenized_query = _tokenize(query)
-
         scores = self.bm25.get_scores(tokenized_query)
         ranked = sorted(
             zip(self.file_paths, scores),

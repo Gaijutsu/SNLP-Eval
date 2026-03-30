@@ -1,0 +1,25 @@
+# RAG Baseline Week 1 — Golden Config (N=30, BM25)
+# Owned by RAG subteam (Mert/Sara/Jonas)
+#
+# This is the primary config for the Week 1 RAG baseline experiment.
+# Run: harness --config config/rag_baseline_week1.yaml
+benchmark:
+  name: swebench_lite
+  split: test
+  task_ids_file: data/subset_30.json
+
+llm:
+  provider: local
+  model: qwen3:0.6b
+  base_url: http://localhost:11434/v1
+
+gatherers:
+  - name: rag_bm25
+    top_k: 20
+
+k_values: [5, 10, 20]
+
+dashboard:
+  enabled: false
+
+output_dir: ./results/v2_baseline_bm25

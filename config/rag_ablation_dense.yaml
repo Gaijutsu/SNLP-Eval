@@ -1,0 +1,23 @@
+# RAG Ablation — Dense Retrieval (all-MiniLM-L6-v2)
+# Owned by RAG subteam (Mert/Sara/Jonas)
+benchmark:
+  name: swebench_lite
+  split: test
+  task_ids_file: data/subset_30.json
+
+llm:
+  provider: local
+  model: qwen3:0.6b
+  base_url: http://localhost:11434/v1
+
+gatherers:
+  - name: rag_dense
+    model: all-MiniLM-L6-v2
+    top_k: 20
+
+k_values: [5, 10, 20]
+
+dashboard:
+  enabled: false
+
+output_dir: ./results/v2_ablation_dense

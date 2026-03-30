@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
-from pathlib import Path
+import warnings
 from typing import Any
 
 import yaml
@@ -13,16 +14,11 @@ import yaml
 from harness.benchmarks.base import BenchmarkAdapter
 from harness.dashboard.state import DashboardState
 from harness.gatherers.base import ContextGatherer
-from harness.metrics.retrieval import compute_all_retrieval_metrics
 from harness.metrics.efficiency import compute_efficiency_metrics
+from harness.metrics.retrieval import compute_all_retrieval_metrics
 from harness.reporting import ResultStore
 
 logger = logging.getLogger(__name__)
-
-
-# ------------------------------------------------------------------
-# Registry: name → class
-# ------------------------------------------------------------------
 
 
 def _get_adapter(cfg: dict) -> BenchmarkAdapter:
@@ -30,10 +26,7 @@ def _get_adapter(cfg: dict) -> BenchmarkAdapter:
     if name in ("swebench_lite", "swebench"):
         from harness.benchmarks.swebench import SWEBenchAdapter
 
-        return SWEBenchAdapter(
-            cache_dir=cfg.get("cache_dir"),
-            gold_context_strategy=cfg.get("gold_context_strategy", "patch_and_tests"),
-        )
+        return SWEBenchAdapter(cache_dir=cfg.get("cache_dir"))
     elif name in ("crosscodeeval", "crosscode"):
         from harness.benchmarks.crosscodeeval import CrossCodeEvalAdapter
 
@@ -41,8 +34,7 @@ def _get_adapter(cfg: dict) -> BenchmarkAdapter:
             language=cfg.get("language", "python"),
             cache_dir=cfg.get("cache_dir"),
         )
-    else:
-        raise ValueError(f"Unknown benchmark: {name}")
+    raise ValueError(f"Unknown benchmark: {name}")
 
 
 def _get_gatherer(cfg: dict, llm_cfg: dict | None = None) -> ContextGatherer:
@@ -82,33 +74,63 @@ def _get_gatherer(cfg: dict, llm_cfg: dict | None = None) -> ContextGatherer:
         raise ValueError(f"Unknown gatherer: {name}")
 
 
-def _resolve_model_name(gcfg: dict, llm_cfg: dict) -> str | None:
-    """Determine the model name used for a gatherer."""
-    # Agentic gatherers may use their own 'llm' key, else fall back to global
-    return gcfg.get("llm") or llm_cfg.get("model")
+def _setup_logging() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)],
+        force=True,
+    )
+
+    noisy_loggers = [
+        "httpx",
+        "httpcore",
+        "urllib3",
+        "huggingface_hub",
+        "huggingface_hub.file_download",
+        "datasets",
+        "fsspec",
+    ]
+    for name in noisy_loggers:
+        logging.getLogger(name).setLevel(logging.ERROR)
+
+    warnings.filterwarnings(
+        "ignore",
+        message="You are sending unauthenticated requests to the HF Hub.*",
+    )
 
 
-# ------------------------------------------------------------------
-# Main experiment loop
-# ------------------------------------------------------------------
+def _load_config(path: str) -> dict[str, Any]:
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
+def _progress_interval(num_instances: int) -> int:
+    """Choose a sparse, readable logging interval."""
+    if num_instances <= 10:
+        return 1
+    if num_instances <= 50:
+        return 10
+    if num_instances <= 200:
+        return 25
+    return 50
 
 
 def run_experiment(config_path: str) -> None:
-    """Run the full experiment as defined by the YAML config."""
     cfg = _load_config(config_path)
+    _setup_logging()
 
-    # Logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    )
-
-    # Load benchmark
     benchmark = _get_adapter(cfg["benchmark"])
     split = cfg["benchmark"].get("split", "test")
     limit = cfg["benchmark"].get("limit")
     instances = benchmark.load(split=split, limit=limit)
-    logger.info("Loaded %d benchmark instances.", len(instances))
+
+    task_ids_file = cfg["benchmark"].get("task_ids_file")
+    if task_ids_file:
+        with open(task_ids_file, "r", encoding="utf-8") as f:
+            task_ids = json.load(f)
+        instances = [inst for inst in instances if inst.id in set(task_ids)]
+        logger.info("Filtered to %d pinned task IDs from %s", len(instances), task_ids_file)
 
     gatherer_cfgs = cfg.get("gatherers", [])
     llm_cfg = cfg.get("llm", {})
@@ -119,29 +141,38 @@ def run_experiment(config_path: str) -> None:
     dashboard = DashboardState(total=total_steps)
     store = ResultStore(output_dir)
 
-    # Persist run-level metadata (config snapshot)
-    store.save_run_meta(cfg)
+    logger.info(
+        "Starting run: %d instances, %d gatherer%s",
+        len(instances),
+        len(gatherer_cfgs),
+        "" if len(gatherer_cfgs) == 1 else "s",
+    )
 
-    # Start live dashboard
     dash_cfg = cfg.get("dashboard", {})
     if dash_cfg.get("enabled", True):
         from harness.dashboard.server import start_dashboard_server
 
         port = dash_cfg.get("port", 8765)
         start_dashboard_server(dashboard, port=port)
-        logger.info("📊 Dashboard live at http://127.0.0.1:%d", port)
+        logger.info("Dashboard available at http://127.0.0.1:%d", port)
 
-    # Run
+    global_step = 0
+    per_gatherer_interval = _progress_interval(len(instances))
+
     for gcfg in gatherer_cfgs:
+        gatherer_name = gcfg["name"]
         gatherer = _get_gatherer(gcfg, llm_cfg)
-        model_name = _resolve_model_name(gcfg, llm_cfg)
-        logger.info("▶ Running gatherer: %s", gcfg["name"])
 
-        for inst in instances:
-            logger.info("  Instance: %s", inst.id)
+        logger.info("Running %s...", gatherer_name)
+
+        gatherer_latencies: list[float] = []
+        gatherer_tokens: list[int] = []
+
+        for idx, inst in enumerate(instances, start=1):
+            global_step += 1
+
             result = gatherer.gather(inst)
 
-            # Compute metrics
             retrieval_scores = compute_all_retrieval_metrics(
                 result.retrieved_contexts,
                 inst.gold_context,
@@ -151,39 +182,50 @@ def run_experiment(config_path: str) -> None:
             efficiency = compute_efficiency_metrics(result)
 
             all_metrics = {**retrieval_scores, **patch_scores, **efficiency}
+            store.store(inst.id, gatherer_name, all_metrics)
 
-            # Store with enriched data
-            store.store(
-                inst.id,
-                gcfg["name"],
-                all_metrics,
-                result=result,
-                gold_context=inst.gold_context,
-                model=model_name,
-            )
-
-            # Update dashboard
             dashboard.record(
-                gatherer_name=gcfg["name"],
+                gatherer_name=gatherer_name,
                 token_usage=result.token_usage,
                 latency_s=result.latency_s,
                 metrics=retrieval_scores,
                 instance_id=inst.id,
             )
 
-    # Generate final report
+            gatherer_latencies.append(result.latency_s)
+            gatherer_tokens.append(result.token_usage or 0)
+
+            if idx % per_gatherer_interval == 0 or idx == len(instances):
+                logger.info(
+                    "  %s: %d/%d complete",
+                    gatherer_name,
+                    idx,
+                    len(instances),
+                )
+
+        avg_latency = (
+            sum(gatherer_latencies) / len(gatherer_latencies)
+            if gatherer_latencies
+            else 0.0
+        )
+        avg_tokens = (
+            sum(gatherer_tokens) / len(gatherer_tokens)
+            if gatherer_tokens
+            else 0.0
+        )
+
+        logger.info(
+            "Finished %s — avg latency %.2fs, avg tokens %.0f",
+            gatherer_name,
+            avg_latency,
+            avg_tokens,
+        )
+
     report_dir = store.generate_report()
-    logger.info("✅ Experiment complete. Results in %s", report_dir)
+    logger.info("Run complete. Results saved to %s", report_dir)
 
 
-def _load_config(path: str) -> dict[str, Any]:
-    """Load a YAML configuration file."""
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-
-def main():
-    """CLI entry point."""
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Context Gathering Testing Harness",
     )
