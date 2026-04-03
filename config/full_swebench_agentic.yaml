@@ -1,0 +1,31 @@
+# Full SWE-bench Lite — Agentic gatherers (react, agentless, agentic_bm25, agentless_bm25)
+# Requires Ollama running with Qwen3-8B at localhost:11434
+
+benchmark:
+  name: swebench_lite
+  split: test
+  gold_context_strategy: patch_and_tests
+
+llm:
+  provider: local
+  model: hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_M
+  base_url: http://localhost:11434/v1
+
+gatherers:
+  - name: react_agent
+    max_steps: 15
+  - name: agentless
+    n_samples: 5
+  - name: agentic_bm25
+    bm25_top_k: 10
+    max_steps: 15
+  - name: agentless_bm25
+    bm25_top_k: 10
+    n_samples: 5
+
+k_values: [1, 3, 5, 10]
+
+dashboard:
+  enabled: false
+
+output_dir: ./results/full_agentic
