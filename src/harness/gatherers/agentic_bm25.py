@@ -227,7 +227,10 @@ class ReActBM25Gatherer(ContextGatherer):
                     agent_explored.append(grep_target)
             elif tool_name == "keyword_search":
                 query = args[0] if args else instance.query
-                top_k = int(args[1]) if len(args) > 1 else self.bm25_top_k
+                try:
+                    top_k = int(args[1]) if len(args) > 1 else self.bm25_top_k
+                except (ValueError, TypeError):
+                    top_k = self.bm25_top_k
                 observation, ks_paths = _tool_keyword_search(bm25_index, query, top_k)
                 # Auto-register keyword_search result paths as candidates
                 for p in ks_paths:

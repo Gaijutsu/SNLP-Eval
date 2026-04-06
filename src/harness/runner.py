@@ -116,7 +116,7 @@ def _progress_interval(num_instances: int) -> int:
     return 50
 
 
-def run_experiment(config_path: str) -> None:
+def run_experiment(config_path: str, resume_dir: str | None = None) -> None:
     cfg = _load_config(config_path)
     _setup_logging()
 
@@ -136,10 +136,40 @@ def run_experiment(config_path: str) -> None:
     llm_cfg = cfg.get("llm", {})
     k_values = cfg.get("k_values", [1, 3, 5, 10])
     output_dir = cfg.get("output_dir", "./results")
+    resume_dir = resume_dir or cfg.get("resume_dir")
 
     total_steps = len(instances) * len(gatherer_cfgs)
     dashboard = DashboardState(total=total_steps)
-    store = ResultStore(output_dir)
+    store = ResultStore(output_dir, run_id=resume_dir)
+
+    # Build set of already-completed (instance_id, gatherer_name) pairs for resume
+    existing_results: set[tuple[str, str]] = set()
+    if resume_dir:
+        instances_dir = store.output_dir / "instances"
+        if instances_dir.exists():
+            for f in instances_dir.glob("*.json"):
+                # filename format: {instance_id}_{gatherer_name}.json
+                name = f.stem
+                # gatherer name is the last part after the last known gatherer prefix
+                for gcfg in gatherer_cfgs:
+                    suffix = f"_{gcfg['name']}"
+                    if name.endswith(suffix):
+                        inst_id = name[: -len(suffix)]
+                        existing_results.add((inst_id, gcfg["name"]))
+                        break
+        # Pre-load metrics from cached results so the final report includes them
+        for f in instances_dir.glob("*.json"):
+            try:
+                data = json.loads(f.read_text(encoding="utf-8"))
+                record = {
+                    "instance_id": data["instance_id"],
+                    "gatherer": data["gatherer"],
+                    **data.get("metrics", {}),
+                }
+                store.records.append(record)
+            except (json.JSONDecodeError, KeyError):
+                pass
+        logger.info("Resuming run %s — %d existing results found", resume_dir, len(existing_results))
 
     logger.info(
         "Starting run: %d instances, %d gatherer%s",
@@ -170,6 +200,11 @@ def run_experiment(config_path: str) -> None:
 
         for idx, inst in enumerate(instances, start=1):
             global_step += 1
+
+            if (inst.id, gatherer_name) in existing_results:
+                if idx % per_gatherer_interval == 0:
+                    logger.info("  %s: %d/%d (skipped — cached)", gatherer_name, idx, len(instances))
+                continue
 
             result = gatherer.gather(inst)
 
@@ -235,8 +270,14 @@ def main() -> None:
         default="config/default.yaml",
         help="Path to experiment config YAML",
     )
+    parser.add_argument(
+        "--resume",
+        type=str,
+        default=None,
+        help="Run ID (directory name) to resume from, e.g. 2026-04-04_124222",
+    )
     args = parser.parse_args()
-    run_experiment(args.config)
+    run_experiment(args.config, resume_dir=args.resume)
 
 
 if __name__ == "__main__":
